@@ -1,0 +1,11 @@
+.welcomeBanner {
+	@apply flex flex-col justify-center items-center w-full my-8 gap-4 h-96;
+
+	.title {
+		@apply font-extrabold text-4xl;
+	}
+
+	.textBlock {
+		@apply max-w-screen-md text-center text-xl mb-4;
+	}
+}

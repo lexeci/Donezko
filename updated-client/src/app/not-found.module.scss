@@ -1,0 +1,7 @@
+.not-found {
+	@apply flex flex-col justify-center items-center my-auto gap-6;
+
+	p:first-child {
+		@apply text-7xl font-black tracking-widest;
+	}
+}

@@ -1,0 +1,23 @@
+.statistic-item {
+  @apply border border-foreground w-full p-2 flex flex-row justify-between items-center gap-x-4 hover:bg-hoverFill transition cursor-pointer
+}
+
+.about {
+  @apply flex flex-col mr-auto gap-y-0.5;
+}
+
+.title {
+  @apply flex flex-row items-baseline gap-x-4;
+
+  h5 {
+    @apply font-bold
+  }
+
+  p {
+    @apply text-xs
+  }
+}
+
+.description {
+  @apply text-sm
+}

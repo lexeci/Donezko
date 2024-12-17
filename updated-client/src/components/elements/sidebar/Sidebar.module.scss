@@ -1,0 +1,11 @@
+.sidebar {
+	@apply bg-background border-r-4 border-foreground h-[calc(100vh-82px)] w-80 p-8;
+}
+
+.container {
+	@apply flex flex-col justify-between h-full;
+
+	&__links {
+		@apply flex flex-col flex-grow gap-y-4;
+	}
+}

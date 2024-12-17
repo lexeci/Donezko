@@ -1,0 +1,27 @@
+.accordion {
+	@apply relative transition-all duration-500 border border-foreground hover:shadow-2xl mb-4;
+
+	&__container {
+		@apply w-full p-4 text-left cursor-pointer;
+	}
+
+	&__answer {
+		@apply relative overflow-hidden transition-all duration-500 max-h-0;
+
+		&__active {
+			@apply max-h-96;
+		}
+
+		p {
+			@apply px-8 pb-4;
+		}
+	}
+
+	&__question {
+		@apply flex items-center justify-between;
+
+		span {
+			@apply transition-transform duration-500 transform;
+		}
+	}
+}

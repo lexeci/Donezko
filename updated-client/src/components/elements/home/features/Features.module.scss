@@ -1,0 +1,43 @@
+.features {
+	@apply pb-8 flex flex-col justify-center items-center gap-y-4 w-3/5;
+
+	.sectionTitle {
+		@apply font-bold text-lg;
+	}
+
+	.mainTitle {
+		@apply font-extrabold text-2xl;
+	}
+
+	.textBlock {
+		@apply max-w-lg text-center;
+	}
+
+	.container {
+		@apply pt-4 grid grid-cols-2 grid-rows-2 gap-6;
+	}
+
+	.item {
+		@apply hover:bg-linkColor transition cursor-pointer border-2 border-foreground p-4 flex flex-col gap-4;
+
+		.textBlock {
+			@apply text-left;
+
+			p {
+				@apply mb-4;
+			}
+		}
+
+		.icon {
+			@apply bg-foreground text-background relative flex h-[70px] w-[70px] items-center justify-center;
+		}
+
+		.title {
+			@apply text-xl font-bold;
+		}
+
+		.textBlock {
+			@apply mb-4;
+		}
+	}
+}

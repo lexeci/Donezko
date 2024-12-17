@@ -1,0 +1,11 @@
+.header {
+	@apply md:fixed md:w-full md:top-0 md:z-20 flex items-center bg-background px-8 border-b border-foreground h-[82px];
+}
+
+.container {
+	@apply flex flex-row flex-wrap justify-between items-baseline w-full;
+}
+
+.links {
+	@apply flex flex-row justify-between items-center w-auto mr-auto px-8 capitalize gap-x-4;
+}

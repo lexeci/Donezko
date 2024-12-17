@@ -1,0 +1,23 @@
+.item {
+	@apply w-full h-full border border-foreground flex flex-col justify-between items-center hover:bg-hoverFill transition;
+}
+
+.title {
+	@apply w-full flex justify-center items-center text-center font-bold py-2;
+}
+
+.icon {
+	@apply my-12;
+}
+
+.footer {
+	@apply border-t border-t-foreground w-full;
+}
+
+.statistics {
+	@apply flex flex-row justify-between px-4 py-2;
+}
+
+.show-more {
+  @apply border-t border-t-foreground flex justify-center items-center py-2 px-4;
+}

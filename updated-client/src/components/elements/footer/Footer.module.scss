@@ -1,0 +1,41 @@
+.footer {
+	@apply pt-8 mx-auto bg-foreground text-background;
+
+	&__top {
+		@apply grid gap-12 px-4 mb-8 gap-x-6 md:px-8 sm:grid-cols-2 lg:grid-cols-4;
+	}
+
+	&__bottom {
+		@apply flex flex-col-reverse justify-between gap-2 px-4 pt-4 pb-8 border-t border-t-background md:px-8 lg:flex-row;
+
+		&__links {
+			@apply flex flex-col gap-2 mb-4 sm:flex-row md:mb-0;
+
+			&__item {
+				@apply block md:border-r-2 border-r-background md:pr-2;
+
+				&:last-child {
+					@apply border-none;
+				}
+			}
+		}
+	}
+
+	&__column {
+		@apply sm:col-span-2;
+	}
+
+	&__description {
+		@apply mt-6 lg:max-w-sm;
+	}
+
+	&__link-group {
+		&__block {
+			@apply flex flex-col gap-1 mt-2;
+		}
+
+		div > p {
+			@apply font-bold tracking-wide;
+		}
+	}
+}

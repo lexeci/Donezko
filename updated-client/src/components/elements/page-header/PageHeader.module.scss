@@ -1,0 +1,15 @@
+.page-section {
+	@apply pb-8 flex flex-col justify-start items-start gap-y-4 w-full border-b-2 border-b-foreground px-8;
+}
+
+.section-title {
+	@apply font-bold text-lg;
+}
+
+.main-title {
+	@apply font-extrabold text-2xl;
+}
+
+.intro-text {
+	@apply max-w-lg;
+}

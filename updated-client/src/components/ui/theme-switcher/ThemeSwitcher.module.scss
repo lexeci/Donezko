@@ -1,0 +1,19 @@
+.theme-switcher {
+	@apply cursor-pointer relative h-5 w-5;
+
+	&__light-mode {
+		@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all ease-in-out duration-200;
+
+		&__dark {
+			@apply opacity-0 invisible;
+		}
+	}
+
+	&__dark-mode {
+		@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all ease-in-out duration-200;
+
+		&__light {
+			@apply opacity-0 invisible;
+		}
+	}
+}

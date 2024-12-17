@@ -18,7 +18,6 @@ export default function TimerRounds({
 	prevRoundHandler,
 	activeRound,
 }: TimerRounds) {
-	console.log(rounds);
 	const isCanPrevRound = rounds
 		? rounds.some(round => round.isCompleted)
 		: false;

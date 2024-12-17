@@ -3,13 +3,37 @@
 }
 
 .section-title {
-	@apply font-bold text-lg;
+	@apply flex flex-row justify-between items-center w-full font-bold text-lg;
+
+	& > *:not(p) {
+		@apply mr-auto;
+	}
+
+	p {
+		@apply flex justify-center items-center w-52 text-xs border border-foreground p-4 py-2;
+
+		span {
+			@apply font-thin;
+		}
+	}
 }
 
 .main-title {
-	@apply font-extrabold text-2xl;
+	@apply flex flex-row justify-between items-center w-full font-extrabold text-2xl;
+
+	& > *:not(button) {
+		@apply mr-auto;
+	}
+
+	& > button {
+		@apply max-w-52 text-xs;
+	}
 }
 
 .intro-text {
-	@apply max-w-lg;
+	@apply max-w-lg flex flex-col gap-y-4;
+
+	&__statistics {
+		@apply block border-b border-foreground;
+	}
 }

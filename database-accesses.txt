@@ -1,0 +1,98 @@
+There is an example data of users in TPlanner
+use this as handbook for fake data
+
+-------------------------------------
+|  User 1:
+|  --- Email: volodkaspas@gmail.com
+|  --- Name: Volodka Spas
+|  --- Password: ponpon228@Nepon
+|  --- Role: Owner of organization Ramshanksa
+|  --- Project: Oldmaneynko
+|
+|  User 2:
+|  --- Email: igorenkapalenka@netropol.com
+|  --- Name: Igorenka Palenka
+|  --- Password: palen66228kovska@
+|  --- Role: Admin of organization Ramshanksa
+|  --- Project: Oldmaneynko
+|
+|  User 3:
+|  --- Email: pashenka2000@yahoo.com
+|  --- Name: Pashenka Oldskulshnik
+|  --- Password: pashpass@wordenka111
+|  --- Role: Usual member, Creator and leader of team Klasiki
+|  --- Project: Oldmaneynko
+|
+|  User 4:
+|  --- Email: dmitriykulbabka@yomayo.com
+|  --- Name: Dmitry Kulbabka
+|  --- Password: ptichkilubabki@124
+|  --- Role: Usual member, Member of team Klasiki
+|  --- Project: Oldmaneynko
+|
+|  User 5:
+|  --- Email: stepanapetrovna@ogorod.ua
+|  --- Name: Stepana Petrovna
+|  --- Password: ogorod@228nevskopat
+|  --- Role: Usual member, Creator of team Cheshki
+|  --- Project: Mustardes
+|
+|  User 6:
+|  --- Email: imposterenkoIrina@eldorado.ua
+|  --- Name: Irinka Postorenko
+|  --- Password: irinanemolodec338@dog
+|  --- Role: Usual member, Member of team Cheshki
+|  --- Project: Mustardes
+-------------------------------------
+
+Tasks: 
+
+-------------------------------------
+|  Task 1:
+|  --- Title: Bring me some water to my office
+|  --- Author: Pashenka Oldskulshnik
+|  --- Description: Where is my bottle of water
+|  --- Team: Klasiki
+|  --- Project: Oldmaneynko
+|  --- Priority: High
+|
+|  Task 2:
+|  --- Title: Fix database connectivity issue
+|  --- Author: Volodka Spas
+|  --- Description: Urgent! The database connection is down.
+|  --- Team: Klasiki
+|  --- Project: Oldmaneynko
+|  --- Priority: High
+|
+|  Task 3:
+|  --- Title: Organize team meeting
+|  --- Author: Igorenka Palenka
+|  --- Description: Schedule and organize a meeting for project updates.
+|  --- Team: Klasiki
+|  --- Project: Mustardes
+|  --- Priority: Medium
+|
+|  Task 4:
+|  --- Title: Update user permissions
+|  --- Author: Irinka Postorenko
+|  --- Description: Adjust permissions for new team members.
+|  --- Team: Cheshki
+|  --- Project: Oldmaneynko
+|  --- Priority: Low
+|
+|  Task 5:
+|  --- Title: Prepare presentation for stakeholders
+|  --- Author: Stepana Petrovna
+|  --- Description: Finalize and submit the presentation for approval.
+|  --- Team: Cheshki
+|  --- Project: Oldmaneynko
+|  --- Priority: High
+|
+|  Task 6:
+|  --- Title: Document team workflows
+|  --- Author: Dmitry Kulbabka
+|  --- Description: Create documentation for team operations and workflows.
+|  --- Team: Klasiki
+|  --- Project: Oldmaneynko
+|  --- Priority: Medium
+-------------------------------------

@@ -17,6 +17,7 @@ interface ProjectElementsProps {
 	organizationId?: string;
 	organizationTitle?: string;
 	projects?: ProjectResponse[];
+	isAdministrate?: boolean;
 }
 
 const ProjectElementsWithData = ({
@@ -24,19 +25,25 @@ const ProjectElementsWithData = ({
 }: {
 	projects: ProjectResponse[];
 }) => {
-	return projects.map((project, i) => {
-		const { _count } = project;
-		return (
-			<EntityItem
-				key={generateKeyComp(`${project.title}__${i}`)}
-				icon={<Buildings size={84} />}
-				linkBase={`/workspace/projects/${project.id}`}
-				title={project.title}
-				firstStat={`Teams: ${_count?.projectTeams}`}
-				secondaryStat={`Tasks: ${_count?.tasks}`}
-			/>
-		);
-	});
+	return projects.length > 0 ? (
+		projects.map((project, i) => {
+			const { _count } = project;
+			return (
+				<EntityItem
+					key={generateKeyComp(`${project.title}__${i}`)}
+					icon={<Buildings size={84} />}
+					linkBase={`/workspace/projects/${project.id}`}
+					title={project.title}
+					firstStat={`Teams: ${_count?.projectTeams}`}
+					secondaryStat={`Tasks: ${_count?.tasks}`}
+				/>
+			);
+		})
+	) : (
+		<div className="w-full h-full bg-background p-8">
+			<h5 className="font-bold text-base">There is no project for you</h5>
+		</div>
+	);
 };
 
 const ProjectElementsWithoutData = ({
@@ -53,19 +60,25 @@ const ProjectElementsWithoutData = ({
 		}
 	}, [projects, onCountChange]);
 
-	return projects?.map((project, i) => {
-		const { _count } = project;
-		return (
-			<EntityItem
-				key={generateKeyComp(`${project.title}__${i}`)}
-				icon={<Buildings size={84} />}
-				linkBase={`/workspace/projects/${project.id}`}
-				title={project.title}
-				firstStat={`Teams: ${_count?.projectTeams}`}
-				secondaryStat={`Tasks: ${_count?.tasks}`}
-			/>
-		);
-	});
+	return projects.length > 0 ? (
+		projects?.map((project, i) => {
+			const { _count } = project;
+			return (
+				<EntityItem
+					key={generateKeyComp(`${project.title}__${i}`)}
+					icon={<Buildings size={84} />}
+					linkBase={`/workspace/projects/${project.id}`}
+					title={project.title}
+					firstStat={`Teams: ${_count?.projectTeams}`}
+					secondaryStat={`Tasks: ${_count?.tasks}`}
+				/>
+			);
+		})
+	) : (
+		<div className="w-full h-full bg-background p-8">
+			<h5 className="font-bold text-base">There is no project for you</h5>
+		</div>
+	);
 };
 
 export default function ProjectElements({
@@ -73,6 +86,7 @@ export default function ProjectElements({
 	organizationId,
 	organizationTitle,
 	projects,
+	isAdministrate = false,
 }: ProjectElementsProps) {
 	const [open, setOpen] = useState<boolean>(false);
 	const [projectCount, setProjectCount] = useState<number>(
@@ -86,7 +100,7 @@ export default function ProjectElements({
 				isWindowElement && "h-full w-full max-w-full !p-0 !justify-start"
 			)}
 		>
-			{open && (
+			{open && isAdministrate && (
 				<ModalWindow
 					title="Project manager.exe"
 					subtitle="The manager to operate your project"
@@ -108,9 +122,11 @@ export default function ProjectElements({
 				>
 					<h4>Total Projects: {projectCount}</h4>
 				</div>
-				<Button type="button" onClick={() => setOpen(true)} negative block>
-					<Plus size={22} className="mr-4" /> Project
-				</Button>
+				{isAdministrate && (
+					<Button type="button" onClick={() => setOpen(true)} negative block>
+						<Plus size={22} className="mr-4" /> Project
+					</Button>
+				)}
 			</div>
 			<div
 				className={clsx(

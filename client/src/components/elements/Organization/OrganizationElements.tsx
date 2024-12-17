@@ -21,8 +21,6 @@ export default function OrganizationElements() {
 	const [open, setOpen] = useState<boolean>(false);
 	const [formType, setFormType] = useState<"join" | "create">("join");
 
-	console.log(organizationList);
-
 	return (
 		<div className={pageStyles["workspace-content-col"]}>
 			{open && (

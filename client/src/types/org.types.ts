@@ -42,8 +42,8 @@ export interface Organization extends RootBase {
 // Тип для сутності "Organization"
 export interface OrgResponse {
 	organization: Organization;
-	role: OrgRole;
-	organizationStatus: AccessStatus;
+	role?: OrgRole;
+	organizationStatus?: AccessStatus;
 }
 
 // Тип для сутності "OrganizationUser"

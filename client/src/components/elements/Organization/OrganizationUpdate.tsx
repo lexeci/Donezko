@@ -2,24 +2,33 @@
 
 import { Button, Field } from "@/components/index";
 import { useUpdateOrg } from "@/src/hooks/organization/useUpdateOrg";
-import { OrgFormData } from "@/src/types/org.types";
-import { useEffect, useState } from "react";
+import { OrgFormData, OrgResponse } from "@/src/types/org.types";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface OrganizationUpdate {
 	id: string;
 	data: OrgFormData;
+	pullUpdatedData: Dispatch<SetStateAction<OrgResponse | undefined>>;
+	pullCloseModal: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function OrganizationUpdate({
 	id,
 	data: localData,
+	pullUpdatedData,
+	pullCloseModal,
 }: OrganizationUpdate) {
 	const { updateOrganization, updatedOrganization } = useUpdateOrg();
 
 	const { register, handleSubmit, setValue, reset } = useForm<OrgFormData>({
 		mode: "onChange",
 	});
+
+	useEffect(() => {
+		setValue("title", localData.title);
+		setValue("description", localData.description);
+	}, []);
 
 	// Локальний стан для згенерованого joinCode
 	const [joinCode, setJoinCode] = useState<string>(
@@ -33,10 +42,6 @@ export default function OrganizationUpdate({
 		setValue("joinCode", code); // Автоматично заповнюємо поле форми
 	};
 
-	useEffect(() => {
-		generateJoinCode();
-	}, []);
-
 	const onSubmit: SubmitHandler<OrgFormData> = data => {
 		updateOrganization({ id, data });
 	};
@@ -44,6 +49,10 @@ export default function OrganizationUpdate({
 	useEffect(() => {
 		updatedOrganization?.organization.id &&
 			reset(updatedOrganization.organization);
+		updatedOrganization?.organization.id &&
+			pullUpdatedData(updatedOrganization);
+
+		updatedOrganization?.organization.id && pullCloseModal(false);
 	}, [updatedOrganization]);
 
 	return (
@@ -68,7 +77,6 @@ export default function OrganizationUpdate({
 						{...register("title", {
 							required: "Title is required!",
 						})}
-						value={localData.title}
 					/>
 					<Field
 						extra="flex flex-col max-w-80 w-full"
@@ -79,7 +87,6 @@ export default function OrganizationUpdate({
 						{...register("description", {
 							maxLength: { value: 500, message: "Description is too long" }, // Валідація на довжину
 						})}
-						value={localData.description}
 					/>
 					<div className="flex flex-row justify-center items-end gap-x-2 max-w-80">
 						<Field

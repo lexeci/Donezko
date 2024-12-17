@@ -15,7 +15,7 @@ export default function Teams() {
 				title="Manage your teams"
 				desc="This page is dedicated for managing teams which are available for you."
 			/>
-			<TeamElements />
+			<TeamElements isAdministrate />
 		</PageLayout>
 	);
 }

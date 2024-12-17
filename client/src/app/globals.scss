@@ -72,4 +72,17 @@ a.underline-anim {
 		background-size: 7px 7px;
 		background-position: -5px -5px;
 	}
+
+	.bg-radial-grid-mini {
+		background: var(--background);
+		background-image: radial-gradient(var(--foreground) 1px, transparent 0);
+		background-size: 3px 3px;
+		background-position: -5px -5px;
+		transition: all 700ms ease-in-out;
+
+		&:hover {
+			background-size: 100px 100px;
+			background-position: -100000px -10000px;
+		}
+	}
 }

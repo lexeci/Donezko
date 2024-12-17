@@ -326,9 +326,103 @@ export class OrgService {
 			);
 		}
 
-		return this.prisma.organization.update({
+		// Логіка для вибору додаткових полів
+		const organizationSelect = {
+			id: true,
+			title: true,
+			description: true,
+			joinCode: true,
+			teams: {
+				select: {
+					id: true,
+					title: true,
+					description: true,
+					createdAt: true,
+					updatedAt: true,
+					organization: {
+						select: {
+							title: true
+						}
+					},
+					_count: {
+						select: {
+							teamUsers: true,
+							tasks: true
+						}
+					}
+				}
+			},
+			projects: {
+				select: {
+					id: true,
+					title: true,
+					description: true,
+					createdAt: true,
+					updatedAt: true,
+					_count: {
+						select: {
+							projectTeams: true,
+							tasks: true
+						}
+					}
+				}
+			},
+			organizationUsers: {
+				where: {
+					role: {
+						not: OrgRole.OWNER
+					}
+				},
+				select: {
+					userId: true,
+					organizationStatus: true,
+					role: true,
+					user: {
+						select: {
+							name: true,
+							email: true,
+							ProjectUser: {
+								select: {
+									project: {
+										select: {
+											title: true
+										}
+									}
+								}
+							},
+							_count: {
+								select: {
+									tasks: true
+								}
+							}
+						}
+					}
+				}
+			},
+			_count: {
+				select: {
+					organizationUsers: true,
+					teams: true,
+					projects: true
+				}
+			}
+		};
+
+		await this.prisma.organization.update({
 			where: { id },
 			data: dto
+		});
+
+		// Повертаємо організацію та роль користувача
+		return this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId: id },
+			select: {
+				organization: {
+					select: organizationSelect
+				},
+				role: true,
+				organizationStatus: true
+			}
 		});
 	}
 

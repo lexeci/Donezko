@@ -30,7 +30,6 @@ export default function Timer() {
 	);
 
 	const handleSessionDeletion = () => {
-		console.log(123);
 		timerState.setIsRunning(false);
 		sessionsResponse && deleteSession(sessionsResponse.id);
 	};

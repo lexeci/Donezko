@@ -3,6 +3,7 @@
 	text-decoration: none;
 	transition: all 0.4s;
 	cursor: pointer;
+	text-wrap: nowrap;
 
 	&::before {
 		content: "";

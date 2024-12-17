@@ -15,7 +15,7 @@ export default function Projects() {
 				title="Manage your projects"
 				desc="This page is dedicated for managing projects which are available for you."
 			/>
-			<ProjectElements />
+			<ProjectElements isAdministrate />
 		</PageLayout>
 	);
 }

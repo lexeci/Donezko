@@ -17,23 +17,30 @@ interface TeamElementsProps {
 	organizationId?: string;
 	organizationTitle?: string;
 	teams?: TeamResponse[];
+	isAdministrate?: boolean;
 }
 
 // Компонента для відображення команд, якщо передано `teams` через пропси
 const TeamElementsWithData = ({ teams }: { teams: TeamResponse[] }) => {
-	return teams.map((team, i) => {
-		const { _count } = team;
-		return (
-			<EntityItem
-				key={generateKeyComp(`${team.title}__${i}`)}
-				icon={<Buildings size={84} />}
-				linkBase={`/workspace/teams/${team.id}`}
-				title={team.title}
-				firstStat={`Participants: ${_count?.teamUsers}`}
-				secondaryStat={`Tasks: ${_count?.tasks}`}
-			/>
-		);
-	});
+	return teams.length > 0 ? (
+		teams.map((team, i) => {
+			const { _count } = team;
+			return (
+				<EntityItem
+					key={generateKeyComp(`${team.title}__${i}`)}
+					icon={<Buildings size={84} />}
+					linkBase={`/workspace/teams/${team.id}`}
+					title={team.title}
+					firstStat={`Participants: ${_count?.teamUsers}`}
+					secondaryStat={`Tasks: ${_count?.tasks}`}
+				/>
+			);
+		})
+	) : (
+		<div className="w-full h-full bg-background p-8">
+			<h5 className="font-bold text-base">There is no teams for you</h5>
+		</div>
+	);
 };
 
 // Компонента для відображення команд, якщо дані не передано через пропси
@@ -51,19 +58,25 @@ const TeamElementsWithoutData = ({
 		}
 	}, [teamList, onCountChange]);
 
-	return teamList?.map((team, i) => {
-		const { _count } = team;
-		return (
-			<EntityItem
-				key={generateKeyComp(`${team.title}__${i}`)}
-				icon={<Buildings size={84} />}
-				linkBase={`/workspace/teams/${team.id}`}
-				title={team.title}
-				firstStat={`Participants: ${_count?.teamUsers}`}
-				secondaryStat={`Tasks: ${_count?.tasks}`}
-			/>
-		);
-	});
+	return teamList && teamList.length > 0 ? (
+		teamList?.map((team, i) => {
+			const { _count } = team;
+			return (
+				<EntityItem
+					key={generateKeyComp(`${team.title}__${i}`)}
+					icon={<Buildings size={84} />}
+					linkBase={`/workspace/teams/${team.id}`}
+					title={team.title}
+					firstStat={`Participants: ${_count?.teamUsers}`}
+					secondaryStat={`Tasks: ${_count?.tasks}`}
+				/>
+			);
+		})
+	) : (
+		<div className="w-full h-full bg-background p-8">
+			<h5 className="font-bold text-base">There is no teams for you</h5>
+		</div>
+	);
 };
 
 export default function TeamElements({
@@ -71,6 +84,7 @@ export default function TeamElements({
 	organizationId,
 	organizationTitle,
 	teams,
+	isAdministrate = false,
 }: TeamElementsProps) {
 	const [open, setOpen] = useState<boolean>(false);
 	const [teamCount, setTeamCount] = useState<number>(teams?.length || 0);
@@ -82,7 +96,7 @@ export default function TeamElements({
 				isWindowElement && "h-full w-full max-w-full !p-0 !justify-start"
 			)}
 		>
-			{open && (
+			{open && isAdministrate && (
 				<ModalWindow
 					title="Organization manager.exe"
 					subtitle="The manager to operate your organization"
@@ -104,9 +118,11 @@ export default function TeamElements({
 				>
 					<h4>Total Teams: {teamCount}</h4>
 				</div>
-				<Button type="button" onClick={() => setOpen(true)} negative block>
-					<Plus size={22} className="mr-4" /> Team
-				</Button>
+				{isAdministrate && (
+					<Button type="button" onClick={() => setOpen(true)} negative block>
+						<Plus size={22} className="mr-4" /> Team
+					</Button>
+				)}
 			</div>
 			<div
 				className={clsx(

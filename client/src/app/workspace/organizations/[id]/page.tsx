@@ -4,6 +4,7 @@ import pageStyles from "@/app/page.module.scss";
 import {
 	Button,
 	ModalWindow,
+	OrganizationUpdate,
 	OrganizationUsers,
 	PageHeader,
 	PageLayout,
@@ -14,29 +15,37 @@ import {
 import { useDeleteOrg } from "@/src/hooks/organization/useDeleteOrg";
 import { useFetchOrgById } from "@/src/hooks/organization/useFetchOrgById";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Organization() {
 	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+
 	const params = useParams<{ id: string }>();
 	const { id: organizationId } = params;
+	const { refresh } = useRouter();
 
-	const { organization: fetchedData } = useFetchOrgById(organizationId);
+	const { organization: fetchedData, setOrganization } =
+		useFetchOrgById(organizationId);
 	const { deleteOrganization } = useDeleteOrg();
 
 	const organization = fetchedData?.organization;
 	const organizationStatus = fetchedData?.organizationStatus;
 	const role = fetchedData?.role;
 
-	console.log(organization);
-
 	return (
 		<PageLayout>
 			<PageHeader
 				pageTitle="Organization"
 				title={organization?.title as string}
-				desc={`${organization?.description}\nParticipants: ${organization?._count?.organizationUsers} | Teams: ${organization?._count?.teams} | Projects: ${organization?._count?.projects}`}
+				desc={`${organization?.description}`}
+				extraDesc={`Participants: ${organization?._count?.organizationUsers} | Teams: ${organization?._count?.teams} | Projects: ${organization?._count?.projects}`}
+				joinCode={
+					(role === "ADMIN" || role === "OWNER") && organization?.joinCode
+				}
+				button={role === "OWNER" && "Update Organization"}
+				buttonAction={() => role === "OWNER" && setOpenModalUpdate(true)}
 			/>
 			<div className={pageStyles["workspace-content-col"]}>
 				<WindowContainer
@@ -49,6 +58,7 @@ export default function Organization() {
 							isWindowElement
 							organizationId={organizationId}
 							projects={organization?.projects}
+							isAdministrate={role === "ADMIN" || role === "OWNER"}
 						/>
 					)}
 				</WindowContainer>
@@ -62,6 +72,7 @@ export default function Organization() {
 							isWindowElement
 							organizationId={organizationId}
 							teams={organization?.teams}
+							isAdministrate={role === "ADMIN" || role === "OWNER"}
 						/>
 					)}
 				</WindowContainer>
@@ -111,6 +122,25 @@ export default function Organization() {
 								</Button>
 							</div>
 						</div>
+					</ModalWindow>
+				)}
+
+				{openModalUpdate && (
+					<ModalWindow
+						title="Update Organization.exe"
+						subtitle="It's time to update :()"
+						onClose={() => setOpenModalUpdate(false)}
+					>
+						{organization && (
+							<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
+								<OrganizationUpdate
+									id={organization.id}
+									data={organization}
+									pullUpdatedData={setOrganization}
+									pullCloseModal={setOpenModalUpdate}
+								/>
+							</div>
+						)}
 					</ModalWindow>
 				)}
 			</div>

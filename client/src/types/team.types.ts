@@ -6,7 +6,7 @@ export enum TeamRole {
 	MEMBER = "MEMBER",
 }
 
-export interface TeamResponse extends RootBase {
+interface Team extends RootBase {
 	title: string;
 	description: string;
 	organizationId: UUID;
@@ -15,7 +15,13 @@ export interface TeamResponse extends RootBase {
 	};
 	projectId: UUID;
 	tasks: TaskResponse[];
+	_count?: {
+		teamUsers: number;
+		tasks: number;
+	};
 }
+
+export interface TeamResponse extends Team {}
 
 export interface TeamWithUsersResponse extends TeamResponse {
 	teamUsers: Array<{
@@ -36,4 +42,4 @@ export interface ManageTeamData {
 	teamUserId: UUID;
 }
 
-export type TeamFormData = Partial<Omit<TeamResponse, "id" | "updatedAt">>;
+export type TeamFormData = Partial<Omit<Team, "id" | "updatedAt">>;

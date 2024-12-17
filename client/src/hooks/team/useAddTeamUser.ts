@@ -3,7 +3,7 @@ import { ManageTeamData, TeamWithUsersResponse } from "@/types/team.types";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
-export function useAddUserToTeam() {
+export function useAddTeamUser() {
 	const [updatedTeam, setUpdatedTeam] = useState<
 		TeamWithUsersResponse | undefined
 	>(undefined);
@@ -16,5 +16,5 @@ export function useAddUserToTeam() {
 		},
 	});
 
-	return { updatedTeam, addUserToTeam, setUpdatedTeam };
+	return { addUserToTeam, updatedTeam };
 }

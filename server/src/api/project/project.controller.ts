@@ -28,7 +28,7 @@ import { ProjectService } from './project.service';
 export class ProjectController {
 	// Injecting the ProjectService to handle the business logic related to projects.
 	constructor(private readonly projectService: ProjectService) {}
-	
+
 	/**
 	 * Get all active projects for a user from all organizations or a specific one.
 	 * @param dto - The data transfer object containing the organization ID.
@@ -42,14 +42,14 @@ export class ProjectController {
 	@Permission('viewResources') // Permission decorator to check if the user has the required permission
 	async getAll(@Body() dto: GetProjectDto, @CurrentUser('id') userId: string) {
 		// If organizationId is provided, get projects from that organization, otherwise get all projects
-		return dto.organizationId
-			? this.projectService.getAll(userId) // Get projects from specific organization
-			: this.projectService.getAllFromOrg({
+		return dto.organizationId?.length
+			? this.projectService.getAllFromOrg({
 					userId,
 					organizationId: dto.organizationId
-				}); // Get all active projects from the organization
+				}) // Get all active projects from the organization
+			: this.projectService.getAll(userId); // Get projects from specific organization
 	}
-	
+
 	/**
 	 * Create a new project.
 	 * @param dto - The project details to be created.
@@ -129,7 +129,7 @@ export class ProjectController {
 		// Call the service to update the project
 		return this.projectService.update({ id, dto, userId });
 	}
-	
+
 	/**
 	 * Exit the project (Leave the project).
 	 * @param userId - The ID of the user who wants to exit the project.

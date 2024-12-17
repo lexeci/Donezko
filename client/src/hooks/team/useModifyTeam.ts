@@ -16,5 +16,5 @@ export function useModifyTeam() {
 		},
 	});
 
-	return { updatedTeam, updateTeam, setUpdatedTeam };
+	return { updateTeam, updatedTeam };
 }

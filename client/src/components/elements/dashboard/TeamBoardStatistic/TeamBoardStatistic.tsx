@@ -36,7 +36,7 @@ export default function TeamBoardStatistic() {
 							icon={<UsersThree size={32} />}
 							title={team.title}
 							description={team.description}
-							subtitle={`Organization: ${team.organization.title} | Tasks: ${team.tasks}`}
+							subtitle={`Tasks: ${team._count?.tasks}`}
 							link={{ href: team.id, text: "Look -->" }}
 						/>
 					))

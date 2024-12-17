@@ -12,5 +12,5 @@ export function useExitFromTeam() {
 		},
 	});
 
-	return { isExited, exitFromTeam, setIsExited };
+	return { exitFromTeam, isExited };
 }

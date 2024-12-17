@@ -15,9 +15,5 @@ export function useTransferLeadership() {
 		},
 	});
 
-	return {
-		isLeadershipTransferred,
-		transferLeadership,
-		setIsLeadershipTransferred,
-	};
+	return { transferLeadership, isLeadershipTransferred };
 }

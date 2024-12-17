@@ -24,7 +24,7 @@ export type ManageOrgUser = {
 	organizationStatus?: AccessStatus;
 };
 
-interface Organization extends RootBase {
+export interface Organization extends RootBase {
 	title: string; // Назва організації
 	description?: string; // Опис організації
 	joinCode?: string; // Код для приєднання до організації (опційно)

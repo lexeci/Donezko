@@ -1,5 +1,4 @@
 import { PrismaService } from '@/src/prisma.service';
-import { TeamWithUsers } from '@/src/types/teams.types';
 import {
 	ForbiddenException,
 	Injectable,
@@ -128,7 +127,7 @@ export class TeamService {
 	 * @param userId - The current user ID.
 	 * @returns The list of teams with their members.
 	 */
-	async getAllByUserId(userId: string): Promise<TeamWithUsers[]> {
+	async getAllByUserId(userId: string) {
 		return this.prisma.team.findMany({
 			where: {
 				teamUsers: {
@@ -144,14 +143,17 @@ export class TeamService {
 				description: true,
 				createdAt: true,
 				updatedAt: true,
-				organizationId: true,
 				organization: {
 					select: {
-						title: true // Get the title (name) of the organization
+						title: true
 					}
 				},
-				teamUsers: true,
-				tasks: true
+				_count: {
+					select: {
+						teamUsers: true,
+						tasks: true
+					}
+				}
 			}
 		});
 	}
@@ -172,7 +174,7 @@ export class TeamService {
 	}: {
 		dto: GetTeamDto;
 		userId: string;
-	}): Promise<TeamWithUsers[]> {
+	}) {
 		const { organizationId, projectId } = dto;
 
 		await this.checkAccess(organizationId, projectId, userId);
@@ -215,7 +217,7 @@ export class TeamService {
 		userId: string;
 		id: string;
 		dto: GetTeamDto;
-	}): Promise<TeamWithUsers> {
+	}) {
 		const { organizationId, projectId } = dto;
 
 		await this.checkAccess(organizationId, projectId, userId);
@@ -342,7 +344,7 @@ export class TeamService {
 		id: string;
 		dto: ManageTeamDto;
 		userId: string;
-	}): Promise<TeamWithUsers> {
+	}) {
 		const { organizationId, teamUserId } = dto;
 
 		await this.checkAccess(organizationId, dto.projectId, userId);

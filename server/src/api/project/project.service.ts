@@ -149,9 +149,28 @@ export class ProjectService {
 	 * @returns A list of active projects associated with the user.
 	 */
 	async getAll(userId: string) {
-		return this.prisma.projectUser.findMany({
-			where: { userId, projectStatus: AccessStatus.ACTIVE },
-			select: { project: true, projectStatus: true }
+		return this.prisma.project.findMany({
+			where: {
+				projectUsers: {
+					some: {
+						userId,
+						projectStatus: AccessStatus.ACTIVE // Ensure the user is active in the team
+					}
+				}
+			},
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				createdAt: true,
+				updatedAt: true,
+				_count: {
+					select: {
+						projectTeams: true,
+						tasks: true
+					}
+				}
+			}
 		});
 	}
 

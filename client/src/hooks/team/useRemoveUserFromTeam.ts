@@ -14,5 +14,5 @@ export function useRemoveUserFromTeam() {
 		},
 	});
 
-	return { isUserRemoved, removeUserFromTeam, setIsUserRemoved };
+	return { removeUserFromTeam, isUserRemoved };
 }

@@ -13,5 +13,5 @@ export function useTeamCreation() {
 		},
 	});
 
-	return { newTeam, createTeam, setNewTeam };
+	return { createTeam, newTeam };
 }

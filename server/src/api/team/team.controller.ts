@@ -1,4 +1,3 @@
-import { TeamWithUsers } from '@/src/types/teams.types';
 import {
 	Body,
 	Controller,
@@ -52,7 +51,7 @@ export class TeamController {
 	async getAll(
 		@Body() dto: GetTeamDto,
 		@CurrentUser('id') userId: string
-	): Promise<TeamWithUsers[]> {
+	) {
 		return await this.teamService.getAllByOrgProject({ userId, dto });
 	}
 
@@ -69,7 +68,7 @@ export class TeamController {
 	@Get('user-teams') // Новий шлях для цього ендпоінта
 	async getAllByUser(
 		@CurrentUser('id') userId: string
-	): Promise<TeamWithUsers[]> {
+	) {
 		return await this.teamService.getAllByUserId(userId);
 	}
 
@@ -92,7 +91,7 @@ export class TeamController {
 		@Body() dto: GetTeamDto,
 		@Param('id') id: string,
 		@CurrentUser('id') userId: string
-	): Promise<TeamWithUsers> {
+	) {
 		return await this.teamService.getById({ userId, id, dto });
 	}
 
@@ -180,7 +179,7 @@ export class TeamController {
 		@Param('id') id: string,
 		@Body() dto: ManageTeamDto,
 		@CurrentUser('id') userId: string
-	): Promise<TeamWithUsers> {
+	) {
 		return await this.teamService.addUserToTeam({ id, dto, userId });
 	}
 

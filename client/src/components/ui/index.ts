@@ -4,6 +4,7 @@ export { default as AsciiElement } from "./AsciiElement/AsciiElement";
 export { default as Button } from "./Button/Button";
 export { default as DigitalClock } from "./DigitalClock/DigitalClock";
 export { default as Field } from "./Field/Field";
+export { default as Select } from "./Field/Select";
 export { default as HeaderUserBadge } from "./HeaderUserBadge/HeaderUserBadge";
 export { default as Logo } from "./Logo/logo";
 export { default as Task } from "./Task/Task";

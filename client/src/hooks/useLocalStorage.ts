@@ -22,9 +22,15 @@ export function useLocalStorage<T>({
 	useEffect(() => {
 		const loadFromLocalStorage = () => {
 			try {
-				const item = window.localStorage.getItem(key);
-				if (item) {
-					setValue(JSON.parse(item));
+				if (typeof window !== "undefined") {
+					// Перевірка на стороні клієнта
+					const item = window.localStorage.getItem(key);
+					if (item) {
+						const parsedValue = JSON.parse(item);
+						if (parsedValue) {
+							setValue(parsedValue); // Тільки якщо дані валідні
+						}
+					}
 				}
 			} catch (error) {
 				console.error(`Error reading localStorage key "${key}":`, error);

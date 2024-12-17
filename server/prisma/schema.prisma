@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,20 +11,152 @@ model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt() @map("updated_at")
-
-  email    String  @unique
-  name     String?
-  password String
+  email     String   @unique
+  name      String
+  password  String
 
   workInterval   Int? @default(50) @map("work_interval")
   breakInterval  Int? @default(10) @map("break_interval")
   intervalsCount Int? @default(7) @map("intervals_count")
 
-  tasks         Task[]
-  timeBlocks    TimeBlock[]
-  timerSessions TimerSession[]
+  organizationUsers OrganizationUser[]
+  tasks             Task[]
+  timeBlocks        TimeBlock[]
+  timerSessions     TimerSession[]
+  teamUsers         TeamUser[]
+  comments          Comment[]
+  ChatParticipant   ChatParticipant[]
+  Message           Message[]
+  ProjectUser       ProjectUser[]
 
   @@map("user")
+}
+
+model Organization {
+  id                String             @id @default(cuid())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt()
+  title             String             @unique
+  description       String?
+  joinCode          String?            @unique @map("join_code") // code for joining
+  organizationUsers OrganizationUser[]
+  projects          Project[]
+  teams             Team[]
+
+  @@map("organization")
+}
+
+model OrganizationUser {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+
+  userId             String       @map("user_id")
+  organizationId     String       @map("organization_id")
+  user               User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationStatus AccessStatus @default(ACTIVE) @map("organization_status")
+
+  role OrgRole @default(VIEWER) // The user role in org
+
+  @@unique([userId, organizationId]) // Support of unique the join of user and org
+  @@map("organization_user")
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt() @map("updated_at")
+  title       String   @unique
+  description String
+
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  tasks        Task[]
+  projectTeams ProjectTeam[] // зв’язок з командами
+  projectUsers ProjectUser[] // Доданий зв'язок з ProjectUser
+
+  @@map("project")
+}
+
+model ProjectUser {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  projectStatus AccessStatus @default(ACTIVE) // Статус користувача в цьому проєкті
+
+  @@unique([projectId, userId]) // Унікальність поєднання проєкту і користувача
+  @@map("project_user")
+}
+
+model ProjectTeam {
+  id        String @id @default(cuid())
+  projectId String
+  teamId    String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  team    Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, teamId])
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+  title     String
+
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  teamUsers    TeamUser[]
+  projectTeams ProjectTeam[] // зв’язок з проєктами
+
+  tasks Task[]
+
+  @@map("team")
+}
+
+model TeamUser {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+
+  userId     String       @map("user_id")
+  teamId     String       @map("team_id")
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team       Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamStatus AccessStatus @default(ACTIVE) @map("team_status")
+
+  role TeamRole @default(MEMBER)
+
+  @@unique([userId, teamId])
+  @@map("team_user")
+}
+
+enum TeamRole {
+  LEADER
+  MEMBER
+}
+
+enum AccessStatus {
+  BANNED
+  ACTIVE
 }
 
 model Task {
@@ -41,11 +167,35 @@ model Task {
   title       String
   priority    Priority?
   isCompleted Boolean?  @default(false) @map("is_completed")
+  description String?
 
   userId String? @map("user_id")
   user   User?   @relation(fields: [userId], references: [id])
 
+  projectId String?  @map("project_id")
+  project   Project? @relation(fields: [projectId], references: [id])
+
+  teamId String? @map("team_id")
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  comments Comment[]
+
   @@map("task")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+
+  content String
+  userId  String @map("user_id")
+  user    User   @relation(fields: [userId], references: [id])
+
+  taskId String @map("task_id")
+  task   Task   @relation(fields: [taskId], references: [id])
+
+  @@map("comment")
 }
 
 model TimeBlock {
@@ -97,4 +247,43 @@ enum Priority {
   low
   medium
   high
+}
+
+model Chat {
+  id           String            @id @default(cuid())
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt() @map("updated_at")
+  isPrivate    Boolean           @default(false) @map("is_private")
+  participants ChatParticipant[]
+  messages     Message[]
+
+  @@map("chat")
+}
+
+model ChatParticipant {
+  id String @id @default(cuid())
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  chatId String @map("chat_id")
+  chat   Chat   @relation(fields: [chatId], references: [id])
+
+  @@unique([userId, chatId])
+  @@map("chat_participant")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+  content   String
+
+  chatId String @map("chat_id")
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  senderId String @map("sender_id")
+  sender   User   @relation(fields: [senderId], references: [id])
+
+  @@map("message")
 }

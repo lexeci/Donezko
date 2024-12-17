@@ -14,7 +14,7 @@ class UserService {
 
 	/**
 	 * Fetches the user profile data.
-	 * @returns {Promise<AuthUser>} The user profile data.
+	 * @returns {Promise<ProfileResponse>} The user profile data.
 	 */
 	async getProfile(): Promise<ProfileResponse> {
 		try {

@@ -1,37 +1,99 @@
 "use client";
 
-import { Button } from "@/components/index";
+import { Button, ModalWindow } from "@/components/index";
 import { useUpdateOrgOwner } from "@/src/hooks/organization/useUpdateOrgOwner";
 import { useUpdateOrgRole } from "@/src/hooks/organization/useUpdateOrgRole";
 import { useUpdateOrgStatus } from "@/src/hooks/organization/useUpdateOrgStatus";
 import { OrgRole, OrgUserResponse } from "@/src/types/org.types";
 import { AccessStatus } from "@/src/types/root.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
-import { Person } from "@phosphor-icons/react/dist/ssr";
+import { Person, UserSwitch } from "@phosphor-icons/react/dist/ssr";
+import { Dispatch, SetStateAction, useState } from "react";
 
 interface OrganizationUsersProps {
 	organizationUsers: OrgUserResponse[];
 	organizationId: string;
+	setOrganizationUsers: Dispatch<SetStateAction<OrgUserResponse[] | undefined>>;
 }
 
 export default function OrganizationUsers({
 	organizationUsers,
 	organizationId,
+	setOrganizationUsers,
 }: OrganizationUsersProps) {
+	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [newOwnerId, setNewOwnerId] = useState<string>();
+
 	const { updateOwner } = useUpdateOrgOwner();
 	const { updateRole } = useUpdateOrgRole();
 	const { updateStatus } = useUpdateOrgStatus();
 
-	const handleChangeRole = (
+	const handleUpdateArray = (updatedUser: OrgUserResponse) => {
+		// Оновлення списку користувачів
+		const updatedUsers = organizationUsers.map(user =>
+			user.userId === updatedUser.userId
+				? {
+						...user,
+						role: updatedUser.role,
+						organizationStatus: updatedUser.organizationStatus,
+				  }
+				: user
+		);
+		setOrganizationUsers(updatedUsers);
+	};
+
+	const handleChangeRole = (orgUserId: string, newRole: OrgRole) => {
+		updateRole(
+			{
+				orgUserId,
+				id: organizationId,
+				role: newRole,
+			},
+			{
+				onSuccess: updatedUser => handleUpdateArray(updatedUser),
+			}
+		);
+	};
+
+	const handleChangeStatus = (
 		orgUserId: string,
-		newRole: OrgRole,
-		organizationId: string
+		organizationStatus: AccessStatus
 	) => {
-		updateRole({
-			orgUserId,
-			id: organizationId,
-			role: newRole,
-		});
+		updateStatus(
+			{
+				id: organizationId,
+				orgUserId,
+				organizationStatus:
+					organizationStatus !== "BANNED"
+						? ("BANNED" as AccessStatus)
+						: ("ACTIVE" as AccessStatus),
+			},
+			{
+				onSuccess: updatedUser => handleUpdateArray(updatedUser),
+			}
+		);
+	};
+
+	const handleTransferOwner = (orgUserId: string) => {
+		setOpenModal(true);
+		setNewOwnerId(orgUserId);
+	};
+
+	const transferOwner = () => {
+		newOwnerId &&
+			updateOwner(
+				{
+					id: organizationId,
+					orgUserId: newOwnerId,
+				},
+				{
+					onSuccess: updatedUser => {
+						handleUpdateArray(updatedUser);
+						setOpenModal(false);
+						window.location.reload(); // I don't like it either
+					},
+				}
+			);
 	};
 
 	return (
@@ -70,14 +132,10 @@ export default function OrganizationUsers({
 									modal
 									fullWidth
 									onClick={() =>
-										updateStatus({
-											id: organizationId,
-											orgUserId: userItem.userId,
-											organizationStatus:
-												userItem.organizationStatus !== "BANNED"
-													? ("BANNED" as AccessStatus)
-													: ("ACTIVE" as AccessStatus),
-										})
+										handleChangeStatus(
+											userItem.userId,
+											userItem.organizationStatus
+										)
 									}
 								>
 									{userItem.organizationStatus !== "BANNED"
@@ -95,11 +153,7 @@ export default function OrganizationUsers({
 										{ text: "Viewer" },
 									]}
 									selectableOnClick={(newRole: string) =>
-										handleChangeRole(
-											userItem.userId,
-											newRole as OrgRole,
-											organizationId
-										)
+										handleChangeRole(userItem.userId, newRole as OrgRole)
 									}
 								>
 									Change Role
@@ -108,12 +162,7 @@ export default function OrganizationUsers({
 									type="button"
 									modal
 									fullWidth
-									onClick={() =>
-										updateOwner({
-											id: organizationId,
-											orgUserId: userItem.userId,
-										})
-									}
+									onClick={() => handleTransferOwner(userItem.userId)}
 								>
 									Transfer ownership
 								</Button>
@@ -126,6 +175,30 @@ export default function OrganizationUsers({
 					</div>
 				)}
 			</div>
+
+			{openModal && (
+				<ModalWindow
+					title="Program to ask of sure action.exe"
+					subtitle="Hey do you really know what you are doing ?"
+					onClose={() => setOpenModal(false)}
+				>
+					<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
+						<div className="desc max-w-80 flex flex-col justify-center items-center text-center gap-y-2">
+							<h1 className="font-bold text-lg">Hey did you know?</h1>
+							<p>
+								If you proceed on this action you will be no longer an owner to
+								this organization. Which means you remove all your privileges.
+								Make sure that you understand that.
+							</p>
+						</div>
+						<div className="w-full h-full flex justify-center items-center">
+							<Button type="button" onClick={() => transferOwner()}>
+								<UserSwitch size={22} className="mr-4" /> Transfer
+							</Button>
+						</div>
+					</div>
+				</ModalWindow>
+			)}
 		</div>
 	);
 }

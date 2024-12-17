@@ -103,15 +103,15 @@
 // Workspace
 
 .workspace-content {
-	@apply grid grid-cols-2 gap-8 p-8 w-full;
+	@apply grid grid-cols-2 gap-8 p-8 w-full h-auto;
 }
 
 .workspace-content-grid-2 {
-	@apply grid grid-cols-2 gap-8 p-8 w-full;
+	@apply grid grid-cols-2 gap-8 p-8 w-full h-auto;
 }
 
 .workspace-content-grid-3 {
-	@apply grid grid-cols-3 gap-8 p-8 w-full;
+	@apply grid grid-cols-3 gap-8 p-8 w-full h-auto;
 }
 
 .workspace-content-col {

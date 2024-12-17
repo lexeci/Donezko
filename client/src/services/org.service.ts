@@ -4,6 +4,7 @@ import type {
 	ManageOrgUser,
 	OrgFormData,
 	OrgResponse,
+	OrgUserResponse,
 } from "@/types/org.types";
 import { AxiosResponse } from "axios";
 import { toast } from "sonner";
@@ -97,7 +98,7 @@ class OrgService {
 	async updateOwnerOrganization(
 		id: string,
 		orgUserId: string
-	): Promise<OrgResponse> {
+	): Promise<OrgUserResponse> {
 		try {
 			const response = await axiosWithAuth.put(
 				`${this.BASE_URL}/${id}/update-owner/`,
@@ -111,7 +112,7 @@ class OrgService {
 		}
 	}
 
-	async updateStatusOrganization(data: ManageOrgUser): Promise<OrgResponse> {
+	async updateStatusOrganization(data: ManageOrgUser): Promise<OrgUserResponse> {
 		try {
 			const response = await axiosWithAuth.put(
 				`${this.BASE_URL}/${data.id}/update-status/`,
@@ -125,7 +126,7 @@ class OrgService {
 		}
 	}
 
-	async updateRoleOrganization(data: ManageOrgUser): Promise<OrgResponse> {
+	async updateRoleOrganization(data: ManageOrgUser): Promise<OrgUserResponse> {
 		try {
 			const response = await axiosWithAuth.put(
 				`${this.BASE_URL}/${data.id}/update-role/`,

@@ -14,9 +14,10 @@ import {
 } from "@/src/components";
 import { useDeleteOrg } from "@/src/hooks/organization/useDeleteOrg";
 import { useFetchOrgById } from "@/src/hooks/organization/useFetchOrgById";
+import { OrgUserResponse } from "@/src/types/org.types";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Organization() {
 	const [openModal, setOpenModal] = useState<boolean>(false);
@@ -24,7 +25,6 @@ export default function Organization() {
 
 	const params = useParams<{ id: string }>();
 	const { id: organizationId } = params;
-	const { refresh } = useRouter();
 
 	const { organization: fetchedData, setOrganization } =
 		useFetchOrgById(organizationId);
@@ -33,6 +33,14 @@ export default function Organization() {
 	const organization = fetchedData?.organization;
 	const organizationStatus = fetchedData?.organizationStatus;
 	const role = fetchedData?.role;
+
+	const [organizationUsers, setOrganizationUsers] = useState<
+		OrgUserResponse[] | undefined
+	>(undefined);
+
+	useEffect(() => {
+		organization && setOrganizationUsers(organization?.organizationUsers);
+	}, [organization]);
 
 	return (
 		<PageLayout>
@@ -83,10 +91,11 @@ export default function Organization() {
 							subtitle={`Participants: ${organization?._count?.organizationUsers}`}
 							fullPage
 						>
-							{organization?.organizationUsers && (
+							{organizationUsers && (
 								<OrganizationUsers
 									organizationId={organizationId}
-									organizationUsers={organization.organizationUsers}
+									organizationUsers={organizationUsers}
+									setOrganizationUsers={setOrganizationUsers}
 								/>
 							)}
 						</WindowContainer>

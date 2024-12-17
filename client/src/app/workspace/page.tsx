@@ -1,68 +1,42 @@
-import { Metadata } from "next";
-import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
-
 import {
 	BlockContainerAdvice,
 	BlockContainerRecent,
 	BlockContainerStatics,
 	BlockContainerWeather,
-} from "@/components/ui/dashboard";
-import { TypeTaskFormState } from "@/types/task.types";
+} from "@/components/elements/dashboard";
+import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
+import { TaskFormData } from "@/types/task.types";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
 	title: `${SITE_NAME} - Dashboard`,
-	...NO_INDEX_PAGE
-}
+	...NO_INDEX_PAGE,
+};
 
 export default function Home() {
-	const dataTotalStatics = [
-		{ title: "Total:", amount: 19 },
-		{ title: "Completed:", amount: 13 },
-		{ title: "Dropped:", amount: 3 },
-		{ title: "This week:", amount: 3 },
-	];
+	const recentTasks: TaskFormData[] = Array(4).fill({
+		title: "Hey complete this task",
+		description: "Hey what's up? What about finishing this task, mate?",
+	});
 
-	const dataRecentTasks: TypeTaskFormState[] = [
-		{
-			title: "Hey complete this task",
-			description: "Hey what's up? What about to finis this damn task mate?",
-		},
-		{
-			title: "Hey complete this task",
-			description: "Hey what's up? What about to finis this damn task mate?",
-		},
-		{
-			title: "Hey complete this task",
-			description: "Hey what's up? What about to finis this damn task mate?",
-		},
-		{
-			title: "Hey complete this task",
-			description: "Hey what's up? What about to finis this damn task mate?",
-		},
-	];
-
-	const dataAdvice = 'Stop straggling'
+	const adviceMessage = "Stop straggling";
 
 	return (
 		<div className="main-container">
-			<div className="title-bar pb-3 mb-3">
-				<div className="welcoming font-normal text-xl">
-					<h1>
-						Glad to see you again,{" "}
-						<span className="capitalize font-bold">Andriy!</span>
-					</h1>
-				</div>
-				<div className="description">
-					<p>
-						There is a dashboard panel, where displayed everything that you
-						might need to know
-					</p>
-				</div>
-			</div>
+			<header className="title-bar pb-3 mb-3">
+				<h1 className="welcoming font-normal text-xl">
+					Glad to see you again,
+					<span className="capitalize font-bold">Andriy!</span>
+				</h1>
+				<p className="description">
+					There is a dashboard panel, where everything you might need to know is
+					displayed.
+				</p>
+			</header>
 			<div className="content grid grid-cols-2 grid-rows-2 gap-3">
 				<BlockContainerStatics />
-				<BlockContainerRecent data={dataRecentTasks} />
-				<BlockContainerAdvice data={dataAdvice}/>
+				<BlockContainerRecent data={recentTasks} />
+				<BlockContainerAdvice data={adviceMessage} />
 				<BlockContainerWeather />
 			</div>
 		</div>

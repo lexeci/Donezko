@@ -1,27 +1,27 @@
 import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
-
 import cn from "clsx";
-
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
-
 import { MultiplicationSignIcon } from "hugeicons-react";
-
 import { useOutside } from "@/hooks/useOutside";
-
-import './DatePicker.css'
+import "./DatePicker.css";
 
 dayjs.extend(LocalizedFormat);
 
-interface DatePicker {
+interface DatePickerProps {
 	onChange: (value: string) => void;
-	value: string;
+	value: string | Date;
 	position?: "left" | "right";
+	dateFormat?: string; // Optional date format prop
 }
 
-export function DatePicker({ onChange, value }: DatePicker) {
+export function DatePicker({
+	onChange,
+	value,
+	dateFormat = "LL",
+}: DatePickerProps) {
 	const [selected, setSelected] = useState<Date | undefined>(
 		value ? new Date(value) : undefined
 	);
@@ -39,16 +39,20 @@ export function DatePicker({ onChange, value }: DatePicker) {
 
 	return (
 		<div className="relative flex justify-between items-center" ref={ref}>
-			<button onClick={() => setIsShow(!isShow)}>
-				{selected ? dayjs(selected).format("LL") : "Click to select"}
+			<button
+				onClick={() => setIsShow(!isShow)}
+				aria-label="Toggle date picker"
+			>
+				{selected ? dayjs(selected).format(dateFormat) : "Click to select"}
 			</button>
-			{value && (
+			{selected && (
 				<button
 					className="relative opacity-50 hover:opacity-100 transition-opacity"
 					onClick={() => {
 						setSelected(undefined);
 						onChange("");
 					}}
+					aria-label="Clear selected date"
 				>
 					<MultiplicationSignIcon size={14} />
 				</button>
@@ -70,8 +74,8 @@ export function DatePicker({ onChange, value }: DatePicker) {
 								? `Selected: ${selected.toLocaleDateString()}`
 								: "Pick a day."
 						}
-            startMonth={new Date(2020, 6)}
-  endMonth={new Date(2999, 12)}
+						startMonth={new Date(2020, 6)}
+						endMonth={new Date(2999, 12)}
 						captionLayout="dropdown" // Caption dropdown for months and years
 					/>
 				</div>

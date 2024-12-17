@@ -1,16 +1,14 @@
-"use client";
-
 import Loader from "@/components/ui/Loader";
 
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-import { SwitcherView } from "./SwitcherView";
-import { KanbanView } from "./kanban-view/KanbanView";
-import { ListView } from "./list-view/ListView";
+import { ViewSwitcher } from "./ViewSwitcher";
+import { KanbanTaskView } from "./viewsStyle/kanban/KanbanTaskView";
+import { TaskListView } from "./viewsStyle/list/TaskListView";
 
 export type TypeView = "list" | "kanban";
 
-export function TasksView() {
+export function TaskDashboard() {
 	const [type, setType, isLoading] = useLocalStorage<TypeView>({
 		key: "view-type",
 		defaultValue: "list",
@@ -20,8 +18,8 @@ export function TasksView() {
 
 	return (
 		<div className="content w-full">
-			<SwitcherView setType={setType} type={type} />
-			{type === "list" ? <ListView /> : <KanbanView />}
+			<ViewSwitcher onChangeView={setType} currentView={type} />
+			{type === "list" ? <TaskListView /> : <KanbanTaskView />}
 		</div>
 	);
 }

@@ -19,7 +19,7 @@ export class AuthController {
 
 	@HttpCode(200)
 	@Post('login/access-token')
-	async getNewTokens(
+	async refreshTokens(
 		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response
 	) {
@@ -31,7 +31,7 @@ export class AuthController {
 			throw new UnauthorizedException('Refresh token not passed');
 		}
 
-		const { refreshToken, ...response } = await this.authService.getNewTokens(
+		const { refreshToken, ...response } = await this.authService.refreshTokens(
 			refreshTokensFromCookies
 		);
 

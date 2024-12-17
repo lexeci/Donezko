@@ -38,7 +38,7 @@ model Task {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt() @map("updated_at")
 
-  title        String
+  title       String
   priority    Priority?
   isCompleted Boolean?  @default(false) @map("is_completed")
 
@@ -53,7 +53,7 @@ model TimeBlock {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt() @map("updated_at")
 
-  title     String
+  title    String
   color    String?
   duration Int
   order    Int     @default(1)
@@ -95,6 +95,6 @@ model TimerRound {
 
 enum Priority {
   low
-  middle
+  medium
   high
 }

@@ -1,12 +1,16 @@
 class DASHBOARD {
-	private root = '/workspace'
+	private static root = "/workspace";
 
-	HOME = this.root
-	TASKS = `${this.root}/tasks`
-	HABITS = `${this.root}/habits`
-	TIMER = `${this.root}/timer`
-	TIME_BLOCKING = `${this.root}/time-blocking`
-	SETTINGS = `${this.root}/settings`
+	static readonly HOME = this.root;
+	static readonly TASKS = `${this.root}/tasks`;
+	static readonly HABITS = `${this.root}/habits`;
+	static readonly TIMER = `${this.root}/timer`;
+	static readonly CHRONO_BLOCKS = `${this.root}/timing`;
+	static readonly SETTINGS = `${this.root}/settings`;
+
+	// Prevent instantiation
+	private constructor() {}
 }
 
-export const DASHBOARD_PAGES = new DASHBOARD()
+// Exporting the routes for use throughout the application
+export const DASHBOARD_PAGES = DASHBOARD;

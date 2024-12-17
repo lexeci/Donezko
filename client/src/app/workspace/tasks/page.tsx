@@ -1,32 +1,24 @@
 import type { Metadata } from "next";
-
 import { NO_INDEX_PAGE } from "@/constants/seo.constants";
-
-import { TasksView } from "./TasksView";
+import { TaskDashboard } from "./TaskDashboard"; // Зміна назви компонента
 
 export const metadata: Metadata = {
-	title: "Tasks",
+	title: "Task Management", // Зміна заголовка
 	...NO_INDEX_PAGE,
 };
 
-export default function TasksPage() {
+export default function TaskManagementPage() { // Зміна назви функції
 	return (
-		<div className="main-container w-full">
-			<div className="title-bar pb-3 mb-3">
-				<div className="welcoming font-normal text-xl">
-					<h1>
-						Glad to see you again,{" "}
-						<span className="capitalize font-bold">Andriy!</span>
-					</h1>
-				</div>
-				<div className="description">
-					<p>
-						There is a dashboard panel, where displayed everything that you
-						might need to know
-					</p>
-				</div>
+		<div className="container mx-auto p-4"> {/* Додаємо стилі */}
+			<div className="header mb-6"> {/* Зміна елемента */}
+				<h1 className="text-2xl font-semibold">
+					Welcome back, <span className="font-extrabold">Andriy!</span>
+				</h1>
+				<p className="mt-2 text-gray-600">
+					Your task dashboard is ready with all the information you need.
+				</p>
 			</div>
-			<TasksView />
+			<TaskDashboard /> {/* Зміна назви компонента */}
 		</div>
 	);
 }

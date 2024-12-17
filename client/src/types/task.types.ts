@@ -4,13 +4,14 @@ export enum EnumTaskPriority {
 	low = "low",
 	medium = "medium",
 	high = "high",
+	NONE = "none", // Add 'none' for optional case if needed
 }
 
 export interface TaskResponse extends RootBase {
-	title: string;
-	description: string;
-	priority?: EnumTaskPriority;
-	isCompleted: boolean;
+	title: string; // Title of the task
+	description: string; // Description of the task
+	priority?: EnumTaskPriority; // Optional priority of the task
+	isCompleted: boolean; // Indicates if the task is completed
 }
 
-export type TypeTaskFormState = Partial<Omit<TaskResponse, "id" | "updatedAt">>;
+export type TaskFormData = Partial<Omit<TaskResponse, "id" | "updatedAt">>;

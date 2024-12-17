@@ -1,22 +1,23 @@
-import cn from 'clsx'
-import { type InputHTMLAttributes, forwardRef } from 'react'
+import cn from "clsx";
+import { type InputHTMLAttributes, forwardRef } from "react";
 
-type TypeTransparentField = InputHTMLAttributes<HTMLInputElement>
+type TransparentFieldProps = InputHTMLAttributes<HTMLInputElement>;
 
 export const TransparentField = forwardRef<
 	HTMLInputElement,
-	TypeTransparentField
->(({ className, ...rest }, ref) => {
+	TransparentFieldProps
+>(({ className, placeholder = "Enter text...", ...rest }, ref) => {
 	return (
 		<input
 			className={cn(
-				'bg-transparent border-none focus:outline-0 focus:shadow-transparent w-full appearance-none outline-none',
+				"bg-transparent border-none focus:outline-none focus:shadow-none w-full appearance-none",
 				className
 			)}
 			ref={ref}
+			placeholder={placeholder}
 			{...rest}
 		/>
-	)
-})
+	);
+});
 
-TransparentField.displayName = 'TransparentField'
+TransparentField.displayName = "TransparentField";

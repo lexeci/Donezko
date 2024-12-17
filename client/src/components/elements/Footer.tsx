@@ -1,10 +1,9 @@
-import getConfig from "next/config";
 import Link from "next/link";
 import type { PropsWithChildren } from "react";
 
-const { publicRuntimeConfig } = getConfig();
-
 export default function Footer({ children }: PropsWithChildren<unknown>) {
+	const currentYear = new Date().getFullYear(); // Dynamic year
+
 	return (
 		<div className="pt-8 mx-auto bg-outerColor text-background">
 			<div className="grid gap-12 row-gap-6 px-4 mb-8 md:px-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -27,7 +26,7 @@ export default function Footer({ children }: PropsWithChildren<unknown>) {
 						<p className="text-base font-bold tracking-wide">Contact</p>
 						<div className="flex flex-col gap-1 mt-2">
 							<p className="mr-1">
-								Email:{" "}
+								Email:
 								<Link
 									href="mailto:admin@tplanner.com"
 									aria-label="email"
@@ -57,7 +56,7 @@ export default function Footer({ children }: PropsWithChildren<unknown>) {
 				</div>
 			</div>
 			<div className="flex flex-col-reverse justify-between gap-2 px-4 pt-4 pb-8 text-sm border-t border-t-background md:px-8 lg:flex-row">
-				<p>© 2024 TPlanner. All Rights Reserved by Andriy Neaijko.</p>
+				<p>© {currentYear} TPlanner. All Rights Reserved by Andriy Neaijko.</p>
 				<div>
 					<p>Created with passion… and a few sleepless nights. {"☉ ‿ ⚆"}</p>
 				</div>

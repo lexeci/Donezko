@@ -1,55 +1,61 @@
-import axios, { type CreateAxiosDefaults } from 'axios'
+import axios, { type CreateAxiosDefaults } from "axios";
 
-import { errorCatch } from './error'
-import {
-	getAccessToken,
-	removeFromStorage
-} from '@/services/auth-token.service'
-import { authService } from '@/services/auth.service'
+import { clearAuthData, getAccessToken } from "@/services/auth-token.service"; // Змінили назву на більш зрозумілу
+import { authService } from "@/services/auth.service";
+import { parseErrorMessage } from "./error";
 
+// Налаштування для axios запитів
 const options: CreateAxiosDefaults = {
-	baseURL: 'http://localhost:3001/api/',
+	baseURL: "http://localhost:3001/api/",
 	headers: {
-		'Content-Type': 'application/json'
+		"Content-Type": "application/json",
 	},
-	withCredentials: true
-}
+	withCredentials: true,
+};
 
-const axiosClassic = axios.create(options)
-const axiosWithAuth = axios.create(options)
+// Ініціалізація екземплярів axios
+const axiosClassic = axios.create(options);
+const axiosWithAuth = axios.create(options);
 
+// Інтерсептор для додавання токенів авторизації
 axiosWithAuth.interceptors.request.use(config => {
-	const accessToken = getAccessToken()
+	const accessToken = getAccessToken();
 
-	if (config?.headers && accessToken)
-		config.headers.Authorization = `Bearer ${accessToken}`
+	if (config?.headers && accessToken) {
+		config.headers.Authorization = `Bearer ${accessToken}`;
+	}
 
-	return config
-})
+	return config;
+});
 
+// Інтерсептор для обробки помилок та оновлення токенів
 axiosWithAuth.interceptors.response.use(
-	config => config,
+	response => response,
 	async error => {
-		const originalRequest = error.config
+		const originalRequest = error.config;
 
+		// Перевіряємо, чи потрібно оновити токен
 		if (
 			(error?.response?.status === 401 ||
-				errorCatch(error) === 'jwt expired' ||
-				errorCatch(error) === 'jwt must be provided') &&
-			error.config &&
-			!error.config._isRetry
+				parseErrorMessage(error) === "jwt expired" ||
+				parseErrorMessage(error) === "jwt must be provided") &&
+			!originalRequest._isRetry
 		) {
-			originalRequest._isRetry = true
+			originalRequest._isRetry = true;
+
 			try {
-				await authService.getNewTokens()
-				return axiosWithAuth.request(originalRequest)
-			} catch (error) {
-				if (errorCatch(error) === 'jwt expired') removeFromStorage()
+				// Отримання нових токенів і повторний запит
+				await authService.refreshTokens(); // Змінили назву методу для кращого розуміння
+				return axiosWithAuth.request(originalRequest); // Виконуємо оригінальний запит з новими токенами
+			} catch (retryError) {
+				if (parseErrorMessage(retryError) === "jwt expired") {
+					clearAuthData(); // Видаляємо дані авторизації, якщо токен знову прострочений
+				}
 			}
 		}
 
-		throw error
+		throw error;
 	}
-)
+);
 
-export { axiosClassic, axiosWithAuth }
+export { axiosClassic, axiosWithAuth };

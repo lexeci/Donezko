@@ -31,7 +31,6 @@ class TaskService {
 
 	async updateTask(id: string, data: TaskFormData): Promise<TaskResponse> {
 		try {
-			console.log(data)
 			const response = await axiosWithAuth.put<TaskResponse>(
 				`${this.BASE_URL}/${id}`,
 				data

@@ -1,0 +1,11 @@
+.error-found {
+	@apply flex flex-col justify-center items-center h-full w-full py-4;
+}
+
+.title {
+	@apply font-bold text-lg;
+}
+
+.description {
+	@apply text-sm;
+}

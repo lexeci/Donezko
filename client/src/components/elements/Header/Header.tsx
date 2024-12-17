@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Button,
 	DigitalClock,
@@ -5,15 +7,46 @@ import {
 	Logo,
 	ThemeSwitcher,
 } from "@/components/index";
+import { useCookieMonitor } from "@/src/hooks/useCookieMonitor";
+import { useFetchUserProfile } from "@/src/hooks/useFetchUserProfile";
+import { AuthUser } from "@/src/types/auth.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useEffect, useState } from "react";
 import styles from "./Header.module.scss";
 
 export default function Header() {
+	const [user, setUser] = useState<AuthUser | undefined>();
+	const { profileData, isDataLoading } = useFetchUserProfile();
+
+	const [cookiesExist, setCookiesExist] = useState(false);
+
+	// Колбек, коли кука з'являється
+	const handleCookieChange = () => {
+		setCookiesExist(true);
+	};
+
+	// Колбек, коли кука зникає
+	const handleCookieRemove = () => {
+		setCookiesExist(false);
+	};
+
+	// Викликаємо useCookieMonitor з двома колбеками
+	useCookieMonitor("accessToken", handleCookieChange, handleCookieRemove);
+
+	useEffect(() => {
+		if (profileData && cookiesExist) {
+			setUser(profileData?.user);
+		}
+	}, [profileData, isDataLoading, cookiesExist]);
+
 	const navigation = [
 		{ link: "/", title: "Homepage" },
 		{ link: "/about", title: "about us" },
-		{ link: "/workspace", title: "Dashboard" },
+		...(user && cookiesExist
+			? [{ link: "/workspace", title: "Dashboard" }]
+			: []), // Додаємо об'єкт лише якщо cookiesExist === true
 	];
+
 	return (
 		<header className={styles.header}>
 			<div className={styles.container}>

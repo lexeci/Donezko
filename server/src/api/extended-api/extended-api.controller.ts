@@ -44,4 +44,21 @@ export class extendedApiController {
 		// Calling the service method to get advice
 		return await this.extendedApiService.getAdvice();
 	}
+
+	/**
+	 * Endpoint to fetch advice from the external Elon Musk news service.
+	 * This endpoint doesn't require any query parameters and simply fetches news.
+	 *
+	 * @returns The fetched Elon Musk news.
+	 *
+	 * @example
+	 * GET /extended-api/elonnews
+	 * // Returns a random news about Elon Musk from the elonmu.sh service
+	 */
+	@HttpCode(200) // Setting HTTP status code to 200 for successful responses
+	@Get('elonnews') // HTTP GET request for the 'elonnews' route
+	async getElonNews() {
+		// Calling the service method to get news
+		return await this.extendedApiService.getElonNews();
+	}
 }

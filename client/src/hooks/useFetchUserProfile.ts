@@ -1,18 +1,36 @@
-import { useQuery } from "@tanstack/react-query"; // Залишаємо імпорт без змін, оскільки це стандартна бібліотека
+import { userService } from "@/services/user.service";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useCookieMonitor } from "./useCookieMonitor";
 
-import { userService } from "@/services/user.service"; // Залишаємо імпорт без змін, оскільки це стандартна бібліотека
-
-// Перейменування функції для унікальності
 export function useFetchUserProfile() {
+	const [cookiesExist, setCookiesExist] = useState(false);
+
+	// Колбек, коли кука з'являється
+	const handleCookieChange = () => {
+		setCookiesExist(true);
+	};
+
+	// Колбек, коли кука зникає
+	const handleCookieRemove = () => {
+		setCookiesExist(false);
+	};
+
+	// Викликаємо useCookieMonitor з двома колбеками
+	useCookieMonitor("accessToken", handleCookieChange, handleCookieRemove);
+
+	// Завжди викликаємо useQuery, але включаємо/виключаємо запит залежно від cookiesExist
 	const {
 		data: profileData,
 		isLoading: isDataLoading,
 		isSuccess: isDataLoaded,
-		refetch,
+		refetch, // Отримуємо метод refetch
 	} = useQuery({
-		queryKey: ["profile"], // Зміна ключа запиту для унікальності
-		queryFn: () => userService.getProfile(), // Виклик сервісу для отримання профілю
+		queryKey: ["profile"],
+		queryFn: () => userService.getProfile(),
+		enabled: cookiesExist, // Запит виконується лише, якщо кука існує
+		retry: false, // Не намагаємося повторювати запит, якщо кука відсутня
 	});
 
-	return { profileData, isDataLoading, isDataLoaded, refetch }; // Повертаємо нові назви змінних
+	return { profileData, isDataLoading, isDataLoaded, refetch };
 }

@@ -34,4 +34,7 @@ export const saveTokenStorage = (
 // Function to clear authentication data from cookies
 export const clearAuthData = (): void => {
 	Cookies.remove(EnumTokens.ACCESS_TOKEN);
+	Cookies.remove(EnumTokens.REFRESH_TOKEN);
+	Cookies.remove(EnumTokens.ACCESS_TOKEN, { path: "/" });
+	Cookies.remove(EnumTokens.REFRESH_TOKEN, { path: "/" });
 };

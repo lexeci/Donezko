@@ -120,6 +120,43 @@ export class TeamService {
 	}
 
 	/**
+	 * Retrieves all teams associated with a specific user.
+	 *
+	 * This method returns a list of teams for the specified user, regardless of organization or project.
+	 * The user must be active in the team.
+	 *
+	 * @param userId - The current user ID.
+	 * @returns The list of teams with their members.
+	 */
+	async getAllByUserId(userId: string): Promise<TeamWithUsers[]> {
+		return this.prisma.team.findMany({
+			where: {
+				teamUsers: {
+					some: {
+						userId,
+						teamStatus: AccessStatus.ACTIVE // Ensure the user is active in the team
+					}
+				}
+			},
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				createdAt: true,
+				updatedAt: true,
+				organizationId: true,
+				organization: {
+					select: {
+						title: true // Get the title (name) of the organization
+					}
+				},
+				teamUsers: true,
+				tasks: true
+			}
+		});
+	}
+
+	/**
 	 * Retrieves all active teams for a project.
 	 *
 	 * This method returns a list of teams for the specified project, filtered by the user's activity.
@@ -129,7 +166,7 @@ export class TeamService {
 	 * @param userId - The current user ID.
 	 * @returns The list of teams with their members.
 	 */
-	async getAll({
+	async getAllByOrgProject({
 		dto,
 		userId
 	}: {

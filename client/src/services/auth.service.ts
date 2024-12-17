@@ -1,7 +1,7 @@
 import { axiosClassic } from "@/api/interceptors";
 import { AuthForm, AuthResponse } from "@/types/auth.types";
-import { clearAuthData, saveTokenStorage } from "./auth-token.service";
 import { toast } from "sonner";
+import { clearAuthData, saveTokenStorage } from "./auth-token.service";
 
 export const authService = {
 	async main(

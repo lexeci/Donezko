@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
 	const { url, cookies } = request;
-	const refreshToken = cookies.get(EnumTokens.REFRESH_TOKEN)?.value;
+	const refreshToken = cookies.get(EnumTokens.ACCESS_TOKEN)?.value;
 
 	// Перевірка, чи це сторінка авторизації
 	const isAuthPage = url.includes("/auth");
@@ -22,6 +22,7 @@ export async function middleware(request: NextRequest) {
 		// Можна також очистити куки, якщо токен недійсний
 		const response = NextResponse.redirect(new URL("/auth", url));
 		response.cookies.delete(EnumTokens.REFRESH_TOKEN); // Опціонально очищуємо токен
+
 		return response;
 	}
 
@@ -30,5 +31,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/workspaces/:path*", "/auth/:path*"], // Виправлено :path*
+	matcher: ["/workspace/:path*", "/auth/:path*"], // Виправлено :path*
 };

@@ -43,7 +43,7 @@ export class OrgService {
 			select: {
 				organization: true,
 				role: true,
-				organizationStatus: true
+				organizationStatus: true,
 			}
 		});
 	}

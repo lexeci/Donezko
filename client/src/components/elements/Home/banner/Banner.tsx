@@ -9,7 +9,6 @@ export default function Banner() {
 			<div className={styles.container}>
 				<div className={styles.info}>
 					<div className={styles.topPanel}>
-						<AnimatedLink link="/dashboard" title="Dashboard panel" />
 						<AnimatedLink link="/about" title="About project" />
 						<AnimatedLink link="/behind-code" title="Behind the code" />
 						<AnimatedLink link="/faqs" title="FAQ's" />
@@ -27,7 +26,7 @@ export default function Banner() {
 								planning styles. Even more!
 							</p>
 						</div>
-						<Button type="link" link="#">
+						<Button type="link" link="/auth">
 							Go to Dashboard
 							<HandPointing
 								className="rotate-90 ml-2"

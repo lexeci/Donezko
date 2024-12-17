@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/components/index";
 import generateKeyComp from "@/src/utils/generateKeyComp";
 
+import LogoutButton from "./LogoutButton";
 import styles from "./Sidebar.module.scss";
 
 export default function Sidebar() {
@@ -31,9 +34,7 @@ export default function Sidebar() {
 					))}
 				</div>
 
-				<Button type="link" link="/workspace/" fullWidth block negative>
-					Log Out
-				</Button>
+				<LogoutButton />
 			</div>
 		</div>
 	);

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { TaskFormData } from "@/types/task.types";
 
-import { taskService } from "@/services/task.service";
+import { taskService } from "@/src/services/task.service";
 
 export function useModifyTask(taskKey?: string) {
 	// Зміна назви функції для унікальності

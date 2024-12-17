@@ -6,7 +6,7 @@ import styles from "./Button.module.scss";
 interface Button {
 	type: "link" | "button";
 	link?: string;
-	onClick?: () => void;
+	onClick?: (e?: any) => void;
 	negative?: boolean;
 	block?: boolean;
 	fullWidth?: boolean;

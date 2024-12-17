@@ -3,24 +3,41 @@
 import { Button } from "@/components/index";
 import { useCookieMonitor } from "@/src/hooks/useCookieMonitor";
 import { useFetchUserProfile } from "@/src/hooks/useFetchUserProfile";
+import { useEffect, useState } from "react";
 
 export default function HeaderUserBadge() {
-	const { profileData, isDataLoading, refetch } = useFetchUserProfile();
-	const user = profileData?.user; // `user` буде або значенням, або undefined
+	const { profileData, isDataLoading } = useFetchUserProfile();
+	const [user, setUser] = useState(profileData?.user); // Динамічно зберігаємо користувача
 
-	// Використовуємо моніторинг для REFRESH_TOKEN
-	useCookieMonitor("accessToken", () => {
-		refetch(); // Повторно виконуємо запит, якщо токен з'явився
-	});
+	const [cookiesExist, setCookiesExist] = useState(false);
+
+	// Колбек, коли кука з'являється
+	const handleCookieChange = () => {
+		setCookiesExist(true);
+	};
+
+	// Колбек, коли кука зникає
+	const handleCookieRemove = () => {
+		setCookiesExist(false);
+	};
+
+	// Викликаємо useCookieMonitor з двома колбеками
+	useCookieMonitor("accessToken", handleCookieChange, handleCookieRemove);
+
+	useEffect(() => {
+		if (profileData && cookiesExist) {
+			setUser(profileData?.user);
+		}
+	}, [profileData, isDataLoading, cookiesExist]);
 
 	return (
 		<div>
-			{isDataLoading || !user ? (
+			{isDataLoading || !user || !cookiesExist ? (
 				<Button type="link" link="/auth">
 					Login
 				</Button>
 			) : (
-				<p>Welcome,{user.name}</p>
+				<p>Welcome, {user.name}</p>
 			)}
 		</div>
 	);

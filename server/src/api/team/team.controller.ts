@@ -53,7 +53,24 @@ export class TeamController {
 		@Body() dto: GetTeamDto,
 		@CurrentUser('id') userId: string
 	): Promise<TeamWithUsers[]> {
-		return await this.teamService.getAll({ userId, dto });
+		return await this.teamService.getAllByOrgProject({ userId, dto });
+	}
+
+	/**
+	 * Fetches all teams associated with the current user.
+	 *
+	 * This endpoint retrieves the list of teams in which the user is an active member.
+	 *
+	 * @param userId - The ID of the current user making the request.
+	 * @returns A list of teams with their users.
+	 */
+	@HttpCode(200)
+	@Permission('viewResources') // Вказуємо відповідний дозвіл, якщо потрібен
+	@Get('user-teams') // Новий шлях для цього ендпоінта
+	async getAllByUser(
+		@CurrentUser('id') userId: string
+	): Promise<TeamWithUsers[]> {
+		return await this.teamService.getAllByUserId(userId);
 	}
 
 	/**

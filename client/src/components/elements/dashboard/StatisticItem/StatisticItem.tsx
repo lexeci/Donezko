@@ -5,7 +5,7 @@ import styles from "./StatisticItem.module.scss";
 type StatisticItemProps = {
 	icon: ReactNode; // Наприклад, <UsersThree />, <Buildings />, або <Rss />
 	title: string;
-	description: string;
+	description?: string;
 	subtitle?: string; // Додатковий текст, наприклад, Teams | Tasks
 	link?: { href: string; text: string }; // Опціональний посилання
 };

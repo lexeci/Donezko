@@ -1,40 +1,51 @@
+"use client";
+
 import { StatisticBlock, StatisticItem } from "@/components/index";
+import { useFetchUserTeams } from "@/src/hooks/team/useFetchUserTeams";
 import { UsersThree } from "@phosphor-icons/react/dist/ssr";
 
-const teams = [
-	{
-		link: "/workspace/teams/1234",
-		title: "Insomnia Work",
-		description: "We are doing nothing ...",
-		participants: 5,
-		tasks: 29,
-	},
-	{
-		link: "/workspace/teams/5678",
-		title: "Creative Team",
-		description: "We are doing nothing ...",
-		participants: 8,
-		tasks: 18,
-	},
-];
+import styles from "./TeamBoardStatistic.module.scss";
+
+function NotFoundElement() {
+	return (
+		<div className={styles["error-found"]}>
+			<div className={styles.title}>
+				<h5>You don't have any teams</h5>
+			</div>
+			<div className={styles.description}>
+				<p>Please join in or create your personal team</p>
+			</div>
+		</div>
+	);
+}
 
 export default function TeamBoardStatistic() {
+	const { userTeamList } = useFetchUserTeams();
+
 	return (
 		<StatisticBlock
 			title="Your Teams"
 			description="Teams with assigned tasks"
 			button={{ title: "Show all", link: "/workspace/teams" }}
 		>
-			{teams.map((team, i) => (
-				<StatisticItem
-					key={i}
-					icon={<UsersThree size={32} />}
-					title={team.title}
-					description={team.description}
-					subtitle={`Users: ${team.participants} | Tasks: ${team.tasks}`}
-					link={{ href: team.link, text: "Look -->" }}
-				/>
-			))}
+			{userTeamList ? (
+				userTeamList.length > 0 ? (
+					userTeamList?.map((team, i) => (
+						<StatisticItem
+							key={i}
+							icon={<UsersThree size={32} />}
+							title={team.title}
+							description={team.description}
+							subtitle={`Organization: ${team.organization.title} | Tasks: ${team.tasks}`}
+							link={{ href: team.id, text: "Look -->" }}
+						/>
+					))
+				) : (
+					<NotFoundElement />
+				)
+			) : (
+				<NotFoundElement />
+			)}
 		</StatisticBlock>
 	);
 }

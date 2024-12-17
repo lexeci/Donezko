@@ -181,7 +181,7 @@ export class OrgController {
 	 * @returns Success message or the updated organization details.
 	 */
 	@HttpCode(200)
-	@Delete('exit/:id')
+	@Delete(':id/exit')
 	@Permission('viewResources')
 	async exit(@Param('id') id: string, @CurrentUser('id') userId: string) {
 		return this.orgService.exit({ id, userId });

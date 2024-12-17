@@ -1,58 +1,62 @@
 "use client";
 
 import { Button, Field } from "@/components/index";
-import { useUpdateOrg } from "@/src/hooks/organization/useUpdateOrg";
-import { OrgFormData } from "@/src/types/org.types";
-import { useEffect, useState } from "react";
+import { useUpdateProject } from "@/src/hooks/project/useUpdateProject";
+import { ProjectFormData, ProjectResponse } from "@/src/types/project.types";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-interface OrganizationUpdate {
+interface ProjectUpdate {
 	id: string;
-	data: OrgFormData;
+	organizationId: string;
+	data: ProjectFormData;
+	pullUpdatedData: Dispatch<SetStateAction<ProjectResponse | null>>;
+	pullCloseModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function OrganizationUpdate({
+export default function ProjectUpdate({
 	id,
+	organizationId,
 	data: localData,
-}: OrganizationUpdate) {
-	const { updateOrganization, updatedOrganization } = useUpdateOrg();
+	pullUpdatedData,
+	pullCloseModal,
+}: ProjectUpdate) {
+	const { updateProject, updatedProject } = useUpdateProject();
 
-	const { register, handleSubmit, setValue, reset } = useForm<OrgFormData>({
+	const { register, handleSubmit, setValue, reset } = useForm<ProjectFormData>({
 		mode: "onChange",
 	});
 
-	// Локальний стан для згенерованого joinCode
-	const [joinCode, setJoinCode] = useState<string>(
-		localData.joinCode as string
-	);
-
-	// Генерація унікального коду приєднання
-	const generateJoinCode = () => {
-		const code = Math.random().toString(36).substr(2, 99).toUpperCase(); // Генеруємо код
-		setJoinCode(code);
-		setValue("joinCode", code); // Автоматично заповнюємо поле форми
-	};
-
 	useEffect(() => {
-		generateJoinCode();
+		setValue("title", localData.title);
+		setValue("description", localData.description);
 	}, []);
 
-	const onSubmit: SubmitHandler<OrgFormData> = data => {
-		updateOrganization({ id, data });
+	const onSubmit: SubmitHandler<ProjectFormData> = localData => {
+		updateProject({
+			id,
+			data: {
+				organizationId,
+				title: localData.title,
+				description: localData.description,
+			},
+		});
 	};
 
 	useEffect(() => {
-		updatedOrganization?.organization.id &&
-			reset(updatedOrganization.organization);
-	}, [updatedOrganization]);
+		updatedProject?.project.id && reset(updatedProject.project);
+		updatedProject?.project.id && pullUpdatedData(updatedProject);
+
+		updatedProject?.project.id && pullCloseModal(false);
+	}, [updatedProject]);
 
 	return (
 		<div className="container bg-background w-full h-full border border-foreground p-4 py-8">
 			<div className="title text-lg font-bold">
-				<h5>Update your organization</h5>
+				<h5>Update your project</h5>
 			</div>
 			<div className="text-block">
-				<p>Please write the title and description for your organization.</p>
+				<p>Please write the title and description for your project.</p>
 			</div>
 			<div className="operate-window flex justify-center items-center h-full">
 				<form
@@ -68,7 +72,6 @@ export default function OrganizationUpdate({
 						{...register("title", {
 							required: "Title is required!",
 						})}
-						value={localData.title}
 					/>
 					<Field
 						extra="flex flex-col max-w-80 w-full"
@@ -79,35 +82,7 @@ export default function OrganizationUpdate({
 						{...register("description", {
 							maxLength: { value: 500, message: "Description is too long" }, // Валідація на довжину
 						})}
-						value={localData.description}
 					/>
-					<div className="flex flex-row justify-center items-end gap-x-2 max-w-80">
-						<Field
-							extra="flex flex-col w-full"
-							id="joinCode"
-							label="JoinCode:"
-							placeholder="Enter joinCode:"
-							type="text"
-							{...register("joinCode", {
-								required: "JoinCode is required!",
-							})}
-							readOnly
-							value={joinCode}
-						/>
-						<div className="w-28 text-xs">
-							<Button
-								type="button"
-								fullWidth
-								block
-								onClick={e => {
-									e.preventDefault();
-									generateJoinCode();
-								}}
-							>
-								Generate
-							</Button>
-						</div>
-					</div>
 					<div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
 						<Button type="button" block>
 							Update Organization

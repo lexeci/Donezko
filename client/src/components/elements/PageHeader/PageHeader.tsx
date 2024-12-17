@@ -8,6 +8,7 @@ interface PageHeader {
 	desc: string;
 	extraDesc?: string;
 	joinCode?: string | boolean;
+	extraInfo?: string | boolean;
 	buttonAction?: () => void;
 	button?: string | boolean;
 }
@@ -18,6 +19,7 @@ export default function PageHeader({
 	desc,
 	extraDesc,
 	joinCode,
+	extraInfo,
 	button,
 	buttonAction,
 }: PageHeader) {
@@ -30,6 +32,11 @@ export default function PageHeader({
 						<span>
 							Join Code: <span>{joinCode}</span>
 						</span>
+					</p>
+				)}
+				{extraInfo && (
+					<p className={styles["join-code"]}>
+						<span>{extraInfo}</span>
 					</p>
 				)}
 			</div>

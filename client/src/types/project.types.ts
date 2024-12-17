@@ -1,5 +1,5 @@
-import { Organization } from "./org.types";
-import type { RootBase, UUID } from "./root.types";
+import { Organization, OrgUserResponse } from "./org.types";
+import type { AccessStatus, RootBase, UUID } from "./root.types";
 import { TaskResponse } from "./task.types";
 import { TeamFormData } from "./team.types";
 
@@ -17,7 +17,15 @@ export interface Project extends RootBase {
 	};
 }
 
-export interface ProjectResponse extends Project {}
+export interface ProjectResponse extends RootBase {
+	projectId: UUID;
+	projectStatus: AccessStatus;
+	project: Project;
+	userId: UUID;
+	user: {
+		organizationUsers: OrgUserResponse[];
+	};
+}
 
 // Тип для сутності "ProjectTeam"
 export interface ProjectTeam extends RootBase {

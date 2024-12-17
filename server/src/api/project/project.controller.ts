@@ -54,6 +54,22 @@ export class ProjectController {
 	}
 
 	/**
+	 * Get details of a specific project by its ID.
+	 * @param id - The ID of the project to retrieve.
+	 * @param userId - The ID of the current user making the request.
+	 * @returns The project details.
+	 * @throws NotFoundException - If the project does not exist or the user does not have access.
+	 */
+	@UsePipes(new ValidationPipe())
+	@Get(':id')
+	@HttpCode(200) // 200 OK for GET requests
+	@Permission('viewResources') // Permission decorator to check if the user has the required permission
+	async getById(@Param('id') id: string, @CurrentUser('id') userId: string) {
+		// Call the service to get project details by ID
+		return this.projectService.getById({ id, userId });
+	}
+
+	/**
 	 * Create a new project.
 	 * @param dto - The project details to be created.
 	 * @param userId - The ID of the current user who is creating the project.

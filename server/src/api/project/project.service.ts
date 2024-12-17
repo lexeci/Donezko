@@ -175,6 +175,69 @@ export class ProjectService {
 	}
 
 	/**
+	 * Fetch a project by its ID.
+	 * @param id The ID of the project to fetch.
+	 * @param userId The ID of the user requesting the project details.
+	 * @returns The project details.
+	 * @throws ForbiddenException if the user does not have access to the project.
+	 * @throws NotFoundException if the project does not exist.
+	 */
+	async getById({ id, userId }: { id: string; userId: string }) {
+		// Check if the user has access to the project
+		const projectUser = await this.prisma.projectUser.findUnique({
+			where: { projectId_userId: { projectId: id, userId } }
+		});
+		if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
+			throw new ForbiddenException(
+				'User does not have access to this project.'
+			);
+		}
+
+		// Return project details
+		return this.prisma.projectUser.findFirst({
+			where: { userId, projectId: id },
+			select: {
+				id: true,
+				userId: true,
+				projectId: true,
+				projectStatus: true,
+				user: {
+					select: {
+						organizationUsers: {
+							where: {
+								userId
+							},
+							select: {
+								role: true,
+								organizationStatus: true
+							}
+						}
+					}
+				},
+				project: {
+					select: {
+						id: true,
+						title: true,
+						description: true,
+						organization: true,
+						organizationId: true,
+						createdAt: true,
+						updatedAt: true,
+						projectTeams: true,
+						tasks: true,
+						_count: {
+							select: {
+								projectTeams: true,
+								tasks: true
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+
+	/**
 	 * Fetch all active projects within an organization for a specific user.
 	 * @param userId The ID of the user whose projects are to be fetched.
 	 * @param organizationId The ID of the organization.
@@ -378,9 +441,52 @@ export class ProjectService {
 			roleCheck: true
 		});
 
-		return this.prisma.project.update({
+		await this.prisma.project.update({
 			where: { id },
 			data: { ...dto }
+		});
+
+		// Return project details
+		return this.prisma.projectUser.findFirst({
+			where: { userId, projectId: id },
+			select: {
+				id: true,
+				userId: true,
+				projectId: true,
+				projectStatus: true,
+				user: {
+					select: {
+						organizationUsers: {
+							where: {
+								userId
+							},
+							select: {
+								role: true,
+								organizationStatus: true
+							}
+						}
+					}
+				},
+				project: {
+					select: {
+						id: true,
+						title: true,
+						description: true,
+						organization: true,
+						organizationId: true,
+						createdAt: true,
+						updatedAt: true,
+						projectTeams: true,
+						tasks: true,
+						_count: {
+							select: {
+								projectTeams: true,
+								tasks: true
+							}
+						}
+					}
+				}
+			}
 		});
 	}
 

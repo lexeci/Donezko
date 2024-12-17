@@ -19,6 +19,7 @@ export { default as OrganizationElements } from "./Organization/OrganizationElem
 export { default as OrganizationUpdate } from "./Organization/OrganizationUpdate";
 export { default as OrganizationUsers } from "./Organization/OrganizationUsers";
 export { default as ProjectElements } from "./Project/ProjectElements";
+export { default as ProjectUpdate } from "./Project/ProjectUpdate";
 export { default as TeamElements } from "./Team/TeamElements";
 
 // Dashboard Elements

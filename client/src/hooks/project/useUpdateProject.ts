@@ -3,7 +3,7 @@ import { ProjectFormData, ProjectResponse } from "@/src/types/project.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
-export function useUpdateProjectUser() {
+export function useUpdateProject() {
 	const queryClient = useQueryClient();
 	const [updatedProject, setUpdatedProject] = useState<
 		ProjectResponse | undefined

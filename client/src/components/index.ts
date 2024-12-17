@@ -16,6 +16,7 @@ export {
 	PageHeader,
 	PageLayout,
 	ProjectElements,
+	ProjectUpdate,
 	Sidebar,
 	StatisticBlock,
 	StatisticItem,

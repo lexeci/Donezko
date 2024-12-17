@@ -1,7 +1,7 @@
-import cn from 'clsx'
-import type { ButtonHTMLAttributes, PropsWithChildren } from 'react'
+import cn from "clsx";
+import type { ButtonHTMLAttributes, PropsWithChildren } from "react";
 
-type TypeButton = ButtonHTMLAttributes<HTMLButtonElement>
+type TypeButton = ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function Button({
 	children,
@@ -11,12 +11,12 @@ export function Button({
 	return (
 		<button
 			className={cn(
-				'linear rounded-lg bg-transparent border border-primary py-2 px-7 text-base font-medium text-white transition hover:bg-primary active:bg-brand-700',
+				"flex justify-center items-center text-sm text-borderColor gap-3.5 w-full text-center font-medium p-2 border border-borderColor h-auto hover:bg-foreground hover:text-background transition-all ease-in-out duration-200",
 				className
 			)}
 			{...rest}
 		>
 			{children}
 		</button>
-	)
+	);
 }

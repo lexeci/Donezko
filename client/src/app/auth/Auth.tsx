@@ -1,80 +1,76 @@
-'use client'
+"use client";
 
-import { useMutation } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-import { Heading } from '@/components/ui/Heading'
-import { Button } from '@/components/ui/buttons/Button'
-import { Field } from '@/components/ui/fields/Field'
+import { AuthForm } from "@/types/auth.types";
 
-import { IAuthForm } from '@/types/auth.types'
+import { DASHBOARD_PAGES } from "@/config/pages-url.config";
 
-import { DASHBOARD_PAGES } from '@/config/pages-url.config'
-
-import { authService } from '@/services/auth.service'
+import { Button } from "@/components/ui/buttons/Button";
+import { Field } from "@/components/ui/fields/Field";
+import { authService } from "@/services/auth.service";
 
 export function Auth() {
-	const { register, handleSubmit, reset } = useForm<IAuthForm>({
-		mode: 'onChange'
-	})
+	const { register, handleSubmit, reset } = useForm<AuthForm>({
+		mode: "onChange",
+	});
 
-	const [isLoginForm, setIsLoginForm] = useState(false)
+	const [isLoginForm, setIsLoginForm] = useState(false);
 
-	const { push } = useRouter()
+	const { push } = useRouter();
 
 	const { mutate } = useMutation({
-		mutationKey: ['auth'],
-		mutationFn: (data: IAuthForm) =>
-			authService.main(isLoginForm ? 'login' : 'register', data),
+		mutationKey: ["auth"],
+		mutationFn: (data: AuthForm) =>
+			authService.main(isLoginForm ? "login" : "register", data),
 		onSuccess() {
-			toast.success('Successfully login!')
-			reset()
-			push(DASHBOARD_PAGES.HOME)
-		}
-	})
+			toast.success("Successfully login!");
+			reset();
+			push(DASHBOARD_PAGES.HOME);
+		},
+	});
 
-	const onSubmit: SubmitHandler<IAuthForm> = data => {
-		mutate(data)
-	}
+	const onSubmit: SubmitHandler<AuthForm> = data => {
+		mutate(data);
+	};
 
 	return (
-		<div className='flex min-h-screen'>
+		<div className="flex p-6 justify-center w-full">
 			<form
-				className='w-1/4 m-auto shadow bg-sidebar rounded-xl p-layout'
+				className="w-1/4 relative flex flex-col flex-wrap md:justify-between bg-blockColor border border-borderColor p-6 flex-none shadow-xl gap-y-3"
 				onSubmit={handleSubmit(onSubmit)}
 			>
-				<Heading title='Auth' />
-
+				<h1 className="text-3xl font-mono text-center w-full border-b border-borderColor pb-6">
+					Login
+				</h1>
 				<Field
-					id='email'
-					label='Email:'
-					placeholder='Enter email:'
-					type='email'
-					extra='mb-4'
-					{...register('email', {
-						required: 'Email is required!'
+					id="email"
+					label="Email:"
+					placeholder="Enter email:"
+					type="email"
+					{...register("email", {
+						required: "Email is required!",
 					})}
 				/>
-
 				<Field
-					id='password'
-					label='Password: '
-					placeholder='Enter password: '
-					type='password'
-					{...register('password', {
-						required: 'Password is required!'
+					id="password"
+					label="Password: "
+					placeholder="Enter password: "
+					type="password"
+					{...register("password", {
+						required: "Password is required!",
 					})}
-					extra='mb-6'
+					extra="pb-3"
 				/>
-
-				<div className='flex items-center gap-5 justify-center'>
+				<div className="flex items-center gap-3 justify-center">
 					<Button onClick={() => setIsLoginForm(true)}>Login</Button>
 					<Button onClick={() => setIsLoginForm(false)}>Register</Button>
 				</div>
 			</form>
 		</div>
-	)
+	);
 }

@@ -1,12 +1,12 @@
-import type { IBase } from './root.types'
+import type { RootBase } from "./root.types";
 
-export interface ITimeBlockResponse extends IBase {
-	name: string
-	color?: string
-	duration: number
-	order: number
+export interface TimeBlockResponse extends RootBase {
+	name: string;
+	color?: string;
+	duration: number;
+	order: number;
 }
 
 export type TypeTimeBlockFormState = Partial<
-	Omit<ITimeBlockResponse, 'createdAt' | 'updatedAt'>
->
+	Omit<TimeBlockResponse, "createdAt" | "updatedAt">
+>;

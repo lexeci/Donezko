@@ -26,5 +26,5 @@ export async function middleware(request: NextRequest, response: NextResponse) {
 }
 
 export const config = {
-	matcher: ['/i/:path*', '/auth/:path']
+	matcher: ['/workspaces/:path*', '/auth/:path']
 }

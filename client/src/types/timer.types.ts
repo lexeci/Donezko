@@ -35,7 +35,7 @@ export type TypeTimerRoundState = Partial<
 export interface TimerState {
 	isRunning: boolean; // Indicates if the timer is currently running
 	secondsLeft: number; // Seconds remaining in the current round/session
-	currentActiveRound: TimerRoundResponse | undefined; // The currently active round, if any
+	activeRound: TimerRoundResponse | undefined; // The currently active round, if any
 
 	// State setter functions for managing timer state
 	setIsRunning: Dispatch<SetStateAction<boolean>>;

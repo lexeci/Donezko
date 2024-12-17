@@ -30,6 +30,7 @@ export default function Timer() {
 	);
 
 	const handleSessionDeletion = () => {
+		console.log(123);
 		timerState.setIsRunning(false);
 		sessionsResponse && deleteSession(sessionsResponse.id);
 	};
@@ -66,7 +67,7 @@ export default function Timer() {
 						{timeFormatter(timerState.secondsLeft)}
 					</div>
 
-					{true ? (
+					{!isLoading && sessionsResponse?.rounds ? (
 						<div className="timer-actions flex-col justify-center items-center gap-x-4 w-full px-4">
 							<div className="item w-full flex flex-row justify-between items-center border border-foreground p-2">
 								<div className="title">
@@ -76,7 +77,7 @@ export default function Timer() {
 									rounds={rounds}
 									nextRoundHandler={actions.moveToNextRound}
 									prevRoundHandler={actions.moveToPreviousRound}
-									currentActiveRound={timerState.currentActiveRound}
+									activeRound={timerState.activeRound}
 								/>
 							</div>
 							<div className="item w-full flex flex-row justify-between items-center border border-foreground p-2">
@@ -85,7 +86,7 @@ export default function Timer() {
 								</div>
 								<Button
 									type="button"
-									onClick={handlePlayPause}
+									onClick={() => handlePlayPause()}
 									disabled={actions.isUpdateRoundPending}
 									modal
 								>
@@ -102,7 +103,7 @@ export default function Timer() {
 								</div>
 								<Button
 									type="button"
-									onClick={handleSessionDeletion}
+									onClick={() => handleSessionDeletion()}
 									disabled={isDeleting}
 									modal
 								>
@@ -113,7 +114,7 @@ export default function Timer() {
 					) : (
 						<Button
 							type={"button"}
-							onClick={handleSessionCreation}
+							onClick={() => handleSessionCreation()}
 							disabled={isCreating}
 							negative
 							block

@@ -1,5 +1,4 @@
-import type { TimerRoundResponse } from "@/types/timer.types";
-import type { TimerState } from "@/types/timer.types";
+import type { TimerRoundResponse, TimerState } from "@/types/timer.types";
 import { useLoadSettings } from "./useLoadSettings";
 import { useUpdateRound } from "./useUpdateRound";
 
@@ -8,7 +7,7 @@ type UseTimerActionsProps = TimerState & {
 };
 
 export function useTimerActions({
-	currentActiveRound,
+	activeRound,
 	setIsRunning,
 	secondsLeft,
 	rounds,
@@ -19,10 +18,10 @@ export function useTimerActions({
 
 	const pauseTimer = () => {
 		setIsRunning(false);
-		if (!currentActiveRound?.id) return;
+		if (!activeRound?.id) return;
 
 		updateRound({
-			id: currentActiveRound.id,
+			id: activeRound.id,
 			data: {
 				totalSeconds: secondsLeft,
 				isCompleted: Math.floor(secondsLeft / 60) >= workInterval,
@@ -35,10 +34,10 @@ export function useTimerActions({
 	};
 
 	const moveToNextRound = () => {
-		if (!currentActiveRound?.id) return;
+		if (!activeRound?.id) return;
 
 		updateRound({
-			id: currentActiveRound.id,
+			id: activeRound.id,
 			data: {
 				isCompleted: true,
 				totalSeconds: workInterval * 60,
@@ -47,18 +46,39 @@ export function useTimerActions({
 	};
 
 	const moveToPreviousRound = () => {
-		const lastCompleted = rounds?.find(round => round.isCompleted);
-		if (!lastCompleted?.id) return;
+		// Перевіряємо, чи є раунди
+		if (!rounds || rounds.length === 0) return;
 
-		updateRound({
-			id: lastCompleted.id,
-			data: {
-				isCompleted: false,
-				totalSeconds: 0,
+		// Знайти індекс останнього завершеного раунду
+		const lastCompletedIndex = rounds
+			.map(round => round.isCompleted)
+			.lastIndexOf(true);
+
+		// Якщо не знайдено завершених раундів, виходимо
+		if (lastCompletedIndex === -1) return;
+
+		// Отримуємо останній завершений раунд
+		const lastCompletedRound = rounds[lastCompletedIndex];
+
+		// Змінюємо стан цього раунду
+		updateRound(
+			{
+				id: lastCompletedRound.id,
+				data: {
+					isCompleted: false, // Робимо раунд незавершеним
+					totalSeconds: 0, // Скидаємо час
+				},
 			},
-		});
+			{
+				onSuccess: () => {
+					// Встановлюємо його активним після оновлення
+					setActiveRound(lastCompletedRound);
 
-		setActiveRound(lastCompleted);
+					// Лог для дебагу
+					console.log("Active round set to:", lastCompletedRound);
+				},
+			}
+		);
 	};
 
 	return {

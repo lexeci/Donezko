@@ -1,6 +1,9 @@
-import type { TimerRoundResponse } from "@/types/timer.types";
 import { useEffect, useState } from "react";
+
+import type { TimerRoundResponse } from "@/types/timer.types";
+
 import type { TimerState } from "@/types/timer.types";
+
 import { useLoadSettings } from "./useLoadSettings";
 
 export function useTimer(): TimerState {
@@ -8,36 +11,37 @@ export function useTimer(): TimerState {
 
 	const [isRunning, setIsRunning] = useState(false);
 	const [isBreakTime, setIsBreakTime] = useState(false);
+
 	const [secondsLeft, setSecondsLeft] = useState(workInterval * 60);
-	const [currentActiveRound, setActiveRound] = useState<TimerRoundResponse>();
+	const [activeRound, setActiveRound] = useState<TimerRoundResponse>();
 
 	useEffect(() => {
-		let timer: NodeJS.Timeout | null = null;
+		let interval: NodeJS.Timeout | null = null;
 
 		if (isRunning) {
-			timer = setInterval(() => {
-				setSecondsLeft(prev => prev - 1);
+			interval = setInterval(() => {
+				setSecondsLeft(secondsLeft => secondsLeft - 1);
 			}, 1000);
-		} else if (!isRunning && secondsLeft !== 0 && timer) {
-			clearInterval(timer);
+		} else if (!isRunning && secondsLeft !== 0 && interval) {
+			clearInterval(interval);
 		}
 
-		// Cleanup function to clear the timer on component unmount
 		return () => {
-			if (timer) clearInterval(timer);
+			if (interval) clearInterval(interval);
 		};
-	}, [isRunning, secondsLeft]);
+	}, [isRunning, secondsLeft, workInterval, activeRound]);
 
 	useEffect(() => {
-		if (secondsLeft > 0) return; // Exit early if time remains
+		// Ранний выход, если время не истекло
+		if (secondsLeft > 0) return;
 
-		// Toggle between work and break intervals
-		setIsBreakTime(prev => !prev);
+		// Переключение режима и установка нового времени одной операцией
+		setIsBreakTime(!isBreakTime);
 		setSecondsLeft((isBreakTime ? workInterval : breakInterval) * 60);
 	}, [secondsLeft, isBreakTime, workInterval, breakInterval]);
 
 	return {
-		currentActiveRound,
+		activeRound,
 		secondsLeft,
 		setActiveRound,
 		setIsRunning,

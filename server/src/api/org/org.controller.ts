@@ -49,6 +49,27 @@ export class OrgController {
 	}
 
 	/**
+	 * Getting users from organization.
+	 * @param id The ID of the organization to be fetched.
+	 * @param projectId The projectId will show all users who already in this project.
+	 * @param hide The hide will ignore all users who already in this project.
+	 * @param userId The ID of the current user who is making the request.
+	 * @returns Organization users list.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Get(':id/users')
+	@Permission('manageUsers')
+	async getUsers(
+		@Param('id') id: string,
+		@CurrentUser('id') userId: string,
+		@Query('projectId') projectId: string,
+		@Query('hide') hide: boolean
+	) {
+		return this.orgService.getUsers({ id, userId, projectId, hide });
+	}
+
+	/**
 	 * Create a new organization.
 	 * @param dto The details of the organization to be created.
 	 * @param userId The ID of the current user who is creating the organization.

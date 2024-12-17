@@ -4,6 +4,7 @@ import pageStyles from "@/app/page.module.scss";
 
 import { Button, EntityItem, ModalWindow } from "@/components/index";
 import { useFetchUserTeams } from "@/src/hooks/team/useFetchUserTeams";
+import { ProjectTeam } from "@/src/types/project.types";
 import { TeamResponse } from "@/src/types/team.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
 import { Buildings } from "@phosphor-icons/react";
@@ -16,24 +17,37 @@ interface TeamElementsProps {
 	isWindowElement?: boolean;
 	organizationId?: string;
 	organizationTitle?: string;
-	teams?: TeamResponse[];
+	teams?: TeamResponse[] | ProjectTeam[];
 	isAdministrate?: boolean;
 }
 
 // Компонента для відображення команд, якщо передано `teams` через пропси
-const TeamElementsWithData = ({ teams }: { teams: TeamResponse[] }) => {
-	return teams.length > 0 ? (
-		teams.map((team, i) => {
-			const { _count } = team;
+const TeamElementsWithData = ({
+	fetchedData,
+}: {
+	fetchedData: TeamResponse[] | ProjectTeam[];
+}) => {
+	return fetchedData.length > 0 ? (
+		fetchedData.map((item, i) => {
+			// Динамічна перевірка на тип
+			const isTeamResponse = (
+				team: TeamResponse | ProjectTeam
+			): team is TeamResponse => "title" in team;
+
+			const team = isTeamResponse(item) ? item : item.team;
+			const { _count, id, title } = team;
+
 			return (
-				<EntityItem
-					key={generateKeyComp(`${team.title}__${i}`)}
-					icon={<Buildings size={84} />}
-					linkBase={`/workspace/teams/${team.id}`}
-					title={team.title}
-					firstStat={`Participants: ${_count?.teamUsers}`}
-					secondaryStat={`Tasks: ${_count?.tasks}`}
-				/>
+				title && (
+					<EntityItem
+						key={generateKeyComp(`${title}__${i}`)}
+						icon={<Buildings size={84} />}
+						linkBase={`/workspace/teams/${id}`}
+						title={title}
+						firstStat={`Participants: ${_count?.teamUsers}`}
+						secondaryStat={`Tasks: ${_count?.tasks}`}
+					/>
+				)
 			);
 		})
 	) : (
@@ -131,7 +145,7 @@ export default function TeamElements({
 				)}
 			>
 				{teams?.length || teams != undefined ? (
-					<TeamElementsWithData teams={teams} />
+					<TeamElementsWithData fetchedData={teams} />
 				) : (
 					<TeamElementsWithoutData onCountChange={setTeamCount} />
 				)}

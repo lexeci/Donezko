@@ -1,5 +1,6 @@
 // Elements
 export {
+	AddProjectUsers,
 	Authorization,
 	Banner,
 	DailyBoardAdvice,
@@ -17,6 +18,7 @@ export {
 	PageLayout,
 	ProjectElements,
 	ProjectUpdate,
+	ProjectUsers,
 	Sidebar,
 	StatisticBlock,
 	StatisticItem,

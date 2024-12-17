@@ -42,4 +42,4 @@ export interface ManageTeamData {
 	teamUserId: UUID;
 }
 
-export type TeamFormData = Partial<Omit<Team, "id" | "updatedAt">>;
+export type TeamFormData = Partial<Omit<Team, "updatedAt">>;

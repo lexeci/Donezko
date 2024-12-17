@@ -272,6 +272,48 @@ export class ProjectService {
 	}
 
 	/**
+	 * Fetch all project users.
+	 * @param userId The ID of the user whose projects are to be fetched.
+	 * @param id The ID of the project.
+	 * @returns A list of users within the project for the specified id.
+	 */
+	async getAllUsers({ userId, id }: { userId: string; id: string }) {
+		const project = await this.projectExists(id);
+		await this.checkUserAccess({
+			userId,
+			orgId: project.organizationId,
+			projectId: id,
+			roleCheck: true
+		});
+
+		return this.prisma.projectUser.findMany({
+			where: {
+				projectId: id,
+				user: {
+					organizationUsers: {
+						some: {
+							organizationId: project.organizationId,
+							role: { notIn: ['OWNER', 'ADMIN'] },
+							organizationStatus: 'ACTIVE'
+						}
+					}
+				}
+			},
+			select: {
+				userId: true,
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true
+					}
+				},
+				projectStatus: true
+			}
+		});
+	}
+
+	/**
 	 * Create a new project in an organization.
 	 * @param dto The project details to be created.
 	 * @param userId The ID of the user creating the project.
@@ -441,52 +483,9 @@ export class ProjectService {
 			roleCheck: true
 		});
 
-		await this.prisma.project.update({
+		return this.prisma.project.update({
 			where: { id },
 			data: { ...dto }
-		});
-
-		// Return project details
-		return this.prisma.projectUser.findFirst({
-			where: { userId, projectId: id },
-			select: {
-				id: true,
-				userId: true,
-				projectId: true,
-				projectStatus: true,
-				user: {
-					select: {
-						organizationUsers: {
-							where: {
-								userId
-							},
-							select: {
-								role: true,
-								organizationStatus: true
-							}
-						}
-					}
-				},
-				project: {
-					select: {
-						id: true,
-						title: true,
-						description: true,
-						organization: true,
-						organizationId: true,
-						createdAt: true,
-						updatedAt: true,
-						projectTeams: true,
-						tasks: true,
-						_count: {
-							select: {
-								projectTeams: true,
-								tasks: true
-							}
-						}
-					}
-				}
-			}
 		});
 	}
 

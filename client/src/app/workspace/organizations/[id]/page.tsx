@@ -42,6 +42,8 @@ export default function Organization() {
 		organization && setOrganizationUsers(organization?.organizationUsers);
 	}, [organization]);
 
+	const hasPermission = role === "ADMIN" || role === "OWNER";
+
 	return (
 		<PageLayout>
 			<PageHeader
@@ -49,9 +51,7 @@ export default function Organization() {
 				title={organization?.title as string}
 				desc={`${organization?.description}`}
 				extraDesc={`Participants: ${organization?._count?.organizationUsers} | Teams: ${organization?._count?.teams} | Projects: ${organization?._count?.projects}`}
-				joinCode={
-					(role === "ADMIN" || role === "OWNER") && organization?.joinCode
-				}
+				joinCode={hasPermission && organization?.joinCode}
 				button={role === "OWNER" && "Update Organization"}
 				buttonAction={() => role === "OWNER" && setOpenModalUpdate(true)}
 			/>
@@ -66,7 +66,7 @@ export default function Organization() {
 							isWindowElement
 							organizationId={organizationId}
 							projects={organization?.projects}
-							isAdministrate={role === "ADMIN" || role === "OWNER"}
+							isAdministrate={hasPermission}
 						/>
 					)}
 				</WindowContainer>
@@ -80,26 +80,26 @@ export default function Organization() {
 							isWindowElement
 							organizationId={organizationId}
 							teams={organization?.teams}
-							isAdministrate={role === "ADMIN" || role === "OWNER"}
+							isAdministrate={hasPermission}
 						/>
 					)}
 				</WindowContainer>
-				{role === "ADMIN" ||
-					(role === "OWNER" && (
-						<WindowContainer
-							title={organization?.title as string}
-							subtitle={`Participants: ${organization?._count?.organizationUsers}`}
-							fullPage
-						>
-							{organizationUsers && (
-								<OrganizationUsers
-									organizationId={organizationId}
-									organizationUsers={organizationUsers}
-									setOrganizationUsers={setOrganizationUsers}
-								/>
-							)}
-						</WindowContainer>
-					))}
+				{hasPermission && (
+					<WindowContainer
+						title={organization?.title as string}
+						subtitle={`Participants: ${organization?._count?.organizationUsers}`}
+						fullPage
+					>
+						{organizationUsers && (
+							<OrganizationUsers
+								organizationId={organizationId}
+								organizationUsers={organizationUsers}
+								setOrganizationUsers={setOrganizationUsers}
+								administrateRole={role}
+							/>
+						)}
+					</WindowContainer>
+				)}
 				{role === "OWNER" && (
 					<Button type="button" onClick={() => setOpenModal(true)}>
 						<Trash size={22} className="mr-4" />

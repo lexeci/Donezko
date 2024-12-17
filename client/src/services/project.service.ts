@@ -1,6 +1,7 @@
 import { axiosWithAuth } from "@/api/interceptors";
-import { ProjectFormData, ProjectResponse } from "@/types/project.types";
+import { Project, ProjectFormData, ProjectUsers } from "@/types/project.types";
 import { AccessStatus } from "@/types/root.types";
+import { OrgUserResponse } from "../types/org.types";
 
 class ProjectService {
 	private BASE_URL = "/user/organizations/projects";
@@ -13,9 +14,9 @@ class ProjectService {
 	 */
 	async getAllProjects(
 		organizationId?: string
-	): Promise<ProjectResponse[] | undefined> {
+	): Promise<Project[] | undefined> {
 		try {
-			const response = await axiosWithAuth.get<ProjectResponse[] | undefined>(
+			const response = await axiosWithAuth.get<Project[] | undefined>(
 				organizationId
 					? `${this.BASE_URL}/?organizationId=${organizationId}`
 					: this.BASE_URL
@@ -35,6 +36,18 @@ class ProjectService {
 	async getProjectById(id: string): Promise<any> {
 		try {
 			const response = await axiosWithAuth.get<any>(`${this.BASE_URL}/${id}`);
+			return response.data;
+		} catch (error) {
+			console.error("Error fetching project:", error);
+			throw new Error("Could not fetch project");
+		}
+	}
+
+	async getAllProjectUsers(id: string): Promise<ProjectUsers[]> {
+		try {
+			const response = await axiosWithAuth.get<ProjectUsers[]>(
+				`${this.BASE_URL}/${id}/users`
+			);
 			return response.data;
 		} catch (error) {
 			console.error("Error fetching project:", error);
@@ -95,9 +108,9 @@ class ProjectService {
 	 * @param userId - The user ID to add.
 	 * @returns The project with the added user.
 	 */
-	async addUserToProject(id: string, userId: string): Promise<any> {
+	async addUserToProject(id: string, userId: string): Promise<OrgUserResponse> {
 		try {
-			const response = await axiosWithAuth.post<any>(
+			const response = await axiosWithAuth.post<OrgUserResponse>(
 				`${this.BASE_URL}/add-user/${id}`,
 				{ projectUserId: userId }
 			);
@@ -123,8 +136,8 @@ class ProjectService {
 			const response = await axiosWithAuth.put<any>(
 				`${this.BASE_URL}/update-status/${id}`,
 				{
-					userId,
-					status,
+					projectUserId: userId,
+					projectStatus: status,
 				}
 			);
 			return response.data;

@@ -1,10 +1,11 @@
 import { projectService } from "@/src/services/project.service";
+import { OrgUserResponse } from "@/src/types/org.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 export function useAddProjectUser() {
 	const queryClient = useQueryClient();
-	const [addedUser, setAddedUser] = useState<any | undefined>(undefined);
+	const [addedUser, setAddedUser] = useState<OrgUserResponse | undefined>(undefined);
 
 	const { mutate: addUser } = useMutation({
 		mutationFn: ({

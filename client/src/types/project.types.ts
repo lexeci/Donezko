@@ -1,3 +1,4 @@
+import { AuthUser } from "./auth.types";
 import { Organization, OrgUserResponse } from "./org.types";
 import type { AccessStatus, RootBase, UUID } from "./root.types";
 import { TaskResponse } from "./task.types";
@@ -15,6 +16,12 @@ export interface Project extends RootBase {
 		projectTeams: number;
 		tasks: number;
 	};
+}
+
+export interface ProjectUsers extends RootBase {
+	userId: UUID;
+	user: AuthUser;
+	projectStatus: AccessStatus;
 }
 
 export interface ProjectResponse extends RootBase {

@@ -2,11 +2,15 @@
 
 import pageStyles from "@/app/page.module.scss";
 import {
+	AddProjectUsers,
 	Button,
 	ModalWindow,
 	PageHeader,
 	PageLayout,
 	ProjectUpdate,
+	ProjectUsers,
+	TeamElements,
+	WindowContainer,
 } from "@/src/components";
 import { useDeleteProject } from "@/src/hooks/project/useDeleteProject";
 import { useFetchProjectById } from "@/src/hooks/project/useFetchProjectById";
@@ -17,6 +21,8 @@ import { useState } from "react";
 export default function Project() {
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+	const [openModalAddUser, setOpenModalAddUser] = useState<boolean>(false);
+	const [openModalUser, setOpenModalUser] = useState<boolean>(false);
 
 	const params = useParams<{ id: string }>();
 	const { id: projectId } = params;
@@ -28,6 +34,7 @@ export default function Project() {
 	const projectStatus = fetchedData?.projectStatus;
 	const role = fetchedData?.user?.organizationUsers[0].role;
 	const organization = project?.organization;
+	const organizationId = organization ? organization?.id : "";
 
 	const hasPermission = role === "ADMIN" || role === "OWNER";
 
@@ -46,6 +53,45 @@ export default function Project() {
 				buttonAction={() => hasPermission && setOpenModalUpdate(true)}
 			/>
 			<div className={pageStyles["workspace-content-col"]}>
+				{hasPermission && (
+					<div className="action-block flex flex-col gap-y-0.5 w-full border-4 border-foreground">
+						<div className="title text-base font-semibold w-full border-b border-foreground px-2 py-2">
+							<h4>Available actions:</h4>
+						</div>
+						<div className="container border-t border-foreground flex flex-row justify-start items-center w-full p-2 gap-x-4">
+							<Button
+								block
+								negative
+								type="button"
+								onClick={() => setOpenModalUser(true)}
+							>
+								Manage user
+							</Button>
+							<Button
+								block
+								negative
+								type="button"
+								onClick={() => setOpenModalAddUser(true)}
+							>
+								Add user
+							</Button>
+						</div>
+					</div>
+				)}
+				<WindowContainer
+					title={project?.title as string}
+					subtitle={`Teams: ${project?._count?.projectTeams}`}
+					fullPage
+				>
+					{project?.projectTeams && (
+						<TeamElements
+							isWindowElement
+							organizationId={organizationId}
+							teams={project?.projectTeams}
+							isAdministrate={role === "ADMIN" || role === "OWNER"}
+						/>
+					)}
+				</WindowContainer>
 				<Button type="button">
 					<Trash size={22} className="mr-4" /> Delete Project
 				</Button>
@@ -79,16 +125,41 @@ export default function Project() {
 						subtitle="It's time to update :()"
 						onClose={() => setOpenModalUpdate(false)}
 					>
-						{organization && project.organizationId && (
+						{organization && organizationId && (
 							<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
 								<ProjectUpdate
 									id={projectId}
-									organizationId={project.organizationId}
+									organizationId={organizationId}
 									data={project}
 									pullCloseModal={setOpenModalUpdate}
 									pullUpdatedData={setProject}
 								/>
 							</div>
+						)}
+					</ModalWindow>
+				)}
+				{openModalAddUser && (
+					<ModalWindow
+						title="Add user to project.exe"
+						subtitle="Someone will have work to do ;)"
+						onClose={() => setOpenModalAddUser(false)}
+					>
+						{organization && organizationId && (
+							<AddProjectUsers
+								organizationId={organizationId}
+								projectId={projectId}
+							/>
+						)}
+					</ModalWindow>
+				)}
+				{openModalUser && (
+					<ModalWindow
+						title="Add user to project.exe"
+						subtitle="Someone will have work to do ;)"
+						onClose={() => setOpenModalUser(false)}
+					>
+						{organization && organizationId && (
+							<ProjectUsers projectId={projectId} />
 						)}
 					</ModalWindow>
 				)}

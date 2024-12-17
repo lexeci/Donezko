@@ -34,6 +34,24 @@ class OrgService {
 		}
 	}
 
+	async getOrganizationUsers(
+		organizationId: string,
+		projectId?: string,
+		hideFromProject?: boolean
+	): Promise<OrgUserResponse[]> {
+		try {
+			const response = await axiosWithAuth.get<OrgUserResponse[]>(
+				`${this.BASE_URL}/${organizationId}/users/${
+					projectId ? `?projectId=${projectId}` : ""
+				}${hideFromProject ? `&hide=${hideFromProject}` : ""}`
+			);
+			return response.data;
+		} catch (error) {
+			console.error(`Fetching organization users error:`, error);
+			throw new Error(`Fetching organization users failed`);
+		}
+	}
+
 	async createOrganization(data: OrgFormData): Promise<OrgResponse> {
 		try {
 			const response = await axiosWithAuth.post<OrgResponse>(
@@ -112,7 +130,9 @@ class OrgService {
 		}
 	}
 
-	async updateStatusOrganization(data: ManageOrgUser): Promise<OrgUserResponse> {
+	async updateStatusOrganization(
+		data: ManageOrgUser
+	): Promise<OrgUserResponse> {
 		try {
 			const response = await axiosWithAuth.put(
 				`${this.BASE_URL}/${data.id}/update-status/`,

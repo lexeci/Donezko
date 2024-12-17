@@ -14,12 +14,14 @@ interface OrganizationUsersProps {
 	organizationUsers: OrgUserResponse[];
 	organizationId: string;
 	setOrganizationUsers: Dispatch<SetStateAction<OrgUserResponse[] | undefined>>;
+	administrateRole: OrgRole;
 }
 
 export default function OrganizationUsers({
 	organizationUsers,
 	organizationId,
 	setOrganizationUsers,
+	administrateRole,
 }: OrganizationUsersProps) {
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [newOwnerId, setNewOwnerId] = useState<string>();
@@ -158,14 +160,16 @@ export default function OrganizationUsers({
 								>
 									Change Role
 								</Button>
-								<Button
-									type="button"
-									modal
-									fullWidth
-									onClick={() => handleTransferOwner(userItem.userId)}
-								>
-									Transfer ownership
-								</Button>
+								{administrateRole === "OWNER" && (
+									<Button
+										type="button"
+										modal
+										fullWidth
+										onClick={() => handleTransferOwner(userItem.userId)}
+									>
+										Transfer ownership
+									</Button>
+								)}
 							</div>
 						</div>
 					))

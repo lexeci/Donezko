@@ -4,7 +4,7 @@ import pageStyles from "@/app/page.module.scss";
 
 import { Button, EntityItem, ModalWindow } from "@/components/index";
 import { useFetchProjects } from "@/src/hooks/project/useFetchProjects";
-import { ProjectResponse } from "@/src/types/project.types";
+import { Project } from "@/src/types/project.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
 import { Buildings } from "@phosphor-icons/react";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
@@ -16,15 +16,11 @@ interface ProjectElementsProps {
 	isWindowElement?: boolean;
 	organizationId?: string;
 	organizationTitle?: string;
-	projects?: ProjectResponse[];
+	projects?: Project[];
 	isAdministrate?: boolean;
 }
 
-const ProjectElementsWithData = ({
-	projects,
-}: {
-	projects: ProjectResponse[];
-}) => {
+const ProjectElementsWithData = ({ projects }: { projects: Project[] }) => {
 	return projects.length > 0 ? (
 		projects.map((project, i) => {
 			const { _count } = project;

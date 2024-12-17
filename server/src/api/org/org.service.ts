@@ -33,6 +33,26 @@ export class OrgService {
 	}
 
 	/**
+	 * Private method to check if the user is the owner of the organization.
+	 * Throws a ForbiddenException if the user is not the owner.
+	 * @param organizationId The ID of the organization.
+	 * @param userId The ID of the user.
+	 * @returns The organization ownership record.
+	 * @throws ForbiddenException If the user is not the owner.
+	 */
+	private async checkAdmin(organizationId: string, userId: string) {
+		const organizationAdmin = await this.prisma.organizationUser.findFirst({
+			where: { organizationId, userId, role: OrgRole.ADMIN }
+		});
+		if (!organizationAdmin) {
+			throw new ForbiddenException(
+				'Only the organization admin can perform this action.'
+			);
+		}
+		return organizationAdmin;
+	}
+
+	/**
 	 * Get all active organizations the user is part of.
 	 * @param userId The ID of the user.
 	 * @returns List of active organizations and their roles.
@@ -267,6 +287,103 @@ export class OrgService {
 	}
 
 	/**
+	 * Get all active organization user in current organization.
+	 * @param userId The ID of the user.
+	 * @param id The ID of the organization.
+	 * @returns List of active organization user.
+	 */
+	async getUsers({
+		id,
+		userId,
+		projectId,
+		hide
+	}: {
+		id: string;
+		userId: string;
+		projectId?: string;
+		hide?: boolean;
+	}) {
+		// Шукаємо користувача в організації
+		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId: id }
+		});
+
+		// Якщо користувач не є частиною організації, кидаємо помилку
+		if (!currentUserInOrg) {
+			throw new ForbiddenException('You are not part of this organization');
+		}
+
+		// Якщо користувач заблокований в організації, кидаємо помилку
+		if (currentUserInOrg.organizationStatus === AccessStatus.BANNED) {
+			throw new ForbiddenException('Insufficient permissions');
+		}
+
+		// Перевірка, чи має користувач роль OWNER або ADMIN
+		const isPermitted = ['OWNER', 'ADMIN'].includes(currentUserInOrg.role);
+
+		if (!isPermitted) {
+			throw new ForbiddenException('You do not have permission on such action');
+		}
+
+		// Повертаємо організацію та користувачів
+		return this.prisma.organizationUser.findMany({
+			where: {
+				organizationId: id,
+				// Виключаємо користувачів зі статусом 'BANNED'
+				organizationStatus: { not: 'BANNED' },
+				// Виключаємо ролі OWNER та ADMIN
+				role: { notIn: ['OWNER', 'ADMIN'] },
+				...(projectId && {
+					user: {
+						ProjectUser: {
+							...(hide
+								? {
+										none: {
+											projectId // Виключаємо користувачів, пов'язаних із проектом
+										}
+									}
+								: {
+										some: {
+											projectId // Виключаємо користувачів, пов'язаних із проектом
+										}
+									})
+						}
+					}
+				})
+			},
+			select: {
+				userId: true,
+				organizationId: true,
+				organizationStatus: true,
+				role: true,
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						...(projectId && {
+							ProjectUser: {
+								where: {
+									projectId
+								},
+								select: {
+									projectStatus: true
+								}
+							}
+						})
+					}
+				},
+				organization: {
+					select: {
+						title: true,
+						description: true
+					}
+				}
+			}
+		});
+	}
+
+	/**
 	 * Create a new organization. Only the user can create an organization with a unique title.
 	 * @param dto The organization data transfer object (DTO) containing organization details.
 	 * @param userId The ID of the current user who is creating the organization.
@@ -483,11 +600,18 @@ export class OrgService {
 		userId: string;
 	}) {
 		const { orgUserId, role: updatedRole } = dto;
-		const organizationOwner = await this.checkOwner(id, userId);
+		const organizationAdmin = await this.checkAdmin(id, userId);
 
-		if (!organizationOwner) {
+		if (!organizationAdmin) {
+			const organizationOwner = await this.checkOwner(id, userId);
+
+			if (!organizationOwner) {
+				throw new ForbiddenException(
+					'Only the owner  can update the role in organization.'
+				);
+			}
 			throw new ForbiddenException(
-				'Only the owner can update the role in organization.'
+				'Only the admin can update the role in organization.'
 			);
 		}
 

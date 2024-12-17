@@ -1,7 +1,7 @@
 import type { RootBase } from "./root.types";
 
 export interface TimeBlockResponse extends RootBase {
-	name: string;
+	title: string;
 	color?: string;
 	duration: number;
 	order: number;

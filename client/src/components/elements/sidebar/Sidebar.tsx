@@ -1,5 +1,9 @@
 'use client'
 
+import { createElement } from "react";
+import Link from "next/link";
+import { DASHBOARD_PAGES } from "@/config/pages-url.config";
+
 import {
 	CheckmarkCircle02Icon,
 	DashboardSquare01Icon,
@@ -7,22 +11,21 @@ import {
 	Timer02Icon,
 	UserMultiple02Icon,
 } from "hugeicons-react";
-import Link from "next/link";
-import { createElement } from "react";
+
 import LogoutButton from "./LogoutButton";
 
 export default function Sidebar() {
 	const menus = [
-		{ name: "Dashboard", link: "/", icon: DashboardSquare01Icon },
-		{ name: "Tasks", link: "/", icon: CheckmarkCircle02Icon },
-		{ name: "Time Blocking", link: "/", icon: HourglassIcon },
-		{ name: "Pomodoro Timer", link: "/", icon: Timer02Icon },
-		{ name: "User Settings", link: "/", icon: UserMultiple02Icon },
+		{ name: "Dashboard", link: DASHBOARD_PAGES.HOME, icon: DashboardSquare01Icon },
+		{ name: "Tasks", link: DASHBOARD_PAGES.TASKS, icon: CheckmarkCircle02Icon },
+		{ name: "Time Blocking", link: DASHBOARD_PAGES.TIME_BLOCKING, icon: HourglassIcon },
+		{ name: "Pomodoro Timer", link: DASHBOARD_PAGES.TIMER, icon: Timer02Icon },
+		{ name: "User Settings", link: DASHBOARD_PAGES.SETTINGS, icon: UserMultiple02Icon },
 		// { name: "Messages", link: "/", icon: Chatting01Icon },
 	];
 
 	return (
-		<div className="relative flex flex-col flex-wrap md:justify-between bg-blockColor border-r border-borderColor p-6 flex-none w-64 shadow-xl gap-y-3">
+		<div className="relative flex flex-col flex-wrap md:justify-between bg-blockColor border-r border-borderColor p-6 flex-none w-64 shadow-xl gap-y-3 min-h-[70.75vh]">
 			<div className="menu flex flex-col flex-wrap gap-y-3">
 				{menus?.map((menu, i) => (
 					<Link

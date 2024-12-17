@@ -2,7 +2,7 @@ import { SITE_NAME } from "@/constants/seo.constants";
 import type { Metadata } from "next";
 import { Inconsolata } from "next/font/google";
 import { Toaster } from "sonner";
-import "./globals.css";
+import "./globals.scss";
 // Components imports
 import Footer from "@/components/elements/Footer";
 import Header from "@/components/elements/Header";
@@ -34,7 +34,7 @@ export default function RootLayout({
 			<body className={`${inconsolata.variable} antialiased`}>
 				<Providers>
 					<Header />
-					<div className="flex flex-col items-center justify-center pt-[82px] min-h-[70.75vh]">
+					<div className="flex flex-col items-center justify-center pt-[82px] min-h-[70.75vh] overflow-hidden">
 						{children}
 					</div>
 					<Footer />

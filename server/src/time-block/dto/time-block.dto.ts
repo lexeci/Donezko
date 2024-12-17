@@ -2,7 +2,7 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class TimeBlockDto {
 	@IsString()
-	name: string;
+	title: string;
 
 	@IsOptional()
 	@IsString()

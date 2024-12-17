@@ -1,7 +1,12 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
 # compiled output
 /*/dist
 /*/node_modules
+node_modules
 /*/build
+package-lock.json
+/*/package-lock.json
 
 # Logs
 /*/logs
@@ -14,6 +19,9 @@
 
 # OS
 .DS_Store
+*.pem
+/*/.DS_Store
+/*/*.pem
 
 # Tests
 /*/coverage
@@ -68,3 +76,22 @@
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# dependencies
+/.pnp
+/*/.pnp.js
+/*/.yarn/install-state.gz
+
+# next.js
+/*/.next/
+/*/out/
+
+# local env files
+/*/.env*.local
+
+# vercel
+/*/.vercel
+
+# typescript
+/*/*.tsbuildinfo
+/*/next-env.d.ts

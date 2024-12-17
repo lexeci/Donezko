@@ -2,7 +2,7 @@ import { AuthUser, TypeUserForm } from "@/types/auth.types";
 
 import { axiosWithAuth } from "@/api/interceptors";
 
-export interface IProfileResponse {
+export interface ProfileResponse {
 	user: AuthUser;
 	statistics: {
 		label: string;
@@ -14,7 +14,7 @@ class UserService {
 	private BASE_URL = "/user/profile";
 
 	async getProfile() {
-		const response = await axiosWithAuth.get<IProfileResponse>(this.BASE_URL);
+		const response = await axiosWithAuth.get<ProfileResponse>(this.BASE_URL);
 		return response.data;
 	}
 

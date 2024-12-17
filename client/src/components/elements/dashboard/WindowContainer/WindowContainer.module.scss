@@ -36,7 +36,7 @@
 
 .full-page {
 	.content {
-		@apply flex flex-col justify-center items-center px-4;
+		@apply flex flex-col justify-center items-center px-4 gap-y-2;
 	}
 }
 

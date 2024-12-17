@@ -24,14 +24,26 @@ export type ManageOrgUser = {
 	organizationStatus?: AccessStatus;
 };
 
-// Тип для сутності "Organization"
-export interface OrgResponse extends RootBase {
+interface Organization extends RootBase {
 	title: string; // Назва організації
 	description?: string; // Опис організації
 	joinCode?: string; // Код для приєднання до організації (опційно)
-	organizationUsers: OrgUserResponse[]; // Користувачі організації
-	projects: Project[]; // Проекти в межах організації
-	teams: TeamResponse[]; // Команди, що належать організації
+	organizationUsers?: OrgUserResponse[]; // Користувачі організації
+	projects?: Project[]; // Проекти в межах організації
+	teams?: TeamResponse[]; // Команди, що належать організації
+	tasks?: TaskResponse[];
+	_count?: {
+		organizationUsers: number;
+		teams: number;
+		projects: number;
+	};
+}
+
+// Тип для сутності "Organization"
+export interface OrgResponse {
+	organization: Organization;
+	role: OrgRole;
+	organizationStatus: AccessStatus;
 }
 
 // Тип для сутності "OrganizationUser"
@@ -41,10 +53,10 @@ export interface OrgUserResponse extends RootBase {
 	organizationStatus: AccessStatus; // Статус користувача в організації (наприклад, ACTIVE або BANNED)
 	role: OrgRole; // Роль користувача в організації (OWNER, ADMIN, MEMBER, VIEWER)
 	user: AuthUser; // Користувач
-	organization: OrgResponse; // Організація
+	organization: Organization; // Організація
 }
 
-export type OrgFormData = Partial<Omit<OrgResponse, "id" | "updatedAt">>;
+export type OrgFormData = Partial<Omit<Organization, "id" | "updatedAt">>;
 export type OrgUserFormData = Partial<
 	Omit<OrgUserResponse, "id" | "updatedAt">
 >;

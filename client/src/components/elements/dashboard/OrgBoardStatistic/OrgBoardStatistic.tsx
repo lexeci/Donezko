@@ -2,26 +2,10 @@
 
 import { StatisticBlock, StatisticItem } from "@/components/index";
 import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
+import generateKeyComp from "@/src/utils/generateKeyComp";
 import { Buildings } from "@phosphor-icons/react/dist/ssr";
 
 import styles from "./OrgBoardStatistic.module.scss";
-
-const orgs = [
-	{
-		link: "/workspace/org/1234",
-		title: "Insomnia Organization",
-		description: "The organization of insomnia and coffee",
-		tasks: 5,
-		teams: 29,
-	},
-	{
-		link: "/workspace/org/5678",
-		title: "Creative Org",
-		description: "The organization of insomnia and coffee",
-		tasks: 12,
-		teams: 6,
-	},
-];
 
 function NotFoundElement() {
 	return (
@@ -47,16 +31,21 @@ export default function OrgBoardStatistic() {
 		>
 			{organizationList ? (
 				organizationList?.length > 0 ? (
-					organizationList?.map((org, i) => (
-						<StatisticItem
-							key={i}
-							icon={<Buildings size={32} />}
-							title={org.title}
-							description={org.description}
-							subtitle={`Teams: ${org.teams.length} | Tasks: ${org.organizationUsers.length}`}
-							link={{ href: org.id, text: "Look -->" }}
-						/>
-					))
+					organizationList?.map((item, i) => {
+						const { organization } = item;
+						const { _count } = organization;
+
+						return (
+							<StatisticItem
+								key={generateKeyComp(`${item}__${i}`)}
+								icon={<Buildings size={32} />}
+								title={organization.title}
+								description={organization.description}
+								subtitle={`Participants: ${_count?.organizationUsers}`}
+								link={{ href: organization.id, text: "Look -->" }}
+							/>
+						);
+					})
 				) : (
 					<NotFoundElement />
 				)

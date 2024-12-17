@@ -14,6 +14,8 @@ export { default as Welcome } from "./Home/welcome/Welcome";
 // Authorization
 
 export { default as Authorization } from "./Authorization/Authorization";
+export { default as ModalWindow } from "./ModalWindow/ModalWindow";
+export { default as OrganizationElements } from "./Organization/OrganizationElements";
 
 // Dashboard Elements
 export {

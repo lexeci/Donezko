@@ -65,4 +65,11 @@ a.underline-anim {
 		background-size: 25px 25px;
 		background-position: -17px -17px;
 	}
+
+	.bg-radial-grid-small {
+		background: var(--background);
+		background-image: radial-gradient(var(--foreground) 1px, transparent 0);
+		background-size: 7px 7px;
+		background-position: -5px -5px;
+	}
 }

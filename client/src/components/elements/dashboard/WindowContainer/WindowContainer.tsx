@@ -8,6 +8,7 @@ type WindowContainerProps = {
 	title: string; // Заголовок контейнера.
 	subtitle: string; // Додаткова інформація, наприклад, кількість проектів.
 	fullPage?: boolean;
+	onClose?: () => void;
 };
 
 export default function WindowContainer({
@@ -15,13 +16,14 @@ export default function WindowContainer({
 	subtitle,
 	children,
 	fullPage = false,
+	onClose,
 }: PropsWithChildren<WindowContainerProps>) {
 	return (
 		<div
 			className={clsx(
 				styles.window,
 				fullPage && styles["full-page"],
-				"bg-radial-grid"
+				"bg-radial-grid-small"
 			)}
 		>
 			<div className={styles.header}>
@@ -37,7 +39,10 @@ export default function WindowContainer({
 					<div className={styles.item}>
 						<Square size={16} />
 					</div>
-					<div className={styles.item}>
+					<div
+						className={clsx(styles.item, onClose && "cursor-pointer")}
+						onClick={onClose}
+					>
 						<X size={16} />
 					</div>
 				</div>

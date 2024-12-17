@@ -10,6 +10,8 @@ interface InputFieldProps {
 	disabled?: boolean;
 	type?: "text" | "number" | "email" | "password"; // Restricted to valid types
 	isNumber?: boolean;
+	readOnly?: boolean;
+	value?: any;
 }
 
 const Field = forwardRef<HTMLInputElement, InputFieldProps>(
@@ -23,6 +25,8 @@ const Field = forwardRef<HTMLInputElement, InputFieldProps>(
 			state,
 			disabled,
 			isNumber,
+			readOnly,
+			value,
 			...rest
 		},
 		ref
@@ -67,6 +71,8 @@ const Field = forwardRef<HTMLInputElement, InputFieldProps>(
 					}`}
 					onKeyDown={handleKeyDown}
 					onChange={handleChange}
+					readOnly={readOnly}
+					value={value}
 					{...rest}
 				/>
 			</div>

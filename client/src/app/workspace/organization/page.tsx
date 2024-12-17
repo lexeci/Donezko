@@ -1,8 +1,5 @@
-import pageStyles from "@/app/page.module.scss";
 import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
-import { Button, EntityItem, PageHeader, PageLayout } from "@/src/components";
-import generateKeyComp from "@/src/utils/generateKeyComp";
-import { Buildings, Plus } from "@phosphor-icons/react/dist/ssr";
+import { OrganizationElements, PageHeader, PageLayout } from "@/src/components";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,33 +8,6 @@ export const metadata: Metadata = {
 };
 
 export default function Organizations() {
-	const orgArray = [
-		{
-			title: "Insomnia Works",
-			participants: 128,
-			teams: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Works",
-			participants: 128,
-			teams: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Works",
-			participants: 128,
-			teams: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Works",
-			participants: 128,
-			teams: 12,
-			id: "2331321213213",
-		},
-	];
-
 	return (
 		<PageLayout>
 			<PageHeader
@@ -45,28 +15,7 @@ export default function Organizations() {
 				title="Manage your organizations"
 				desc="This page is dedicated for managing organizations which are available for you."
 			/>
-			<div className={pageStyles["workspace-content-col"]}>
-				<div className="counter w-full flex flex-row justify-between items-center">
-					<div className="title">
-						<h4>Total Organizations: 4</h4>
-					</div>
-					<Button type="button">
-						<Plus size={22} className="mr-4" /> Organization
-					</Button>
-				</div>
-				<div className={pageStyles["workspace-content-grid-3"]}>
-					{orgArray.map((item, i) => (
-						<EntityItem
-							icon={<Buildings size={84} />}
-							linkBase={`/workspace/organization/${item.id}`}
-							title={item.title}
-							firstStat={`Participants: ${item.participants}`}
-							secondaryStat={`Teams: ${item.teams}`}
-							key={generateKeyComp(`${item.title}__${i}`)}
-						/>
-					))}
-				</div>
-			</div>
+			<OrganizationElements />
 		</PageLayout>
 	);
 }

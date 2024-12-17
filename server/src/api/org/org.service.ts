@@ -41,9 +41,23 @@ export class OrgService {
 		return this.prisma.organizationUser.findMany({
 			where: { userId, organizationStatus: AccessStatus.ACTIVE },
 			select: {
-				organization: true,
+				organization: {
+					select: {
+						id: true,
+						title: true,
+						description: true,
+						joinCode: true,
+						_count: {
+							select: {
+								organizationUsers: true,
+								teams: true,
+								projects: true
+							}
+						}
+					}
+				},
 				role: true,
-				organizationStatus: true,
+				organizationStatus: true
 			}
 		});
 	}

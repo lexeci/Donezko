@@ -4,7 +4,6 @@ export enum EnumTaskPriority {
 	low = "low",
 	medium = "medium",
 	high = "high",
-	NONE = "none", // Add 'none' for optional case if needed
 }
 
 export interface TaskResponse extends RootBase {

@@ -133,7 +133,7 @@ export class UserService {
 	async create(dto: AuthDto) {
 		const user = {
 			email: dto.email,
-			name: dto.email,
+			name: dto.name,
 			password: await hash(dto.password) // Hash the password before storing
 		};
 

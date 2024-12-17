@@ -3,6 +3,7 @@
  */
 export interface AuthForm {
 	email: string; // User's email address
+	name: string; // User's name
 	password: string; // User's password
 }
 

@@ -1,7 +1,8 @@
+import { AnimatedLink } from "@/components/index";
 import { NO_INDEX_PAGE } from "@/constants/seo.constants";
-import { HandPrayerIcon } from "hugeicons-react";
 import { Metadata } from "next";
-import Link from "next/link";
+
+import styles from "./not-found.module.scss";
 
 export const metadata: Metadata = {
 	title: "Oh, no! Wrong page anyway...",
@@ -10,14 +11,10 @@ export const metadata: Metadata = {
 
 export default function NotFoundPage() {
 	return (
-		<div className="no-found flex flex-col justify-center items-center gap-3 text-foreground">
-			<p className="text-5xl font-black tracking-widest">4 0 4</p>
+		<div className={styles["not-found"]}>
+			<p>4 0 4</p>
 			<p>Guess today is not your day if you are on this page.</p>
-			<Link href="/" className="font-mono text-sm flex gap-x-3 pt-3">
-				<HandPrayerIcon size={20} />
-				<span>Please return me home!</span>
-				<HandPrayerIcon size={20} />
-			</Link>
+			<AnimatedLink link="/" title="Please return me home!" />
 		</div>
 	);
 }

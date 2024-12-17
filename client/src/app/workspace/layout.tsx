@@ -1,4 +1,4 @@
-import Sidebar from "@/components/elements/sidebar/Sidebar";
+import { Sidebar } from "@/src/components";
 
 export default function Layout({
 	children,
@@ -6,13 +6,13 @@ export default function Layout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<div className="flex flex-row items-stretch justify-between w-full">
+		<div className="relative overflow-hidden max-h-[calc(100vh-82px)] w-full flex flex-row justify-between items-start">
 			<Sidebar />
 			<div
-				className="content-base flex-1 p-6"
-				style={{ width: "calc(100% - 16rem)" }}
+				className="content-base max-h-[calc(100vh-82px)] overflow-auto"
+				style={{ width: "calc(100% - 20rem)" }}
 			>
-				{children}
+				<div className="py-8">{children}</div>
 			</div>
 		</div>
 	);

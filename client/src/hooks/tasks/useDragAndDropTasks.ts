@@ -1,6 +1,6 @@
 import { DropResult } from "@hello-pangea/dnd";
 
-import { DATE_FILTERS } from "@/app/workspace/tasks/columns.data";
+import { DATE_FILTERS } from "@/constants/tasks.constants";
 
 import { useModifyTask } from "./useModifyTask";
 

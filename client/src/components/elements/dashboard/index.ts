@@ -1,5 +1,11 @@
-export {default as BlockContainer} from "./BlockContainer";
-export {default as BlockContainerAdvice} from "./BlockContainerAdvice";
-export {default as BlockContainerRecent} from "./BlockContainerRecent";
-export {default as BlockContainerStatics} from "./BlockContainerStatics";
-export {default as BlockContainerWeather} from "./BlockContainerWeather";
+export { default as DailyBoardAdvice } from "./DailyBoardAdvice/DailyBoardAdvice";
+export { default as EntityItem } from "./EntityItem/EntityItem";
+export { default as OrgBoardStatistic } from "./OrgBoardStatistic/OrgBoardStatistic";
+export { default as StatisticBlock } from "./StatisticBlock/StatisticBlock";
+export { default as StatisticItem } from "./StatisticItem/StatisticItem";
+export { default as TasksBoardStatistic } from "./TasksBoardStatistic/TasksBoardStatistic";
+export { default as TasksWindow } from "./TasksWindow/TasksWindow";
+export { default as TeamBoardStatistic } from "./TeamBoardStatistic/TeamBoardStatistic";
+export { default as Timer } from "./Timer/Timer";
+export { default as TimerRounds } from "./TimerRounds/TimerRounds";
+export { default as WindowContainer } from "./WindowContainer/WindowContainer";

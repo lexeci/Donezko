@@ -1,11 +1,13 @@
-import {
-	BlockContainerAdvice,
-	BlockContainerRecent,
-	BlockContainerStatics,
-	BlockContainerWeather,
-} from "@/components/elements/dashboard";
+import pageStyles from "@/app/page.module.scss";
 import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
-import { TaskFormData } from "@/types/task.types";
+import {
+	DailyBoardAdvice,
+	OrgBoardStatistic,
+	PageHeader,
+	PageLayout,
+	TasksBoardStatistic,
+	TeamBoardStatistic,
+} from "@/src/components";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,31 +16,19 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-	const recentTasks: TaskFormData[] = Array(4).fill({
-		title: "Hey complete this task",
-		description: "Hey what's up? What about finishing this task, mate?",
-	});
-
-	const adviceMessage = "Stop straggling";
-
 	return (
-		<div className="main-container">
-			<header className="title-bar pb-3 mb-3">
-				<h1 className="welcoming font-normal text-xl">
-					Glad to see you again,
-					<span className="capitalize font-bold">Andriy!</span>
-				</h1>
-				<p className="description">
-					There is a dashboard panel, where everything you might need to know is
-					displayed.
-				</p>
-			</header>
-			<div className="content grid grid-cols-2 grid-rows-2 gap-3">
-				<BlockContainerStatics />
-				<BlockContainerRecent data={recentTasks} />
-				<BlockContainerAdvice data={adviceMessage} />
-				<BlockContainerWeather />
+		<PageLayout>
+			<PageHeader
+				pageTitle="Dashboard"
+				title="Welcome back to TPlanner"
+				desc="This page is the start of our workspace. Here, you can find the main data."
+			/>
+			<div className={pageStyles["workspace-content-grid-2"]}>
+				<TasksBoardStatistic />
+				<TeamBoardStatistic />
+				<DailyBoardAdvice />
+				<OrgBoardStatistic />
 			</div>
-		</div>
+		</PageLayout>
 	);
 }

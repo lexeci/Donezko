@@ -121,7 +121,7 @@ export class AuthService {
 
 		// Create the user in the database and issue tokens
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { password, ...user } = await this.userService.create(dto);
+		const { password, name, ...user } = await this.userService.create(dto);
 		const tokens = this.issueTokens(user.id);
 
 		return {

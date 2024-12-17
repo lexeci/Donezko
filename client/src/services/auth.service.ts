@@ -1,26 +1,34 @@
 import { axiosClassic } from "@/api/interceptors";
 import { AuthForm, AuthResponse } from "@/types/auth.types";
 import { clearAuthData, saveTokenStorage } from "./auth-token.service";
+import { toast } from "sonner";
 
 export const authService = {
 	async main(
 		type: "login" | "register",
 		data: AuthForm
 	): Promise<AuthResponse | null> {
+		const { email, password, name } = data;
 		try {
-			const response = await axiosClassic.post<AuthResponse>(
-				`/auth/${type}`,
-				data
-			);
+			const response = await axiosClassic.post<AuthResponse>(`/auth/${type}`, {
+				...{ ...(name ? { name } : { name: "placeholder name" }) },
+				email,
+				password,
+			});
 
 			if (response.data.accessToken) {
 				saveTokenStorage(response.data.accessToken);
 			}
 
 			return response.data; // Return the response data instead of the whole response
-		} catch (error) {
+		} catch (error: any) {
+			if (error.response?.status === 404) {
+				toast.error("Resource not found! Please check your request.");
+				throw error; // Повертаємо null для подальшої обробки
+			}
+			toast.error("An unexpected error occurred.");
 			console.error("AuthService main error:", error);
-			return null; // Handle error appropriately
+			throw error;
 		}
 	},
 

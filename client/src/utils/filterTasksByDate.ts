@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
+import { DATE_FILTERS } from "@/src/constants/tasks.constants";
 import type { TaskResponse } from "@/types/task.types";
-import { DATE_FILTERS } from "../app/workspace/tasks/columns.data";
 
 // Розширення dayjs плагінами
 dayjs.extend(isSameOrAfter);

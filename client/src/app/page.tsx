@@ -1,11 +1,25 @@
-import { NO_INDEX_PAGE } from "@/constants/seo.constants";
+import {
+	Banner,
+	Faqs,
+	Features,
+	PageLayout,
+	Welcome,
+} from "@/components/index";
+import { INDEX_PAGE } from "@/constants/seo.constants";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Dashboard",
-	...NO_INDEX_PAGE,
+	title: "Homepage",
+	...INDEX_PAGE,
 };
 
 export default function Home() {
-	return <div>hello</div>;
+	return (
+		<PageLayout>
+			<Banner />
+			<Features />
+			<Faqs />
+			<Welcome />
+		</PageLayout>
+	);
 }

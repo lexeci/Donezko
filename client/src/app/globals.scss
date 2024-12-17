@@ -3,76 +3,66 @@
 @tailwind utilities;
 
 :root {
-	--background: #fbf7f1;
-	--foreground: #181c14;
-	--outer__color: #000000;
-	--border__color: #8e8b82;
-	--block__color: #fefdfc;
-	--definer__color: #e5e7eb;
+	--background: #faf6f0;
+	--foreground: #1a120b;
+	--hover-fill: #f8ede1;
+	--inactive: #f4eae0;
+	--link: #d39d63;
 }
 
-/*
-  TODO: Fix the black theme
-*/
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
- --background: ;
-	--foreground: ;
-	--outer__color: ;
-	--border__color: ;
-	--block__color
-  }
-} */
+// @media (prefers-color-scheme: dark) {
+// 	:root {
+// 		--background: #0a0a0a;
+// 		--foreground: #ededed;
+// 	}
+// }
 
 body {
-	@apply text-base;
 	color: var(--foreground);
 	background: var(--background);
-	font-family: var(--font-inconsolata);
+	font-size: 14px;
 }
-
-@layer utilities {
-	.text-balance {
-		text-wrap: balance;
-	}
-}
-
-/*
-	Underline animation for links
-*/
 
 a.underline-anim {
 	position: relative;
 	text-decoration: none;
-}
 
-a.underline-anim:not(.button)::before {
-	content: "";
-	position: absolute;
-	display: block;
-	width: 100%;
-	height: 1px;
-	bottom: -2px;
-	left: 0;
-	background-color: var(--foreground);
-	transform: scaleX(0);
-	transition: transform 0.3s ease;
-}
+	&:not(.button)::before {
+		content: "";
+		position: absolute;
+		display: block;
+		width: 100%;
+		height: 1px;
+		bottom: -2px;
+		left: 0;
+		background-color: var(--foreground);
+		transform: scaleX(0);
+		transition: transform 0.3s ease;
+	}
 
-a.underline-anim:not(.button).dark::before {
-	background-color: var(--background);
-}
+	&:not(.button).dark::before {
+		background-color: var(--background);
+	}
 
-a.underline-anim:not(.button):hover::before {
-	transform: scaleX(1);
+	&:not(.button):hover::before {
+		transform: scaleX(1);
+	}
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+	to {
+		transform: rotate(360deg);
+	}
 }
 .animate-spin {
-  animation: spin 15s linear infinite;
+	animation: spin 15s linear infinite;
+}
+
+@layer utilities {
+	.bg-radial-grid {
+		background: var(--background);
+		background-image: radial-gradient(var(--foreground) 1px, transparent 0);
+		background-size: 25px 25px;
+		background-position: -17px -17px;
+	}
 }

@@ -5,25 +5,62 @@ import {
 	NotFoundException
 } from '@nestjs/common';
 import { AccessStatus, OrgRole } from '@prisma/client';
-import { ProjectDto } from './dto/project.dto';
+import {
+	AddProjectUserDto,
+	ProjectDto,
+	ProjectStatusDto
+} from './dto/project.dto';
 
+/**
+ * Service class for handling project-related operations.
+ * Handles project management including creation, updates, user management, and project access control.
+ */
 @Injectable()
 export class ProjectService {
 	constructor(private prisma: PrismaService) {}
 
-	// Helper function to check user access
-	async checkUserAccess(
-		requestUserId: string, // ID користувача, який робить запит
-		orgId: string,
-		projectId?: string,
-		roleCheck: boolean = false,
-		retrieveAccessCheck: boolean = false,
-		targetUserId?: string // userId того, кого змінюємо (якщо потрібно)
-	) {
-		// Check if the user is an active member of the organization
+	/**
+	 * Helper function to check if required fields are provided in the DTO.
+	 * @param dto The data transfer object containing the fields to validate.
+	 * @param fields List of field names that need to be checked for presence.
+	 * @throws ForbiddenException if any of the required fields is missing or empty.
+	 */
+	private validateRequiredFields(dto: any, fields: string[]) {
+		for (const field of fields) {
+			if (!dto[field] || dto[field].trim().length === 0) {
+				throw new ForbiddenException(`Field "${field}" is required.`);
+			}
+		}
+	}
+
+	/**
+	 * Helper function to check the user's access rights for an organization, project, or user.
+	 * @param userId The ID of the user requesting access.
+	 * @param orgId The ID of the organization.
+	 * @param projectId (Optional) The ID of the project.
+	 * @param roleCheck (Optional) Flag to check if the user has a required role.
+	 * @param retrieveAccessCheck (Optional) Flag to check if the user can change the target user's access.
+	 * @param targetUserId (Optional) The ID of the user whose access is being checked.
+	 * @throws ForbiddenException if the user does not have sufficient permissions.
+	 */
+	private async checkUserAccess({
+		userId,
+		orgId,
+		projectId,
+		roleCheck = false,
+		retrieveAccessCheck = false,
+		targetUserId
+	}: {
+		userId: string;
+		orgId: string;
+		projectId?: string;
+		roleCheck?: boolean;
+		retrieveAccessCheck?: boolean;
+		targetUserId?: string;
+	}) {
 		const organizationUser = await this.prisma.organizationUser.findFirst({
 			where: {
-				userId: requestUserId,
+				userId,
 				organizationId: orgId,
 				organizationStatus: AccessStatus.ACTIVE
 			}
@@ -34,20 +71,20 @@ export class ProjectService {
 			);
 		}
 
-		// If roleCheck is true, ensure the user is an admin or owner
+		// Check for admin or owner role if required
 		if (
 			roleCheck &&
-			organizationUser.role !== OrgRole.ADMIN &&
-			organizationUser.role !== OrgRole.OWNER
+			!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+				organizationUser.role
+			)
 		) {
 			throw new ForbiddenException(
 				'Only admins or owners can perform this action.'
 			);
 		}
 
-		// Якщо параметр retrieveAccessCheck встановлено як true, перевіряємо, що користувач не може змінювати статус власника або адміністратора організації
+		// Check if the target user is an admin or owner, restricting access changes
 		if (retrieveAccessCheck && targetUserId) {
-			// Отримуємо роль користувача, якого плануємо змінювати (targetUserId)
 			const targetOrganizationUser =
 				await this.prisma.organizationUser.findFirst({
 					where: {
@@ -55,12 +92,11 @@ export class ProjectService {
 						organizationId: orgId
 					}
 				});
-
-			// Якщо цільовий користувач є власником або адміністратором, або якщо користувач намагається змінити свій власний статус
 			if (
 				targetOrganizationUser &&
-				(targetOrganizationUser.role === OrgRole.OWNER ||
-					targetOrganizationUser.role === OrgRole.ADMIN)
+				([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
+					targetOrganizationUser.role
+				)
 			) {
 				throw new ForbiddenException(
 					'Cannot change the access status of an owner or admin.'
@@ -68,10 +104,10 @@ export class ProjectService {
 			}
 		}
 
-		// Check if the user is a participant in the project if projectId is provided
+		// Check if the user is part of the project
 		if (projectId) {
 			const projectUser = await this.prisma.projectUser.findUnique({
-				where: { projectId_userId: { projectId, userId: requestUserId } }
+				where: { projectId_userId: { projectId, userId } }
 			});
 			if (!projectUser) {
 				throw new ForbiddenException(
@@ -80,7 +116,7 @@ export class ProjectService {
 			}
 		}
 
-		// If targetUserId is provided, check if they are part of the project
+		// Check if the target user is part of the project
 		if (targetUserId) {
 			const projectUser = await this.prisma.projectUser.findUnique({
 				where: { projectId_userId: { projectId, userId: targetUserId } }
@@ -93,22 +129,48 @@ export class ProjectService {
 		}
 	}
 
-	// Get all active projects for a specific user
+	/**
+	 * Helper method to check if a project exists.
+	 * @param projectId The ID of the project to check.
+	 * @returns The project if found.
+	 * @throws NotFoundException if the project does not exist.
+	 */
+	private async projectExists(projectId: string) {
+		const project = await this.prisma.project.findUnique({
+			where: { id: projectId }
+		});
+		if (!project) throw new NotFoundException('Project not found.');
+		return project;
+	}
+
+	/**
+	 * Fetch all active projects for a specific user.
+	 * @param userId The ID of the user whose active projects are to be fetched.
+	 * @returns A list of active projects associated with the user.
+	 */
 	async getAll(userId: string) {
 		return this.prisma.projectUser.findMany({
 			where: { userId, projectStatus: AccessStatus.ACTIVE },
-			select: {
-				project: true,
-				projectStatus: true
-			}
+			select: { project: true, projectStatus: true }
 		});
 	}
 
-	// Get all active projects from a specific organization for a user
-	async getAllFromOrg(userId: string, orgId: string) {
+	/**
+	 * Fetch all active projects within an organization for a specific user.
+	 * @param userId The ID of the user whose projects are to be fetched.
+	 * @param organizationId The ID of the organization.
+	 * @returns A list of active projects within the organization for the specified user.
+	 */
+	async getAllFromOrg({
+		userId,
+		organizationId
+	}: {
+		userId: string;
+		organizationId: string;
+	}) {
 		return this.prisma.project.findMany({
 			where: {
-				organizationId: orgId,
+				organizationId,
 				projectUsers: {
 					some: {
 						userId,
@@ -127,23 +189,37 @@ export class ProjectService {
 		});
 	}
 
-	// Create a new project
-	async create(dto: ProjectDto, userId: string) {
+	/**
+	 * Create a new project in an organization.
+	 * @param dto The project details to be created.
+	 * @param userId The ID of the user creating the project.
+	 * @returns The created project.
+	 * @throws ForbiddenException if the project already exists in the organization.
+	 */
+	async create({ dto, userId }: { dto: ProjectDto; userId: string }) {
+		this.validateRequiredFields(dto, ['title', 'organizationId']); // Ensure title and organizationId are provided
+
+		const { title, organizationId } = dto;
+
 		// Check if project already exists in the organization
 		const existingProject = await this.prisma.project.findFirst({
 			where: {
-				title: dto.title,
-				organizationId: dto.organizationId
+				title,
+				organizationId
 			}
 		});
 		if (existingProject) {
 			throw new ForbiddenException(
-				`Project "${dto.title}" already exists in this organization.`
+				`Project "${title}" already exists in this organization.`
 			);
 		}
 
 		// Check user access to the organization (Admin or Owner role)
-		await this.checkUserAccess(userId, dto.organizationId, undefined, true);
+		await this.checkUserAccess({
+			userId,
+			orgId: organizationId,
+			roleCheck: true
+		});
 
 		// Create the project
 		return this.prisma.project.create({
@@ -161,19 +237,36 @@ export class ProjectService {
 		});
 	}
 
-	// Add a user to a project
-	async addUser(projectId: string, userId: string, targetUserId: string) {
-		const project = await this.prisma.project.findUnique({
-			where: { id: projectId }
-		});
-		if (!project) throw new NotFoundException('Project not found.');
+	/**
+	 * Add a user to an existing project.
+	 * @param id The project ID to which the user will be added.
+	 * @param dto The user details to be added.
+	 * @param userId The ID of the user adding the new participant.
+	 * @returns The updated project user association.
+	 * @throws ForbiddenException if the user is already part of the project or not part of the organization.
+	 */
+	async addUser({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: AddProjectUserDto;
+		userId: string;
+	}) {
+		const { projectUserId } = dto;
 
-		// Check user access to the project
-		await this.checkUserAccess(userId, project.organizationId, projectId, true);
+		const project = await this.projectExists(id);
+		await this.checkUserAccess({
+			userId,
+			orgId: project.organizationId,
+			projectId: id,
+			roleCheck: true
+		});
 
 		// Check if the user is already part of the project
 		const existingUser = await this.prisma.projectUser.findUnique({
-			where: { projectId_userId: { projectId, userId: targetUserId } }
+			where: { projectId_userId: { projectId: id, userId: projectUserId } }
 		});
 		if (existingUser) {
 			throw new ForbiddenException('User is already part of this project.');
@@ -182,7 +275,7 @@ export class ProjectService {
 		// Check if the user is part of the organization
 		const userInOrganization = await this.prisma.organizationUser.findFirst({
 			where: {
-				userId: targetUserId,
+				userId: projectUserId,
 				organizationId: project.organizationId,
 				organizationStatus: AccessStatus.ACTIVE
 			}
@@ -193,76 +286,95 @@ export class ProjectService {
 
 		return this.prisma.projectUser.create({
 			data: {
-				projectId,
-				userId: targetUserId,
+				projectId: id,
+				userId: projectUserId,
 				projectStatus: AccessStatus.ACTIVE
 			}
 		});
 	}
 
-	// Update user status in a project
-	async updateStatus(
-		projectId: string,
-		userId: string,
-		targetUserId: string,
-		status: AccessStatus
-	) {
-		const project = await this.prisma.project.findUnique({
-			where: { id: projectId }
-		});
-		if (!project) throw new NotFoundException('Project not found.');
-
-		// Check user access to the organization (Admin or Owner role)
-		await this.checkUserAccess(
+	/**
+	 * Update the status of a user in a project.
+	 * @param id The project ID where the user status is to be updated.
+	 * @param dto The updated user status details.
+	 * @param userId The ID of the user performing the update.
+	 * @returns The updated project user status.
+	 * @throws ForbiddenException if the user does not have permission to update the status.
+	 */
+	async updateStatus({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: ProjectStatusDto;
+		userId: string;
+	}) {
+		const { projectStatus, projectUserId } = dto;
+		const project = await this.projectExists(id);
+		await this.checkUserAccess({
 			userId,
-			project.organizationId,
-			projectId,
-			true,
-			true,
-			targetUserId
-		);
+			orgId: project.organizationId,
+			projectId: id,
+			roleCheck: true,
+			retrieveAccessCheck: true,
+			targetUserId: projectUserId
+		});
 
 		// Update user status in the project
 		return this.prisma.projectUser.update({
 			where: {
-				projectId_userId: { projectId, userId: targetUserId }
+				projectId_userId: { projectId: id, userId: projectUserId }
 			},
 			data: {
-				projectStatus: status
+				projectStatus
 			}
 		});
 	}
 
-	// Update an existing project
-	async update(projectId: string, dto: ProjectDto, userId: string) {
-		const project = await this.prisma.project.findUnique({
-			where: { id: projectId },
-			include: { organization: true }
+	/**
+	 * Update an existing project.
+	 * @param id The project ID to be updated.
+	 * @param dto The updated project details.
+	 * @param userId The ID of the user performing the update.
+	 * @returns The updated project.
+	 * @throws ForbiddenException if the user does not have permission to update the project.
+	 */
+	async update({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: ProjectDto;
+		userId: string;
+	}) {
+		this.validateRequiredFields(dto, ['title', 'organizationId']); // Ensure title and organizationId are provided
+
+		const project = await this.projectExists(id);
+		await this.checkUserAccess({
+			userId,
+			orgId: project.organizationId,
+			projectId: id,
+			roleCheck: true
 		});
-		if (!project) throw new NotFoundException('Project not found.');
 
-		// Check user access to the organization (Admin or Owner role)
-		await this.checkUserAccess(userId, project.organizationId, projectId, true);
-
-		// Update project
 		return this.prisma.project.update({
-			where: { id: projectId },
+			where: { id },
 			data: { ...dto }
 		});
 	}
 
-	// Метод для виходу користувача з проєкту
-	async exit(userId: string, projectId: string) {
-		// Знайти проєкт
-		const project = await this.prisma.project.findUnique({
-			where: { id: projectId },
-			include: { organization: true }
-		});
-		if (!project) {
-			throw new NotFoundException('Project not found.');
-		}
+	/**
+	 * Allows a user to exit a project.
+	 * @param id The project ID the user is leaving.
+	 * @param userId The ID of the user exiting the project.
+	 * @returns A success message indicating the user has exited the project.
+	 * @throws ForbiddenException if the user is an admin/owner or banned from the project.
+	 */
+	async exit({ id, userId }: { id: string; userId: string }) {
+		const project = await this.projectExists(id);
 
-		// Перевірка: якщо користувач є власником або адміністратором організації, не дозволяємо вихід з проєкту
 		const organizationUser = await this.prisma.organizationUser.findFirst({
 			where: {
 				userId,
@@ -272,50 +384,47 @@ export class ProjectService {
 		});
 		if (
 			organizationUser &&
-			(organizationUser.role === OrgRole.OWNER ||
-				organizationUser.role === OrgRole.ADMIN)
+			([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
+				organizationUser.role
+			)
 		) {
 			throw new ForbiddenException(
 				'Owners and admins cannot leave the project.'
 			);
 		}
 
-		// Перевірка: якщо користувач є учасником проєкту
 		const projectUser = await this.prisma.projectUser.findUnique({
-			where: { projectId_userId: { projectId, userId } }
+			where: { projectId_userId: { projectId: id, userId } }
 		});
 		if (!projectUser) {
 			throw new ForbiddenException('User is not a member of this project.');
 		}
 
-		// Перевірка: якщо користувач заблокований, не дозволяємо йому вийти
 		if (projectUser.projectStatus === AccessStatus.BANNED) {
 			throw new ForbiddenException('Banned users cannot leave the project.');
 		}
 
-		// Видалення участі користувача з проєкту
 		return this.prisma.projectUser.delete({
-			where: { projectId_userId: { projectId, userId } }
+			where: { projectId_userId: { projectId: id, userId } }
 		});
 	}
 
-	// Delete a project
-	async delete(projectId: string, userId: string) {
-		const project = await this.prisma.project.findUnique({
-			where: { id: projectId }
-		});
-		if (!project) throw new NotFoundException('Project not found.');
-
-		// Check user access to the project (Admin or Owner role)
-		await this.checkUserAccess(
+	/**
+	 * Delete an existing project.
+	 * @param id The project ID to be deleted.
+	 * @param userId The ID of the user requesting project deletion.
+	 * @returns A success message indicating the project has been deleted.
+	 * @throws ForbiddenException if the user does not have permission to delete the project.
+	 */
+	async delete({ id, userId }: { id: string; userId: string }) {
+		const project = await this.projectExists(id);
+		await this.checkUserAccess({
 			userId,
-			project.organizationId,
-			projectId,
-			true,
-			false
-		);
+			orgId: project.organizationId,
+			projectId: id,
+			roleCheck: true
+		});
 
-		// Delete project
-		return this.prisma.project.delete({ where: { id: projectId } });
+		return this.prisma.project.delete({ where: { id } });
 	}
 }

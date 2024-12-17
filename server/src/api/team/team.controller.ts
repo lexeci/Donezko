@@ -1,10 +1,10 @@
+import { TeamWithUsers } from '@/src/types/teams.types';
 import {
 	Body,
 	Controller,
 	Delete,
 	Get,
 	HttpCode,
-	NotFoundException,
 	Param,
 	Post,
 	Put,
@@ -14,124 +14,225 @@ import {
 import { Team } from '@prisma/client';
 import { CurrentUser } from '../auth/decorators/user.decorator';
 import { Permission } from '../permission/decorators/permission.decorator';
-import { TeamDto } from './dto/team.dto';
+import {
+	CreateTeamDto,
+	DeleteTeamDto,
+	GetTeamDto,
+	ManageTeamDto,
+	TeamDto
+} from './dto/team.dto';
 import { TeamService } from './team.service';
 
-@Controller('user/organizations/:orgId/projects/:projectId/teams')
+/**
+ * TeamController - Controller for managing teams within an organization.
+ *
+ * This controller handles all the HTTP routes related to teams, such as creating, updating, deleting teams,
+ * and managing users within teams. It includes endpoints for both team management and user management within teams.
+ *
+ * @module TeamController
+ */
+@Controller('user/organizations/projects/teams')
 export class TeamController {
 	constructor(private readonly teamService: TeamService) {}
 
-	// Отримання списку всіх команд для проєкту
+	/**
+	 * Fetches all teams for a project.
+	 *
+	 * This endpoint retrieves the list of teams in a project, along with their members,
+	 * and is accessible by users with the 'viewResources' permission.
+	 *
+	 * @param dto - Data Transfer Object containing filter parameters for fetching teams.
+	 * @param userId - The ID of the current user making the request.
+	 * @returns A list of teams with their users.
+	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
 	@Permission('viewResources')
 	@Get()
 	async getAll(
-		@Param('orgId') orgId: string,
-		@Param('projectId') projectId: string,
+		@Body() dto: GetTeamDto,
 		@CurrentUser('id') userId: string
-	): Promise<Team[]> {
-		return await this.teamService.getAll(orgId, projectId, userId);
+	): Promise<TeamWithUsers[]> {
+		return await this.teamService.getAll({ userId, dto });
 	}
 
-	// Створення нової команди
+	/**
+	 * Fetches a team by its ID.
+	 *
+	 * This endpoint retrieves a specific team, identified by its ID, including the users in the team.
+	 * It requires the 'viewResources' permission.
+	 *
+	 * @param dto - Data Transfer Object containing the filter parameters for the team.
+	 * @param id - The ID of the team to fetch.
+	 * @param userId - The ID of the current user making the request.
+	 * @returns A team object with its associated users.
+	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
+	@Get(':id')
+	@Permission('viewResources')
+	async getById(
+		@Body() dto: GetTeamDto,
+		@Param('id') id: string,
+		@CurrentUser('id') userId: string
+	): Promise<TeamWithUsers> {
+		return await this.teamService.getById({ userId, id, dto });
+	}
+
+	/**
+	 * Creates a new team.
+	 *
+	 * This endpoint creates a new team for the project. The user must have the 'createTeam' permission.
+	 *
+	 * @param dto - Data Transfer Object containing the necessary information to create the team.
+	 * @param userId - The ID of the current user creating the team.
+	 * @returns The newly created team.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(201)
 	@Post()
 	@Permission('createTeam')
 	async create(
-		@Param('orgId') orgId: string,
-		@Param('projectId') projectId: string,
-		@Body() dto: TeamDto,
+		@Body() dto: CreateTeamDto,
 		@CurrentUser('id') userId: string
 	): Promise<Team> {
-		return await this.teamService.create(orgId, projectId, dto, userId);
-	}
-
-	// Отримання команди за її id
-	@UsePipes(new ValidationPipe())
-	@HttpCode(200)
-	@Get(':teamId')
-	@Permission('viewResources')
-	async getById(
-		@Param('orgId') orgId: string,
-		@Param('projectId') projectId: string,
-		@Param('teamId') teamId: string
-	): Promise<Team> {
-		const team = await this.teamService.getById(orgId, projectId, teamId);
-		if (!team) throw new NotFoundException('Team not found');
-		return team;
-	}
-
-	// Оновлення команди за її id
-	@UsePipes(new ValidationPipe())
-	@HttpCode(200)
-	@Put(':teamId')
-	@Permission('updateTeam')
-	async update(
-		@Param('orgId') orgId: string,
-		@Param('projectId') projectId: string,
-		@Param('teamId') teamId: string,
-		@CurrentUser('id') userId: string,
-		@Body() dto: TeamDto
-	): Promise<Team> {
-		return await this.teamService.update(orgId, projectId, teamId, dto, userId);
-	}
-
-	// Видалення команди за її id
-	@UsePipes(new ValidationPipe())
-	@HttpCode(200)
-	@Delete(':teamId')
-	@HttpCode(204)
-	@Permission('deleteTeam')
-	async delete(
-		@Param('orgId') orgId: string,
-		@Param('projectId') projectId: string,
-		@Param('teamId') teamId: string,
-		@CurrentUser('id') userId: string
-	): Promise<void> {
-		await this.teamService.delete(orgId, projectId, teamId, userId);
-	}
-
-	// Додавання користувача до команди
-	@UsePipes(new ValidationPipe())
-	@HttpCode(200)
-	@Post(':teamId/users')
-	@Permission('manageTeamUsers')
-	async addUserToTeam(
-		@Param('orgId') orgId: string,
-		@Param('projectId') projectId: string,
-		@Param('teamId') teamId: string,
-		@CurrentUser('id') userId: string,
-		@Body() dto: TeamDto
-	): Promise<Team> {
-		return await this.teamService.addUserToTeam(
-			orgId,
-			projectId,
-			teamId,
+		return await this.teamService.create({
 			dto,
 			userId
-		);
+		});
 	}
 
-	// Видалення користувача з команди
+	/**
+	 * Updates a team by its ID.
+	 *
+	 * This endpoint allows updating an existing team, and is restricted to users with the 'updateTeam' permission.
+	 *
+	 * @param id - The ID of the team to update.
+	 * @param userId - The ID of the current user updating the team.
+	 * @param dto - Data Transfer Object containing the updated team details.
+	 * @returns The updated team.
+	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
-	@Delete(':teamId/users/:userId')
+	@Put(':id')
+	@Permission('updateTeam')
+	async update(
+		@Param('id') id: string,
+		@CurrentUser('id') userId: string,
+		@Body() dto: TeamDto
+	): Promise<Team> {
+		return await this.teamService.update({ id, dto, userId });
+	}
+
+	/**
+	 * Deletes a team by its ID.
+	 *
+	 * This endpoint allows deleting a team, and is accessible by users with the 'deleteTeam' permission.
+	 *
+	 * @param id - The ID of the team to delete.
+	 * @param dto - Data Transfer Object containing the information needed for deletion.
+	 * @param userId - The ID of the current user deleting the team.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(204)
+	@Delete(':id')
+	@Permission('deleteTeam')
+	async delete(
+		@Param('id') id: string,
+		@Body() dto: DeleteTeamDto,
+		@CurrentUser('id') userId: string
+	): Promise<void> {
+		await this.teamService.delete({ id, dto, userId });
+	}
+
+	/**
+	 * Adds a user to a team.
+	 *
+	 * This endpoint adds a user to a specified team. The current user must have the 'manageTeamUsers' permission.
+	 *
+	 * @param id - The ID of the team to which the user will be added.
+	 * @param dto - Data Transfer Object containing the details of the user to add.
+	 * @param userId - The ID of the current user adding the user to the team.
+	 * @returns The updated team with its users.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(201)
+	@Post(':id/users')
+	@Permission('manageTeamUsers')
+	async addUserToTeam(
+		@Param('id') id: string,
+		@Body() dto: ManageTeamDto,
+		@CurrentUser('id') userId: string
+	): Promise<TeamWithUsers> {
+		return await this.teamService.addUserToTeam({ id, dto, userId });
+	}
+
+	/**
+	 * Transfers leadership within a team.
+	 *
+	 * This endpoint transfers the leadership of a team to another user. The current user must have the 'manageTeamUsers' permission.
+	 *
+	 * @param id - The ID of the team to transfer leadership in.
+	 * @param dto - Data Transfer Object containing the new leader's details.
+	 * @param userId - The ID of the current user initiating the leadership transfer.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Put(':id/transfer-leader')
+	@Permission('manageTeamUsers')
+	async transferLeadership(
+		@Param('id') id: string,
+		@Body() dto: ManageTeamDto,
+		@CurrentUser('id') userId: string
+	): Promise<void> {
+		await this.teamService.transferLeadership({
+			id,
+			dto,
+			userId
+		});
+	}
+
+	/**
+	 * Allows a user to exit a team.
+	 *
+	 * This endpoint allows a user to leave a team. It requires the 'viewResources' permission and removes the user from the team.
+	 *
+	 * @param id - The ID of the team the user is exiting.
+	 * @param userId - The ID of the current user who is exiting the team.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(204)
+	@Delete(':id/users/exit')
+	@Permission('viewResources')
+	async exitFromTeam(
+		@Param('id') id: string,
+		@CurrentUser('id') userId: string
+	): Promise<void> {
+		await this.teamService.exitFromTeam({ id, userId });
+	}
+
+	/**
+	 * Removes a user from a team.
+	 *
+	 * This endpoint allows a user with the 'manageTeamUsers' permission to remove another user from the team.
+	 *
+	 * @param id - The ID of the team from which to remove a user.
+	 * @param dto - Data Transfer Object containing the details of the user to remove.
+	 * @param userId - The ID of the current user removing the other user.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(204)
+	@Delete(':id/users')
 	@Permission('manageTeamUsers')
 	async removeUserFromTeam(
-		@Param('orgId') orgId: string,
-		@Param('projectId') projectId: string,
-		@Param('teamId') teamId: string,
-		@Param('userId') userId: string,
-		@CurrentUser('id') currentUserId: string
+		@Param('id') id: string,
+		@Body() dto: ManageTeamDto,
+		@CurrentUser('id') userId: string
 	): Promise<void> {
-		await this.teamService.removeUserFromTeam(
-			orgId,
-			projectId,
-			teamId,
-			userId,
-			currentUserId
-		);
+		await this.teamService.removeUserFromTeam({
+			id,
+			dto,
+			userId
+		});
 	}
 }

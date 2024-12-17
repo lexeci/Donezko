@@ -83,6 +83,7 @@ model Project {
   tasks        Task[]
   projectTeams ProjectTeam[] // зв’язок з командами
   projectUsers ProjectUser[] // Доданий зв'язок з ProjectUser
+  Team         Team[]
 
   @@map("project")
 }
@@ -126,7 +127,10 @@ model Team {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   teamUsers    TeamUser[]
-  projectTeams ProjectTeam[] // зв’язок з проєктами
+  projectTeams ProjectTeam[] // зв’язок з іншими проєктами, якщо потрібно
+
+  projectId String  @map("project_id") // Прив'язка до конкретного проєкту
+  project   Project @relation(fields: [projectId], references: [id])
 
   tasks Task[]
 
@@ -170,16 +174,16 @@ model Task {
   isCompleted Boolean?  @default(false) @map("is_completed")
   description String?
 
-  userId String? @map("user_id")
+  userId String? @map("user_id") // Конкретний відповідальний користувач
   user   User?   @relation(fields: [userId], references: [id])
 
-  projectId String?  @map("project_id")
+  projectId String?  @map("project_id") // Зв’язок із проектом
   project   Project? @relation(fields: [projectId], references: [id])
 
-  teamId String? @map("team_id")
+  teamId String? @map("team_id") // Зв’язок із командою
   team   Team?   @relation(fields: [teamId], references: [id])
 
-  comments Comment[]
+  comments Comment[] // Зв’язок із коментарями
 
   @@map("task")
 }
@@ -190,10 +194,10 @@ model Comment {
   updatedAt DateTime @updatedAt() @map("updated_at")
 
   content String
-  userId  String @map("user_id")
+  userId  String @map("user_id") // Автор коментаря
   user    User   @relation(fields: [userId], references: [id])
 
-  taskId String @map("task_id")
+  taskId String @map("task_id") // До якої таски належить
   task   Task   @relation(fields: [taskId], references: [id])
 
   @@map("comment")

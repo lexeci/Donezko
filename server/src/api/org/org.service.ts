@@ -1,19 +1,45 @@
 import { PrismaService } from '@/src/prisma.service';
 import {
+	ConflictException,
 	ForbiddenException,
 	Injectable,
 	NotFoundException
 } from '@nestjs/common';
 import { AccessStatus, OrgRole } from '@prisma/client';
-import { OrgDto } from './dto/org.dto';
+import { JoinOrgDto, ManageOrgUserDto, OrgDto } from './dto/org.dto';
 
 @Injectable()
 export class OrgService {
 	constructor(private prisma: PrismaService) {}
 
+	/**
+	 * Private method to check if the user is the owner of the organization.
+	 * Throws a ForbiddenException if the user is not the owner.
+	 * @param organizationId The ID of the organization.
+	 * @param userId The ID of the user.
+	 * @returns The organization ownership record.
+	 * @throws ForbiddenException If the user is not the owner.
+	 */
+	private async checkOwner(organizationId: string, userId: string) {
+		const organizationOwner = await this.prisma.organizationUser.findFirst({
+			where: { organizationId, userId, role: OrgRole.OWNER }
+		});
+		if (!organizationOwner) {
+			throw new ForbiddenException(
+				'Only the organization owner can perform this action.'
+			);
+		}
+		return organizationOwner;
+	}
+
+	/**
+	 * Get all active organizations the user is part of.
+	 * @param userId The ID of the user.
+	 * @returns List of active organizations and their roles.
+	 */
 	async getAll(userId: string) {
 		return this.prisma.organizationUser.findMany({
-			where: { userId: userId, organizationStatus: 'ACTIVE' },
+			where: { userId, organizationStatus: AccessStatus.ACTIVE },
 			select: {
 				organization: true,
 				role: true,
@@ -22,7 +48,24 @@ export class OrgService {
 		});
 	}
 
-	async create(dto: OrgDto, userId: string) {
+	/**
+	 * Create a new organization. Only the user can create an organization with a unique title.
+	 * @param dto The organization data transfer object (DTO) containing organization details.
+	 * @param userId The ID of the current user who is creating the organization.
+	 * @returns The created organization.
+	 * @throws ConflictException If an organization with the same title already exists.
+	 */
+	async create({ dto, userId }: { dto: OrgDto; userId: string }) {
+		const existingOrganization = await this.prisma.organization.findFirst({
+			where: { title: dto.title } // Check if an organization with the same title exists
+		});
+
+		if (existingOrganization) {
+			throw new ConflictException(
+				'An organization with this name already exists.'
+			);
+		}
+
 		return this.prisma.organization.create({
 			data: {
 				...dto,
@@ -40,14 +83,28 @@ export class OrgService {
 		});
 	}
 
-	async update(dto: Partial<OrgDto>, id: string, userId: string) {
-		const organizationOwner = await this.prisma.organizationUser.findFirst({
-			where: { organizationId: id, userId, role: OrgRole.OWNER }
-		});
+	/**
+	 * Update organization details. Only the owner of the organization can perform updates.
+	 * @param id The ID of the organization to update.
+	 * @param dto The updated organization details.
+	 * @param userId The ID of the current user making the update.
+	 * @returns The updated organization.
+	 * @throws ForbiddenException If the user is not the owner of the organization.
+	 */
+	async update({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: Partial<OrgDto>;
+		userId: string;
+	}) {
+		const organizationOwner = await this.checkOwner(id, userId);
 
 		if (!organizationOwner) {
 			throw new ForbiddenException(
-				'Only the organization owner can update organization details.'
+				'Only the owner can update the organization.'
 			);
 		}
 
@@ -57,16 +114,23 @@ export class OrgService {
 		});
 	}
 
-	async join(dto: Partial<OrgDto>, userId: string) {
+	/**
+	 * Join an organization using a join code and title. Ensures the user is not already a member.
+	 * @param dto The DTO containing join code and title.
+	 * @param userId The ID of the current user joining the organization.
+	 * @returns The created membership for the user in the organization.
+	 * @throws NotFoundException If the organization is not found.
+	 * @throws ForbiddenException If the user is already a member.
+	 */
+	async join({ dto, userId }: { dto: Partial<JoinOrgDto>; userId: string }) {
 		const { joinCode, title } = dto;
-
 		const organization = await this.prisma.organization.findFirst({
 			where: { joinCode, title }
 		});
 
 		if (!organization) {
 			throw new NotFoundException(
-				'Organization with this join code and title not found.'
+				'Organization not found with the provided join code and title.'
 			);
 		}
 
@@ -89,25 +153,34 @@ export class OrgService {
 		});
 	}
 
-	async updateRole(
-		dto: Partial<OrgDto>,
-		organizationId: string,
-		currentUserId: string
-	) {
-		const { userId, role: updatedRole } = dto;
-
-		const organizationOwner = await this.prisma.organizationUser.findFirst({
-			where: { organizationId, userId: currentUserId, role: OrgRole.OWNER }
-		});
+	/**
+	 * Update the role of a user in an organization. Only the owner can update roles.
+	 * @param id The ID of the organization.
+	 * @param dto The DTO containing the user's ID and new role.
+	 * @param userId The ID of the current user updating the role.
+	 * @returns The updated user role.
+	 * @throws ForbiddenException If the user is not the owner or if role changes are restricted.
+	 */
+	async updateRole({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: Partial<ManageOrgUserDto>;
+		userId: string;
+	}) {
+		const { orgUserId, role: updatedRole } = dto;
+		const organizationOwner = await this.checkOwner(id, userId);
 
 		if (!organizationOwner) {
 			throw new ForbiddenException(
-				'Only the organization owner can update user roles.'
+				'Only the owner can update the role in organization.'
 			);
 		}
 
 		const existingMembership = await this.prisma.organizationUser.findFirst({
-			where: { userId, organizationId }
+			where: { userId: orgUserId, organizationId: id }
 		});
 
 		if (!existingMembership) {
@@ -116,6 +189,7 @@ export class OrgService {
 			);
 		}
 
+		// Restrict changing roles of owners or banned users
 		if (existingMembership.organizationStatus === AccessStatus.BANNED) {
 			throw new ForbiddenException('Cannot update role of a banned user.');
 		}
@@ -127,7 +201,7 @@ export class OrgService {
 		}
 
 		if (updatedRole === existingMembership.role) {
-			throw new ForbiddenException('The role is already assigned.');
+			throw new ForbiddenException('User already has the requested role.');
 		}
 
 		if (existingMembership.role === OrgRole.OWNER) {
@@ -140,25 +214,28 @@ export class OrgService {
 		});
 	}
 
-	async updateStatus(
-		dto: Partial<OrgDto>,
-		organizationId: string,
-		currentUserId: string
-	) {
-		const { userId, organizationStatus: updatedStatus } = dto;
-
-		const organizationOwner = await this.prisma.organizationUser.findFirst({
-			where: { organizationId, userId: currentUserId, role: OrgRole.OWNER }
-		});
-
-		if (!organizationOwner) {
-			throw new ForbiddenException(
-				'Only the organization owner can update user statuses.'
-			);
-		}
+	/**
+	 * Update the status of a user in the organization. Only the owner can update the status.
+	 * @param id The ID of the organization.
+	 * @param dto The DTO containing the user's ID and new status.
+	 * @param userId The ID of the current user updating the status.
+	 * @returns The updated status of the user.
+	 * @throws ForbiddenException If the user is not a member, or if status update is restricted.
+	 */
+	async updateStatus({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: Partial<ManageOrgUserDto>;
+		userId: string;
+	}) {
+		const { orgUserId, organizationStatus: updatedStatus } = dto;
+		const organizationOwner = await this.checkOwner(id, userId);
 
 		const existingMembership = await this.prisma.organizationUser.findFirst({
-			where: { userId, organizationId }
+			where: { userId: orgUserId, organizationId: id }
 		});
 
 		if (!existingMembership) {
@@ -167,34 +244,46 @@ export class OrgService {
 			);
 		}
 
-		if (organizationOwner.userId === userId) {
+		if (organizationOwner.userId === orgUserId) {
 			throw new ForbiddenException('Cannot change the owner’s access status.');
 		}
 
 		if (existingMembership.organizationStatus === updatedStatus) {
 			throw new ForbiddenException(
-				`The user already has status ${updatedStatus}`
+				`The user already has the status ${updatedStatus}.`
 			);
 		}
 
 		return this.prisma.organizationUser.update({
 			where: { id: existingMembership.id },
 			data: {
-				...(updatedStatus == AccessStatus.BANNED && { role: OrgRole.VIEWER }),
+				...(updatedStatus === AccessStatus.BANNED && { role: OrgRole.VIEWER }),
 				organizationStatus: updatedStatus
 			}
 		});
 	}
 
-	async updateOwner(
-		dto: Partial<OrgDto>,
-		currentOwner: string,
-		organizationId: string
-	) {
-		const { userId } = dto;
+	/**
+	 * Transfer ownership to another user. The new owner must not be banned or already the owner.
+	 * @param id The ID of the organization.
+	 * @param dto The DTO containing the new owner's user ID.
+	 * @param userId The ID of the current owner transferring ownership.
+	 * @returns The updated user role.
+	 * @throws ForbiddenException If the user is not the owner or the new owner is invalid.
+	 */
+	async updateOwner({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: Partial<ManageOrgUserDto>;
+		userId: string;
+	}) {
+		const { orgUserId } = dto;
 
 		const existingMembership = await this.prisma.organizationUser.findFirst({
-			where: { userId, organizationId }
+			where: { userId: orgUserId, organizationId: id }
 		});
 
 		if (!existingMembership) {
@@ -203,27 +292,25 @@ export class OrgService {
 			);
 		}
 
-		if (existingMembership.organizationStatus == AccessStatus.BANNED) {
+		if (existingMembership.organizationStatus === AccessStatus.BANNED) {
 			throw new ForbiddenException(
-				'User is banned member of this organization. You can not transfer ownership to banned user. Change user status first'
+				'User is banned. Cannot transfer ownership to banned users.'
 			);
 		}
 
 		const organizationOwner = await this.prisma.organizationUser.findFirst({
-			where: { organizationId, role: OrgRole.OWNER }
+			where: { organizationId: id, role: OrgRole.OWNER }
 		});
 
-		if (currentOwner === userId) {
+		if (userId === orgUserId) {
 			throw new ForbiddenException("You can't transfer ownership to yourself.");
 		}
 
-		if (organizationOwner && organizationOwner.userId === userId) {
-			throw new ForbiddenException(
-				'The user is already the owner of this organization.'
-			);
+		if (organizationOwner && organizationOwner.userId === orgUserId) {
+			throw new ForbiddenException('User is already the owner.');
 		}
 
-		if (organizationOwner && organizationOwner.userId !== currentOwner) {
+		if (organizationOwner && organizationOwner.userId !== userId) {
 			throw new ForbiddenException(
 				'You are not the owner of this organization.'
 			);
@@ -240,7 +327,14 @@ export class OrgService {
 		});
 	}
 
-	async exit(id: string, userId: string) {
+	/**
+	 * Exit an organization. A user cannot exit if they are the owner.
+	 * @param id The ID of the organization.
+	 * @param userId The ID of the user exiting the organization.
+	 * @returns A confirmation of the exit.
+	 * @throws ForbiddenException If the user is the owner.
+	 */
+	async exit({ id, userId }: { id: string; userId: string }) {
 		const existingMembership = await this.prisma.organizationUser.findFirst({
 			where: { userId, organizationId: id }
 		});
@@ -260,10 +354,15 @@ export class OrgService {
 		});
 	}
 
-	async delete(orgId: string, userId: string) {
-		const organizationOwner = await this.prisma.organizationUser.findFirst({
-			where: { organizationId: orgId, userId, role: OrgRole.OWNER }
-		});
+	/**
+	 * Delete an organization. Only the owner can delete the organization.
+	 * @param id The ID of the organization.
+	 * @param userId The ID of the user deleting the organization.
+	 * @returns The deleted organization.
+	 * @throws ForbiddenException If the user is not the owner.
+	 */
+	async delete({ id, userId }: { id: string; userId: string }) {
+		const organizationOwner = await this.checkOwner(id, userId);
 
 		if (!organizationOwner) {
 			throw new ForbiddenException(
@@ -272,7 +371,7 @@ export class OrgService {
 		}
 
 		return this.prisma.organization.delete({
-			where: { id: orgId }
+			where: { id }
 		});
 	}
 }

@@ -9,6 +9,7 @@ import { TimerModule } from '@/api/timer/timer.module';
 import { UserModule } from '@/api/user/user.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TeamModule } from './api/team/team.module';
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
 		UserModule,
 		OrgModule,
 		ProjectModule,
+		TeamModule,
 		TaskModule,
 		TimeBlockModule,
 		TimerModule,

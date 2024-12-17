@@ -10,4 +10,8 @@ export type PermissionType =
 	| 'removeUser'
 	| 'createProject'
 	| 'updateProject'
-	| 'deleteProject';
+	| 'deleteProject'
+	| 'createTeam'
+	| 'updateTeam'
+	| 'deleteTeam'
+	| 'manageTeamUsers';

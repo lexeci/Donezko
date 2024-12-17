@@ -12,7 +12,11 @@ export const RolePermissions: Record<OrgRole, PermissionType[]> = {
 		'createProject',
 		'updateProject',
 		'deleteProject',
-		'removeUser'
+		'createTeam',
+		'updateTeam',
+		'deleteTeam',
+		'removeUser',
+		'manageTeamUsers'
 	],
 	[OrgRole.ADMIN]: [
 		'manageUsers',
@@ -21,8 +25,19 @@ export const RolePermissions: Record<OrgRole, PermissionType[]> = {
 		'createProject',
 		'updateProject',
 		'deleteProject',
-		'removeUser'
+		'createTeam',
+		'updateTeam',
+		'deleteTeam',
+		'removeUser',
+		'manageTeamUsers'
 	],
-	[OrgRole.MEMBER]: ['viewResources', 'editResources'],
+	[OrgRole.MEMBER]: [
+		'viewResources',
+		'editResources',
+		'createTeam',
+		'updateTeam',
+		'deleteTeam',
+		'manageTeamUsers'
+	],
 	[OrgRole.VIEWER]: ['viewResources']
 };

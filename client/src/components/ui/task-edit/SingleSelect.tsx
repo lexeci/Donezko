@@ -28,7 +28,7 @@ export function SingleSelect({
 
 	return (
 		<div
-			className={cn('relative min-w-36', {
+			className={cn('relative flex flex-row justify-between items-center min-w-36', {
 				'w-max': isColorSelect
 			})}
 			ref={ref}
@@ -53,7 +53,7 @@ export function SingleSelect({
 			</button>
 			{value && (
 				<button
-					className='absolute top-0 right-0 opacity-30 hover:opacity-100 transition-opacity'
+					className='relative block opacity-30 hover:opacity-100 transition-opacity'
 					onClick={e => {
 						e.preventDefault()
 						onChange('')
@@ -65,7 +65,7 @@ export function SingleSelect({
 			{isShow && (
 				<div
 					className={cn(
-						'absolute w-full p-2.5 left-0 slide bg-sidebar z-10 shadow rounded-lg'
+						'absolute w-auto p-2.5 left-0 slide bg-blockColor border border-borderColor z-10 shadow '
 					)}
 					style={{
 						top: 'calc(100% + .5rem)'

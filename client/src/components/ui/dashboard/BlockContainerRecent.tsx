@@ -21,7 +21,7 @@ export default function BlockContainerRecent({
 						{/* <span className={`dot h-1 w-1 rounded-full bg-${item.priority}`} /> */}
 						<span className={`block dot h-2 w-2 rounded-full bg-red-500`} />
 					</div>
-					<div className="description font-mono text-xs text-left w-full bg-gray-300 border border-borderColor px-1 group-hover:text-foreground">
+					<div className="description font-mono text-xs text-left w-full bg-foreground-300 border border-borderColor px-1 group-hover:text-foreground">
 						<p>{item.description}</p>
 					</div>
 				</div>

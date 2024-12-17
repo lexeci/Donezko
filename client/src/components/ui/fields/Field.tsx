@@ -19,10 +19,7 @@ export const Field = forwardRef<HTMLInputElement, InputFieldProps>(
 	) => {
 		return (
 			<div className={`${extra}`}>
-				<label
-					htmlFor={id}
-					className={`text-sm text-borderColor font-mono`}
-				>
+				<label htmlFor={id} className={`text-sm text-foreground font-mono`}>
 					{label}
 				</label>
 				<input
@@ -32,15 +29,15 @@ export const Field = forwardRef<HTMLInputElement, InputFieldProps>(
 					id={id}
 					placeholder={placeholder}
 					className={`flex items-center text-sm text-foreground gap-3.5
-						bg-transparent font-medium w-full p-2 border border-borderColor h-auto transition-all ease-in-out duration-200 outline-none placeholder:text-borderColor placeholder:font-mono placeholder:font-normal focus:border-primary ${
-						disabled === true
-							? "!border-none !bg-gray-100 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
-							: state === "error"
-							? "border-red-500 text-red-500 placeholder:text-red-500 dark:!border-red-400 dark:!text-red-400 dark:placeholder:!text-red-400"
-							: state === "success"
-							? "border-green-500 text-green-500 placeholder:text-green-500 dark:!border-green-400 dark:!text-green-400 dark:placeholder:!text-green-400"
-							: ""
-					}`}
+						bg-transparent font-medium w-full p-2 border border-borderColor h-auto transition-all ease-in-out duration-200 outline-none placeholder:text-foreground placeholder:font-mono placeholder:font-normal focus:border-primary ${
+							disabled === true
+								? "!border-none !bg-foreground-100 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]"
+								: state === "error"
+								? "border-red-500 text-red-500 placeholder:text-red-500 dark:!border-red-400 dark:!text-red-400 dark:placeholder:!text-red-400"
+								: state === "success"
+								? "border-green-500 text-green-500 placeholder:text-green-500 dark:!border-green-400 dark:!text-green-400 dark:placeholder:!text-green-400"
+								: ""
+						}`}
 					onKeyDown={event => {
 						if (
 							isNumber &&

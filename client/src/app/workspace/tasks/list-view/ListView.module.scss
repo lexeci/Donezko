@@ -21,8 +21,7 @@
 
 	.parentsWrapper {
 		.colHeading {
-			@apply hover:bg-transparent;
-			background-color: #0e0f0f;
+			@apply hover:bg-definerColor bg-transparent;
 
 			> div {
 				@apply font-semibold text-xl py-3;
@@ -36,6 +35,14 @@
 		.row {
 			@apply font-normal grid grid-cols-[1.4fr_.4fr_.4fr_.1fr] relative;
 
+			> div {
+				@apply flex justify-between items-center;
+
+				> div {
+					@apply w-full
+				}
+			}
+
 			&.completed {
 				> div > span > input {
 					@apply italic line-through opacity-50;
@@ -43,7 +50,7 @@
 			}
 
 			&:hover {
-				@apply bg-[#1c1f1f];
+				@apply bg-definerColor;
 			}
 
 			> div > span {

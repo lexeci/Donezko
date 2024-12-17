@@ -29,7 +29,7 @@ body {
 	@apply text-base;
 	color: var(--foreground);
 	background: var(--background);
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: var(--font-inconsolata);
 }
 
 @layer utilities {

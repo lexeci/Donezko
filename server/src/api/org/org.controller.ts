@@ -11,6 +11,7 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
@@ -33,12 +34,18 @@ export class OrgController {
 	/**
 	 * Get all organizations the current user is part of.
 	 * @param userId The ID of the current user.
+	 * @param id The ID of the organization to be displayed.
 	 * @returns List of organizations.
 	 */
 	@Get()
 	@Auth()
-	async getAll(@CurrentUser('id') userId: string) {
-		return this.orgService.getAll(userId);
+	async getAll(
+		@Query('organizationId') organizationId: string,
+		@CurrentUser('id') userId: string
+	) {
+		return organizationId
+			? this.orgService.getById({ id: organizationId, userId })
+			: this.orgService.getAll(userId);
 	}
 
 	/**

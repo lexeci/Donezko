@@ -63,6 +63,185 @@ export class OrgService {
 	}
 
 	/**
+	 * Get all active organizations the user is part of.
+	 * @param userId The ID of the user.
+	 * @param id The ID of the organization.
+	 * @returns List of active organizations and their roles.
+	 */
+	async getById({ id, userId }: { id: string; userId: string }) {
+		// Шукаємо користувача в організації
+		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId: id }
+		});
+
+		// Якщо користувач не є частиною організації, кидаємо помилку
+		if (!currentUserInOrg) {
+			throw new ForbiddenException('You are not part of this organization');
+		}
+
+		// Якщо користувач заблокований в організації, кидаємо помилку
+		if (currentUserInOrg.organizationStatus === AccessStatus.BANNED) {
+			throw new ForbiddenException('Insufficient permissions');
+		}
+
+		// Перевірка, чи має користувач роль OWNER або ADMIN
+		const isPermitted = ['OWNER', 'ADMIN'].includes(currentUserInOrg.role);
+
+		// Логіка для вибору додаткових полів
+		const organizationSelect = {
+			id: true,
+			title: true,
+			description: true,
+			...(isPermitted && { joinCode: true }),
+			teams: isPermitted
+				? {
+						select: {
+							id: true,
+							title: true,
+							description: true,
+							createdAt: true,
+							updatedAt: true,
+							organization: {
+								select: {
+									title: true
+								}
+							},
+							_count: {
+								select: {
+									teamUsers: true,
+									tasks: true
+								}
+							}
+						}
+					}
+				: {
+						select: {
+							id: true,
+							title: true,
+							description: true,
+							createdAt: true,
+							updatedAt: true,
+							organization: {
+								select: {
+									title: true
+								}
+							},
+							_count: {
+								select: {
+									teamUsers: true,
+									tasks: true
+								}
+							}
+						},
+						where: {
+							teamUsers: {
+								some: {
+									userId: currentUserInOrg.id,
+									teamStatus: AccessStatus.ACTIVE
+								}
+							}
+						}
+					},
+			projects: isPermitted
+				? {
+						select: {
+							id: true,
+							title: true,
+							description: true,
+							createdAt: true,
+							updatedAt: true,
+							_count: {
+								select: {
+									projectTeams: true,
+									tasks: true
+								}
+							}
+						}
+					}
+				: {
+						select: {
+							id: true,
+							title: true,
+							description: true,
+							createdAt: true,
+							updatedAt: true,
+							_count: {
+								select: {
+									projectTeams: true,
+									tasks: true
+								}
+							}
+						},
+						where: {
+							projectUsers: {
+								some: {
+									userId: currentUserInOrg.id,
+									projectStatus: AccessStatus.ACTIVE
+								}
+							}
+						}
+					},
+			...(isPermitted && {
+				organizationUsers: {
+					where: {
+						role: {
+							not: OrgRole.OWNER
+						}
+					}
+				}
+			}),
+			_count: {
+				select: {
+					organizationUsers: isPermitted
+						? true
+						: {
+								where: {
+									userId: currentUserInOrg.id,
+									organizationStatus: AccessStatus.ACTIVE
+								}
+							},
+					teams: isPermitted
+						? true
+						: {
+								where: {
+									teamUsers: {
+										some: {
+											userId: currentUserInOrg.id,
+											teamStatus: AccessStatus.ACTIVE
+										}
+									}
+								}
+							},
+					projects: isPermitted
+						? true
+						: {
+								where: {
+									projectUsers: {
+										some: {
+											userId: currentUserInOrg.id,
+											projectStatus: AccessStatus.ACTIVE
+										}
+									}
+								}
+							}
+				}
+			}
+		};
+
+		// Повертаємо організацію та роль користувача
+		return this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId: id },
+			select: {
+				organization: {
+					select: organizationSelect
+				},
+				role: true,
+				organizationStatus: true
+			}
+		});
+	}
+
+	/**
 	 * Create a new organization. Only the user can create an organization with a unique title.
 	 * @param dto The organization data transfer object (DTO) containing organization details.
 	 * @param userId The ID of the current user who is creating the organization.

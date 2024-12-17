@@ -3,7 +3,7 @@ import { ProjectFormData, ProjectResponse } from "@/types/project.types";
 import { AccessStatus } from "@/types/root.types";
 
 class ProjectService {
-	private BASE_URL = "/user/organizations/projects";
+	private BASE_URL = "/user/organizations/projects/";
 
 	/**
 	 * Fetches all active projects for a user.
@@ -11,11 +11,14 @@ class ProjectService {
 	 * @param params - Parameters containing optional organizationId.
 	 * @returns A list of projects.
 	 */
-	async getAllProjects(organizationId?: string): Promise<ProjectResponse[]> {
+	async getAllProjects(
+		organizationId?: string
+	): Promise<ProjectResponse[] | undefined> {
 		try {
-			const response = await axiosWithAuth.get<ProjectResponse[]>(
-				this.BASE_URL,
-				{ data: organizationId }
+			const response = await axiosWithAuth.get<ProjectResponse[] | undefined>(
+				organizationId
+					? `${this.BASE_URL}?organizationId=${organizationId}`
+					: this.BASE_URL
 			);
 			return response.data;
 		} catch (error) {

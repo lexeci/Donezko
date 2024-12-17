@@ -9,12 +9,12 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
 import {
 	AddProjectUserDto,
-	GetProjectDto,
 	ProjectDto,
 	ProjectStatusDto
 } from './dto/project.dto';
@@ -40,14 +40,17 @@ export class ProjectController {
 	@Get()
 	@HttpCode(200) // 200 OK for GET requests
 	@Permission('viewResources') // Permission decorator to check if the user has the required permission
-	async getAll(@Body() dto: GetProjectDto, @CurrentUser('id') userId: string) {
+	async getAll(
+		@Query('organizationId') organizationId: string,
+		@CurrentUser('id') userId: string
+	) {
 		// If organizationId is provided, get projects from that organization, otherwise get all projects
-		return dto.organizationId?.length
+		return organizationId
 			? this.projectService.getAllFromOrg({
 					userId,
-					organizationId: dto.organizationId
-				}) // Get all active projects from the organization
-			: this.projectService.getAll(userId); // Get projects from specific organization
+					organizationId: organizationId
+				})
+			: this.projectService.getAll(userId); // Get projects from specific organization// Get all active projects from the organization
 	}
 
 	/**

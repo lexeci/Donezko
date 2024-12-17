@@ -9,7 +9,7 @@ import styles from "./Sidebar.module.scss";
 export default function Sidebar() {
 	const links = [
 		{ link: "/workspace", title: "Dashboard" },
-		{ link: "/workspace/organization", title: "Organization" },
+		{ link: "/workspace/organizations", title: "Organizations" },
 		{ link: "/workspace/teams", title: "Teams" },
 		{ link: "/workspace/projects", title: "Projects" },
 		{ link: "/workspace/pomodoro", title: "Pomodoro Timer" },

@@ -1,74 +1,67 @@
+"use client";
+
 import pageStyles from "@/app/page.module.scss";
-import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
 import {
 	Button,
-	EntityItem,
 	PageHeader,
 	PageLayout,
-	TasksWindow,
+	ProjectElements,
+	TeamElements,
 	WindowContainer,
 } from "@/src/components";
-import generateKeyComp from "@/src/utils/generateKeyComp";
-import { Person, Trash, UsersThree } from "@phosphor-icons/react/dist/ssr";
-import { Metadata } from "next";
+import { useFetchOrgById } from "@/src/hooks/organization/useFetchOrgById";
+import { Person, Trash } from "@phosphor-icons/react/dist/ssr";
+import { useParams } from "next/navigation";
 
-export const metadata: Metadata = {
-	title: `${SITE_NAME} - Project`,
-	...NO_INDEX_PAGE,
-};
+export default function Organization() {
+	const params = useParams<{ id: string }>();
+	const { id: organizationId } = params;
 
-export default function Project() {
-	const teamArray = [
-		{
-			title: "Insomnia Team",
-			tasks: 128,
-			participants: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Team",
-			tasks: 128,
-			participants: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Team",
-			tasks: 128,
-			participants: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Project",
-			tasks: 128,
-			participants: 12,
-			id: "2331321213213",
-		},
-	];
+	const { organization: fetchedData } = useFetchOrgById(organizationId);
+
+	const organization = fetchedData?.organization;
+	const organizationStatus = fetchedData?.organizationStatus;
+	const role = fetchedData?.role;
+
+	console.log(organization);
 
 	return (
 		<PageLayout>
 			<PageHeader
-				pageTitle="Project"
-				title="Insomnia Project"
-				desc={`Participants: 32 | Teams: 16 | Projects: 15 | Tasks: 32`}
+				pageTitle="Organization"
+				title={organization?.title as string}
+				desc={`${organization?.description}\nParticipants: ${organization?._count?.organizationUsers} | Teams: ${organization?._count?.teams} | Projects: ${organization?._count?.projects}`}
 			/>
 			<div className={pageStyles["workspace-content-col"]}>
-				<TasksWindow />
-				<WindowContainer title="Insomnia Project" subtitle="Teams [15]">
-					{teamArray.map((item, i) => (
-						<EntityItem
-							icon={<UsersThree size={84} />}
-							linkBase={`/workspace/teams/${item.id}`}
-							title={item.title}
-							firstStat={`Participants: ${item.participants}`}
-							secondaryStat={`Tasks: ${item.tasks}`}
-							key={generateKeyComp(`${item.title}__${i}`)}
+				<WindowContainer
+					title={organization?.title as string}
+					subtitle={`Projects: ${organization?._count?.projects}`}
+					fullPage
+				>
+					{fetchedData?.organization.projects && (
+						<ProjectElements
+							isWindowElement
+							organizationId={organizationId}
+							projects={organization?.projects}
 						/>
-					))}
+					)}
 				</WindowContainer>
 				<WindowContainer
-					title="Insomnia Project"
-					subtitle="Users [15]"
+					title={organization?.title as string}
+					subtitle={`Teams: ${organization?._count?.teams}`}
+					fullPage
+				>
+					{fetchedData?.organization.teams && (
+						<TeamElements
+							isWindowElement
+							organizationId={organizationId}
+							teams={organization?.teams}
+						/>
+					)}
+				</WindowContainer>
+				<WindowContainer
+					title={organization?.title as string}
+					subtitle={`Participants: ${organization?._count?.organizationUsers}`}
 					fullPage
 				>
 					<div className="container flex flex-col w-full h-full bg-background border border-foreground p-4">
@@ -93,14 +86,13 @@ export default function Project() {
 									</div>
 									<div className="projects">
 										<p>
-											Projects: {"["}"Insomnia Project", "Skoda Activision
+											Projects: {"["}"Insomnia Works", "Skoda Activision
 											Blizzard"{"]"}
 										</p>
 									</div>
 									<div className="teams">
 										<p>
-											Teams: {"["}"Insomnia Project", "Skoda Activision
-											Blizzard"
+											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
 											{"]"}
 										</p>
 									</div>
@@ -134,14 +126,13 @@ export default function Project() {
 									</div>
 									<div className="projects">
 										<p>
-											Projects: {"["}"Insomnia Project", "Skoda Activision
+											Projects: {"["}"Insomnia Works", "Skoda Activision
 											Blizzard"{"]"}
 										</p>
 									</div>
 									<div className="teams">
 										<p>
-											Teams: {"["}"Insomnia Project", "Skoda Activision
-											Blizzard"
+											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
 											{"]"}
 										</p>
 									</div>
@@ -175,14 +166,13 @@ export default function Project() {
 									</div>
 									<div className="projects">
 										<p>
-											Projects: {"["}"Insomnia Project", "Skoda Activision
+											Projects: {"["}"Insomnia Works", "Skoda Activision
 											Blizzard"{"]"}
 										</p>
 									</div>
 									<div className="teams">
 										<p>
-											Teams: {"["}"Insomnia Project", "Skoda Activision
-											Blizzard"
+											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
 											{"]"}
 										</p>
 									</div>
@@ -203,7 +193,7 @@ export default function Project() {
 					</div>
 				</WindowContainer>
 				<Button type="button">
-					<Trash size={22} className="mr-4" /> Delete project
+					<Trash size={22} className="mr-4" /> Delete organization
 				</Button>
 			</div>
 		</PageLayout>

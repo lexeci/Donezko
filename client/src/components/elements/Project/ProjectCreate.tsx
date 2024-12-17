@@ -3,25 +3,34 @@
 import { Button, Field, Select } from "@/components/index";
 import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
 import { useCreateProject } from "@/src/hooks/project/useCreateProject";
-import { useFetchProjects } from "@/src/hooks/project/useFetchProjects";
 import { OrgResponse } from "@/src/types/org.types";
-import { ProjectFormData, ProjectResponse } from "@/src/types/project.types";
+import { ProjectFormData } from "@/src/types/project.types";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-export default function ProjectCreate() {
+export default function ProjectCreate({
+	organizationId,
+	organizationTitle,
+}: {
+	organizationId?: string;
+	organizationTitle?: string;
+}) {
 	const [organizations, setOrganizations] = useState<OrgResponse[]>();
 
 	const { organizationList } = useFetchOrgs();
 	const { createProject, createdProject } = useCreateProject();
 
-	const { register, handleSubmit, reset } = useForm<ProjectFormData>({
+	const { register, handleSubmit, setValue, reset } = useForm<ProjectFormData>({
 		mode: "onChange",
 	});
 
 	const onSubmit: SubmitHandler<ProjectFormData> = data => {
 		createProject(data);
 	};
+
+	useEffect(() => {
+		organizationId && setValue("organizationId", organizationId);
+	}, []);
 
 	useEffect(() => {
 		if (organizationList) {
@@ -67,19 +76,33 @@ export default function ProjectCreate() {
 								maxLength: { value: 500, message: "Description is too long" }, // Валідація на довжину
 							})}
 						/>
-						<Select
-							id="organization-select"
-							label="Select Organization:"
-							placeholder="Choose an organization"
-							options={organizations.map(item => ({
-								value: item.organization.id,
-								label: item.organization.title,
-							}))}
-							{...register("organizationId", {
-								required: "Organization is required!",
-							})}
-							extra="flex flex-col max-w-80 w-full"
-						/>
+						{!organizationId ? (
+							<Select
+								id="organization-select"
+								label="Select Organization:"
+								placeholder="Choose an organization"
+								options={organizations.map(item => ({
+									value: item.organization.id,
+									label: item.organization.title,
+								}))}
+								{...register("organizationId", {
+									required: "Organization is required!",
+								})}
+								extra="flex flex-col max-w-80 w-full"
+							/>
+						) : (
+							<Field
+								extra="flex flex-col max-w-80 w-full"
+								id="organization-select"
+								label="Select Organization:"
+								placeholder="Choose an organization"
+								type="text"
+								value={
+									organizationTitle ? organizationTitle : "Current organization"
+								}
+								disabled
+							/>
+						)}
 						<div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
 							<Button type="button" block>
 								Create Project

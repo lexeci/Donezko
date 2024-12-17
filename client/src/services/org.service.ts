@@ -20,6 +20,18 @@ class OrgService {
 		}
 	}
 
+	async getOrganizationById(organizationId: string): Promise<OrgResponse> {
+		try {
+			const response = await axiosWithAuth.get<OrgResponse>(
+				`${this.BASE_URL}?organizationId=${organizationId}`
+			);
+			return response.data;
+		} catch (error) {
+			console.error(`Fetching organization error:`, error);
+			throw new Error(`Fetching organization failed`);
+		}
+	}
+
 	async createOrganization(data: OrgFormData): Promise<OrgResponse> {
 		try {
 			const response = await axiosWithAuth.post<OrgResponse>(

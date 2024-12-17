@@ -69,7 +69,7 @@ export default function OrganizationElements() {
 						<EntityItem
 							key={generateKeyComp(`${organization.title}__${i}`)}
 							icon={<Buildings size={84} />}
-							linkBase={`/workspace/organization/${organization.id}`}
+							linkBase={`/workspace/organizations/${organization.id}`}
 							title={organization.title}
 							firstStat={`Participants: ${_count?.organizationUsers}`}
 							secondaryStat={`Teams: ${_count?.teams}`}

@@ -10,7 +10,13 @@ import { TeamFormData } from "@/src/types/team.types";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-export default function TeamCreate() {
+export default function TeamCreate({
+	organizationId: localOrgId,
+	organizationTitle: localOrgTitle,
+}: {
+	organizationId?: string;
+	organizationTitle?: string;
+}) {
 	const [organizations, setOrganizations] = useState<OrgResponse[]>();
 	const [organizationId, setOrganizationId] = useState<string | undefined>();
 	const [projects, setProjects] = useState<ProjectResponse[]>();
@@ -33,6 +39,10 @@ export default function TeamCreate() {
 	const onSubmit: SubmitHandler<TeamFormData> = data => {
 		createTeam(data); // Створюємо команду
 	};
+
+	useEffect(() => {
+		localOrgId && setOrganizationId(localOrgId);
+	}, [localOrgId]);
 
 	useEffect(() => {
 		if (organizationList) {
@@ -91,17 +101,29 @@ export default function TeamCreate() {
 								maxLength: { value: 500, message: "Description is too long" },
 							})}
 						/>
-						<Select
-							id="organization-select"
-							label="Select Organization:"
-							placeholder="Choose an organization"
-							options={organizations.map(item => ({
-								value: item.organization.id,
-								label: item.organization.title,
-							}))}
-							onChange={e => handleOrgSelect(e.target.value)} // Оновлення організації
-							extra="flex flex-col max-w-80 w-full"
-						/>
+						{!localOrgId ? (
+							<Select
+								id="organization-select"
+								label="Select Organization:"
+								placeholder="Choose an organization"
+								options={organizations.map(item => ({
+									value: item.organization.id,
+									label: item.organization.title,
+								}))}
+								onChange={e => handleOrgSelect(e.target.value)} // Оновлення організації
+								extra="flex flex-col max-w-80 w-full"
+							/>
+						) : (
+							<Field
+								extra="flex flex-col max-w-80 w-full"
+								id="organization-select"
+								label="Select Organization:"
+								placeholder="Choose an organization"
+								type="text"
+								value={localOrgTitle ? localOrgTitle : "Current organization"}
+								disabled
+							/>
+						)}
 						{/* Якщо організацію вибрано, показуємо список проектів */}
 						{organizationId && projects && (
 							<Select

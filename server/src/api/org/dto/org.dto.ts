@@ -3,6 +3,18 @@ import { Transform } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 /**
+ * DTO for getting project details, optionally filtered by organization ID.
+ */
+export class GetOrgDto {
+	/**
+	 * The ID of the organization the project belongs to.
+	 * This field is optional.
+	 */
+	@IsString()
+	@IsOptional()
+	organizationId: string;
+}
+/**
  * DTO for managing a user within an organization.
  */
 export class ManageOrgUserDto {

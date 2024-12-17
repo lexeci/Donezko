@@ -1,6 +1,6 @@
 import {
 	ITimeBlockResponse,
-	TimeBlockTypeFromState
+	TypeTimeBlockFormState
 } from '@/types/time-block.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
@@ -15,7 +15,7 @@ class TimeBlockService {
 		return response
 	}
 
-	async createTimeBlock(data: TimeBlockTypeFromState) {
+	async createTimeBlock(data: TypeTimeBlockFormState) {
 		const response = await axiosWithAuth.post(this.BASE_URL, data)
 		return response
 	}
@@ -27,7 +27,7 @@ class TimeBlockService {
 		return response
 	}
 
-	async updateTimeBlock(id: string, data: TimeBlockTypeFromState) {
+	async updateTimeBlock(id: string, data: TypeTimeBlockFormState) {
 		const response = await axiosWithAuth.put(`${this.BASE_URL}/${id}`, data)
 		return response
 	}

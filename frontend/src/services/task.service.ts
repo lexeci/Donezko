@@ -1,4 +1,4 @@
-import type { ITaskResponse, TaskTypeFromState } from '@/types/task.types'
+import type { ITaskResponse, TypeTaskFormState } from '@/types/task.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -10,12 +10,12 @@ class TaskService {
 		return response
 	}
 
-	async createTask(data: TaskTypeFromState) {
+	async createTask(data: TypeTaskFormState) {
 		const response = await axiosWithAuth.post(this.BASE_URL, data)
 		return response
 	}
 
-	async updateTask(id: string, data: TaskTypeFromState) {
+	async updateTask(id: string, data: TypeTaskFormState) {
 		const response = await axiosWithAuth.put(`${this.BASE_URL}/${id}`, data)
 		return response
 	}

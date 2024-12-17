@@ -12,6 +12,12 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
+			opacity: {
+				...Array.from({ length: 101 }, (_, i) => i).reduce(
+					(acc, val) => ({ ...acc, [val]: (val / 100).toFixed(2) }),
+					{}
+				)
+			},
 			colors: COLORS,
 			spacing: {
 				0.5: '0.12rem',

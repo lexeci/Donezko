@@ -1,13 +1,14 @@
+import axios, { type CreateAxiosDefaults } from 'axios'
+
+import { errorCatch } from './error'
 import {
 	getAccessToken,
 	removeFromStorage
 } from '@/services/auth-token.service'
-import axios, { type CreateAxiosDefaults } from 'axios'
-import { errorCatch } from './error-catcher'
 import { authService } from '@/services/auth.service'
 
 const options: CreateAxiosDefaults = {
-	baseURL: 'http:\\localhost:3001/api',
+	baseURL: 'http://localhost:3001/api',
 	headers: {
 		'Content-Type': 'application/json'
 	},

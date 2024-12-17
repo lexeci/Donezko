@@ -1,14 +1,13 @@
 import {
 	ITimerSessionResponse,
-	ITimerRoundResponse,
-	TimerSessionTypeFromState,
-	TimerRoundTypeFromState
+	TypeTimerRoundState,
+	TypeTimerSessionState
 } from '@/types/timer.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
 class TimerService {
-	private BASE_URL = 'user/timer'
+	private BASE_URL = '/user/timer'
 
 	async getTodaySession() {
 		const response = await axiosWithAuth.get<ITimerSessionResponse>(
@@ -21,11 +20,10 @@ class TimerService {
 		const response = await axiosWithAuth.post<ITimerSessionResponse>(
 			this.BASE_URL
 		)
-
 		return response
 	}
 
-	async updateSession(id: string, data: TimerSessionTypeFromState) {
+	async updateSession(id: string, data: TypeTimerSessionState) {
 		const response = await axiosWithAuth.put(`${this.BASE_URL}/${id}`, data)
 		return response
 	}
@@ -35,7 +33,7 @@ class TimerService {
 		return response
 	}
 
-	async updateRound(id: string, data: TimerRoundTypeFromState) {
+	async updateRound(id: string, data: TypeTimerRoundState) {
 		const response = await axiosWithAuth.put(
 			`${this.BASE_URL}/round/${id}`,
 			data

@@ -1,16 +1,18 @@
 import type { Metadata } from 'next'
 import { Noto_Sans } from 'next/font/google'
-import './globals.scss'
-import { SITE_NAME } from '@/constants/seo.constants'
-import { Providers } from './providers'
 import { Toaster } from 'sonner'
 
+import { SITE_NAME } from '@/constants/seo.constants'
+
+import './globals.scss'
+import { Providers } from './providers'
+
 const zen = Noto_Sans({
-	subsets: ['latin'],
+	subsets: ['cyrillic', 'latin'],
 	weight: ['300', '400', '500', '600', '700'],
 	display: 'swap',
 	variable: '--font-zen',
-	style: 'normal'
+	style: ['normal']
 })
 
 export const metadata: Metadata = {
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
 		default: SITE_NAME,
 		template: `%s | ${SITE_NAME}`
 	},
-	description: 'TPlanner: best of yours planners...'
+	description: 'Tplanner choose and manage your time'
 }
 
 export default function RootLayout({
@@ -28,9 +30,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en'>
-			<body className={`${zen.className} antialiased`}>
+			<body className={zen.className}>
 				<Providers>
 					{children}
+
 					<Toaster
 						theme='dark'
 						position='bottom-right'

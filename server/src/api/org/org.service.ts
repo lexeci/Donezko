@@ -156,7 +156,7 @@ export class OrgService {
 						where: {
 							teamUsers: {
 								some: {
-									userId: currentUserInOrg.id,
+									userId,
 									teamStatus: AccessStatus.ACTIVE
 								}
 							}
@@ -195,7 +195,7 @@ export class OrgService {
 						where: {
 							projectUsers: {
 								some: {
-									userId: currentUserInOrg.id,
+									userId,
 									projectStatus: AccessStatus.ACTIVE
 								}
 							}
@@ -241,7 +241,7 @@ export class OrgService {
 						? true
 						: {
 								where: {
-									userId: currentUserInOrg.id,
+									userId,
 									organizationStatus: AccessStatus.ACTIVE
 								}
 							},
@@ -251,7 +251,7 @@ export class OrgService {
 								where: {
 									teamUsers: {
 										some: {
-											userId: currentUserInOrg.id,
+											userId,
 											teamStatus: AccessStatus.ACTIVE
 										}
 									}
@@ -263,7 +263,7 @@ export class OrgService {
 								where: {
 									projectUsers: {
 										some: {
-											userId: currentUserInOrg.id,
+											userId,
 											projectStatus: AccessStatus.ACTIVE
 										}
 									}

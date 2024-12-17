@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/index";
+import { useExitProject } from "@/src/hooks/project/useExitProject";
 import { useFetchProjectUsers } from "@/src/hooks/project/useFetchProjectUser";
 import { useUpdateProjectUser } from "@/src/hooks/project/useUpdateProjectUser";
 import { ProjectUsers as ProjectUsersType } from "@/src/types/project.types";
@@ -11,6 +12,7 @@ import { Person } from "@phosphor-icons/react";
 export default function ProjectUsers({ projectId }: { projectId: string }) {
 	const { projectUsers, setProjectUsers } = useFetchProjectUsers(projectId);
 	const { updateStatus } = useUpdateProjectUser();
+	const { exitProject } = useExitProject();
 
 	const handleUpdateArray = (updatedUser: ProjectUsersType) => {
 		// Оновлення списку користувачів
@@ -21,6 +23,15 @@ export default function ProjectUsers({ projectId }: { projectId: string }) {
 						projectStatus: updatedUser.projectStatus,
 				  }
 				: user
+		);
+
+		setProjectUsers(updatedUsers);
+	};
+
+	const handleRemoveFromArray = (userId: string) => {
+		// Оновлення списку користувачів
+		const updatedUsers = projectUsers.filter(
+			user => user.userId !== userId && user
 		);
 
 		setProjectUsers(updatedUsers);
@@ -42,10 +53,19 @@ export default function ProjectUsers({ projectId }: { projectId: string }) {
 		);
 	};
 
+	const handleExitProject = (projectId: string, userId: string) => {
+		exitProject(
+			{ projectId, userId: userId },
+			{
+				onSuccess: () => handleRemoveFromArray(userId),
+			}
+		);
+	};
+
 	return (
 		<div className="container flex flex-col w-full h-full bg-background border border-foreground p-4">
 			<div className="title">
-				<h5>Users in current organization:</h5>
+				<h5>Users in current project:</h5>
 			</div>
 			<div className="users flex flex-col w-full h-full overflow-auto pt-4 gap-y-4">
 				{projectUsers && projectUsers.length > 0 ? (
@@ -78,6 +98,14 @@ export default function ProjectUsers({ projectId }: { projectId: string }) {
 									{userItem.projectStatus === "BANNED"
 										? "Remove Ban"
 										: "Ban from Project"}
+								</Button>
+								<Button
+									type="button"
+									modal
+									fullWidth
+									onClick={() => handleExitProject(projectId, userItem.userId)}
+								>
+									Remove from Project
 								</Button>
 							</div>
 						</div>

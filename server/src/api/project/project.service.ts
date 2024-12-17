@@ -223,7 +223,23 @@ export class ProjectService {
 						organizationId: true,
 						createdAt: true,
 						updatedAt: true,
-						projectTeams: true,
+						projectTeams: {
+							select: {
+								team: {
+									select: {
+										id: true,
+										title: true,
+										description: true,
+										_count: {
+											select: {
+												teamUsers: true,
+												tasks: true
+											}
+										}
+									}
+								}
+							}
+						},
 						tasks: true,
 						_count: {
 							select: {

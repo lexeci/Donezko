@@ -7,7 +7,13 @@ export function useExitProject() {
 	const [exitStatus, setExitStatus] = useState<any | undefined>(undefined);
 
 	const { mutate: exitProject } = useMutation({
-		mutationFn: (projectId: string) => projectService.exitProject(projectId),
+		mutationFn: ({
+			projectId,
+			userId,
+		}: {
+			projectId: string;
+			userId?: string;
+		}) => projectService.exitProject(projectId, userId),
 		onSuccess: data => {
 			setExitStatus(data);
 			queryClient.invalidateQueries({ queryKey: ["projects"] }); // Інвалідуємо список проектів

@@ -87,14 +87,21 @@ export default function Project() {
 						<TeamElements
 							isWindowElement
 							organizationId={organizationId}
+							organizationTitle={organization?.title}
+							projectId={projectId}
+							projectTitle={project.title}
 							teams={project?.projectTeams}
-							isAdministrate={role === "ADMIN" || role === "OWNER"}
+							isAdministrate={
+								role === "ADMIN" || role === "OWNER" || role === "MEMBER"
+							}
 						/>
 					)}
 				</WindowContainer>
-				<Button type="button">
-					<Trash size={22} className="mr-4" /> Delete Project
-				</Button>
+				{hasPermission && (
+					<Button type="button" onClick={() => deleteProject(projectId)}>
+						<Trash size={22} className="mr-4" /> Delete Project
+					</Button>
+				)}
 				{openModal && (
 					<ModalWindow
 						title="Program to ask of sure action.exe"
@@ -154,8 +161,8 @@ export default function Project() {
 				)}
 				{openModalUser && (
 					<ModalWindow
-						title="Add user to project.exe"
-						subtitle="Someone will have work to do ;)"
+						title="Manage project user.exe"
+						subtitle="Administrate your users within project"
 						onClose={() => setOpenModalUser(false)}
 					>
 						{organization && organizationId && (

@@ -171,6 +171,7 @@ export class ProjectController {
 	/**
 	 * Exit the project (Leave the project).
 	 * @param userId - The ID of the user who wants to exit the project.
+	 * @param queryUserId - The ID of the user who wants to exit the project (from query).
 	 * @param id - The ID of the project the user is leaving.
 	 * @returns A confirmation response that the user has exited the project.
 	 * @throws ForbiddenException - If the user cannot leave the project (e.g., admins, owners).
@@ -178,9 +179,16 @@ export class ProjectController {
 	@Delete('/exit/:id')
 	@HttpCode(204) // 204 No Content for DELETE requests (no content in response body)
 	@Permission('viewResources') // Permission decorator to check if the user has the required permission
-	async exit(@CurrentUser('id') userId: string, @Param('id') id: string) {
+	async exit(
+		@CurrentUser('id') userId: string,
+		@Param('id') id: string,
+		@Query('userId') queryUserId: string
+	) {
 		// Call the service to handle exiting the project
-		return this.projectService.exit({ id, userId });
+		return this.projectService.exit({
+			id,
+			userId: queryUserId ? queryUserId : userId
+		});
 	}
 
 	/**

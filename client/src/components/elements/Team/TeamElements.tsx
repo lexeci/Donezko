@@ -16,7 +16,9 @@ import TeamCreate from "./TeamCreate";
 interface TeamElementsProps {
 	isWindowElement?: boolean;
 	organizationId?: string;
+	projectId?: string;
 	organizationTitle?: string;
+	projectTitle?: string;
 	teams?: TeamResponse[] | ProjectTeam[];
 	isAdministrate?: boolean;
 }
@@ -27,16 +29,16 @@ const TeamElementsWithData = ({
 }: {
 	fetchedData: TeamResponse[] | ProjectTeam[];
 }) => {
+	console.log(fetchedData);
 	return fetchedData.length > 0 ? (
 		fetchedData.map((item, i) => {
 			// Динамічна перевірка на тип
 			const isTeamResponse = (
 				team: TeamResponse | ProjectTeam
 			): team is TeamResponse => "title" in team;
-
+			
 			const team = isTeamResponse(item) ? item : item.team;
 			const { _count, id, title } = team;
-
 			return (
 				title && (
 					<EntityItem
@@ -96,6 +98,8 @@ const TeamElementsWithoutData = ({
 export default function TeamElements({
 	isWindowElement,
 	organizationId,
+	projectId,
+	projectTitle,
 	organizationTitle,
 	teams,
 	isAdministrate = false,
@@ -118,7 +122,9 @@ export default function TeamElements({
 				>
 					<TeamCreate
 						organizationId={organizationId}
+						projectId={projectId}
 						organizationTitle={organizationTitle}
+						projectTitle={projectTitle}
 					/>
 				</ModalWindow>
 			)}

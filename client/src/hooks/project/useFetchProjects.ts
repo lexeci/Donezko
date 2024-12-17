@@ -4,14 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 export function useFetchProjects(organizationId?: string) {
-	const { data: projectsData } = useQuery<Project[] | undefined>({
+	const { data: projectsData } = useQuery<ProjectResponse[] | undefined>({
 		queryKey: ["projects", organizationId],
 		queryFn: () => projectService.getAllProjects(organizationId),
 	});
 
-	const [projects, setProjects] = useState<Project[]>(
-		projectsData || []
-	);
+	const [projects, setProjects] = useState<ProjectResponse[]>(projectsData || []);
 
 	useEffect(() => {
 		if (projectsData) {

@@ -12,14 +12,19 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function TeamCreate({
 	organizationId: localOrgId,
+	projectId: localProjectId,
 	organizationTitle: localOrgTitle,
+	projectTitle,
 }: {
 	organizationId?: string;
 	organizationTitle?: string;
+	projectId?: string;
+	projectTitle?: string;
 }) {
 	const [organizations, setOrganizations] = useState<OrgResponse[]>();
 	const [organizationId, setOrganizationId] = useState<string | undefined>();
 	const [projects, setProjects] = useState<ProjectResponse[]>();
+	const [projectId, setProjectId] = useState<string | undefined>();
 
 	const { organizationList } = useFetchOrgs(); // Отримуємо список організацій
 	const { projects: projectList } = useFetchProjects(organizationId); // Отримуємо проекти для вибраної організації
@@ -32,7 +37,6 @@ export default function TeamCreate({
 
 	// Хендлер для вибору організації
 	const handleOrgSelect = (value: string) => {
-		setOrganizationId(value); // Оновлюємо id вибраної організації
 		setValue("organizationId", value); // Встановлюємо це значення в форму
 	};
 
@@ -42,7 +46,11 @@ export default function TeamCreate({
 
 	useEffect(() => {
 		localOrgId && setOrganizationId(localOrgId);
-	}, [localOrgId]);
+		localProjectId && setProjectId(localProjectId);
+
+		localOrgId && setValue("organizationId", localOrgId);
+		localProjectId && setValue("projectId", localProjectId);
+	}, [localOrgId, localProjectId]);
 
 	useEffect(() => {
 		if (organizationList) {
@@ -125,25 +133,41 @@ export default function TeamCreate({
 							/>
 						)}
 						{/* Якщо організацію вибрано, показуємо список проектів */}
-						{organizationId && projects && (
-							<Select
-								id="project-select"
-								label="Select Project:"
-								placeholder="Choose a Project"
-								options={projects.map(item => ({
-									value: item.id,
-									label: item.title,
-								}))}
-								{...register("projectId", {
-									required: "Project is required!",
-								})}
-								extra="flex flex-col max-w-80 w-full"
-							/>
-						)}
+						{organizationId &&
+							projects &&
+							(!localProjectId ? (
+								<Select
+									id="project-select"
+									label="Select Project:"
+									placeholder="Choose a Project"
+									options={projects.map(item => ({
+										value: item.id,
+										label: item.project.title,
+									}))}
+									{...register("projectId", {
+										required: "Project is required!",
+									})}
+									extra="flex flex-col max-w-80 w-full"
+								/>
+							) : (
+								<Field
+									extra="flex flex-col max-w-80 w-full"
+									id="project-select"
+									label="Select Project:"
+									placeholder="Choose an Project"
+									type="text"
+									value={projectTitle ? projectTitle : "Current Project"}
+									disabled
+								/>
+							))}
 
 						{/* Кнопка для створення команди */}
 						<div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
-							<Button type="button" block disabled={!organizationId}>
+							<Button
+								type="button"
+								block
+								disabled={!organizationId && !projectId}
+							>
 								Create Team
 							</Button>
 						</div>

@@ -3,21 +3,27 @@
 import pageStyles from "@/app/page.module.scss";
 import {
 	Button,
+	ModalWindow,
+	OrganizationUsers,
 	PageHeader,
 	PageLayout,
 	ProjectElements,
 	TeamElements,
 	WindowContainer,
 } from "@/src/components";
+import { useDeleteOrg } from "@/src/hooks/organization/useDeleteOrg";
 import { useFetchOrgById } from "@/src/hooks/organization/useFetchOrgById";
-import { Person, Trash } from "@phosphor-icons/react/dist/ssr";
+import { Trash } from "@phosphor-icons/react/dist/ssr";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 export default function Organization() {
+	const [openModal, setOpenModal] = useState<boolean>(false);
 	const params = useParams<{ id: string }>();
 	const { id: organizationId } = params;
 
 	const { organization: fetchedData } = useFetchOrgById(organizationId);
+	const { deleteOrganization } = useDeleteOrg();
 
 	const organization = fetchedData?.organization;
 	const organizationStatus = fetchedData?.organizationStatus;
@@ -59,142 +65,54 @@ export default function Organization() {
 						/>
 					)}
 				</WindowContainer>
-				<WindowContainer
-					title={organization?.title as string}
-					subtitle={`Participants: ${organization?._count?.organizationUsers}`}
-					fullPage
-				>
-					<div className="container flex flex-col w-full h-full bg-background border border-foreground p-4">
-						<div className="title">
-							<h5>Users in current organization:</h5>
-						</div>
-						<div className="users flex flex-col w-full h-full overflow-auto pt-4 gap-y-4">
-							<div className="item flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground">
-								<Person size={48} className="border border-foreground p-0.5" />
-								<div className="about flex flex-col justify-start items-start">
-									<div className="name">
-										<p>Username: "Andriy Neaijko"</p>
-									</div>
-									<div className="email">
-										<p>Email: "andriy.neaijko@gmail.com"</p>
-									</div>
-									<div className="status">
-										<p>Status: "Active"</p>
-									</div>
-									<div className="tasks">
-										<p>Tasks: "4"</p>
-									</div>
-									<div className="projects">
-										<p>
-											Projects: {"["}"Insomnia Works", "Skoda Activision
-											Blizzard"{"]"}
-										</p>
-									</div>
-									<div className="teams">
-										<p>
-											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
-											{"]"}
-										</p>
-									</div>
-								</div>
-								<div className="actions flex flex-col gap-y-2 ml-auto">
-									<Button type="button" modal fullWidth>
-										Ban
-									</Button>
-									<Button type="button" modal fullWidth>
-										Make admin
-									</Button>
-									<Button type="button" modal fullWidth>
-										Delete
-									</Button>
-								</div>
+				{role === "ADMIN" ||
+					(role === "OWNER" && (
+						<WindowContainer
+							title={organization?.title as string}
+							subtitle={`Participants: ${organization?._count?.organizationUsers}`}
+							fullPage
+						>
+							{organization?.organizationUsers && (
+								<OrganizationUsers
+									organizationId={organizationId}
+									organizationUsers={organization.organizationUsers}
+								/>
+							)}
+						</WindowContainer>
+					))}
+				{role === "OWNER" && (
+					<Button type="button" onClick={() => setOpenModal(true)}>
+						<Trash size={22} className="mr-4" />
+						Delete organization
+					</Button>
+				)}
+
+				{openModal && (
+					<ModalWindow
+						title="Program to ask of sure action.exe"
+						subtitle="Hey do you really know what you are doing ?"
+						onClose={() => setOpenModal(false)}
+					>
+						<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
+							<div className="desc max-w-80 flex flex-col justify-center items-center text-center gap-y-2">
+								<h1 className="font-bold text-lg">Hey did you know?</h1>
+								<p>
+									If you proceed on this action you will delete teams and
+									projects which are related to this organization. Make sure
+									that you understand that.
+								</p>
 							</div>
-							<div className="item flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground">
-								<Person size={48} className="border border-foreground p-0.5" />
-								<div className="about flex flex-col justify-start items-start">
-									<div className="name">
-										<p>Username: "Andriy Neaijko"</p>
-									</div>
-									<div className="email">
-										<p>Email: "andriy.neaijko@gmail.com"</p>
-									</div>
-									<div className="status">
-										<p>Status: "Active"</p>
-									</div>
-									<div className="tasks">
-										<p>Tasks: "4"</p>
-									</div>
-									<div className="projects">
-										<p>
-											Projects: {"["}"Insomnia Works", "Skoda Activision
-											Blizzard"{"]"}
-										</p>
-									</div>
-									<div className="teams">
-										<p>
-											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
-											{"]"}
-										</p>
-									</div>
-								</div>
-								<div className="actions flex flex-col gap-y-2 ml-auto">
-									<Button type="button" modal fullWidth>
-										Ban
-									</Button>
-									<Button type="button" modal fullWidth>
-										Make admin
-									</Button>
-									<Button type="button" modal fullWidth>
-										Delete
-									</Button>
-								</div>
-							</div>
-							<div className="item flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground">
-								<Person size={48} className="border border-foreground p-0.5" />
-								<div className="about flex flex-col justify-start items-start">
-									<div className="name">
-										<p>Username: "Andriy Neaijko"</p>
-									</div>
-									<div className="email">
-										<p>Email: "andriy.neaijko@gmail.com"</p>
-									</div>
-									<div className="status">
-										<p>Status: "Active"</p>
-									</div>
-									<div className="tasks">
-										<p>Tasks: "4"</p>
-									</div>
-									<div className="projects">
-										<p>
-											Projects: {"["}"Insomnia Works", "Skoda Activision
-											Blizzard"{"]"}
-										</p>
-									</div>
-									<div className="teams">
-										<p>
-											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
-											{"]"}
-										</p>
-									</div>
-								</div>
-								<div className="actions flex flex-col gap-y-2 ml-auto">
-									<Button type="button" modal fullWidth>
-										Ban
-									</Button>
-									<Button type="button" modal fullWidth>
-										Make admin
-									</Button>
-									<Button type="button" modal fullWidth>
-										Delete
-									</Button>
-								</div>
+							<div className="w-full h-full flex justify-center items-center">
+								<Button
+									type="button"
+									onClick={() => deleteOrganization(organizationId)}
+								>
+									<Trash size={22} className="mr-4" /> Delete
+								</Button>
 							</div>
 						</div>
-					</div>
-				</WindowContainer>
-				<Button type="button">
-					<Trash size={22} className="mr-4" /> Delete organization
-				</Button>
+					</ModalWindow>
+				)}
 			</div>
 		</PageLayout>
 	);

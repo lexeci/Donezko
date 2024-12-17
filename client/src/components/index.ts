@@ -11,6 +11,7 @@ export {
 	ModalWindow,
 	OrgBoardStatistic,
 	OrganizationElements,
+	OrganizationUsers,
 	PageHeader,
 	PageLayout,
 	ProjectElements,

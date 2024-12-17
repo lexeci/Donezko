@@ -18,6 +18,10 @@ export interface AuthUser {
 	workInterval?: number; // Optional work session duration in minutes
 	breakInterval?: number; // Optional break duration in minutes
 	intervalsCount?: number; // Optional count of completed intervals
+
+	_count?: {
+		tasks: number;
+	};
 }
 
 interface Statistic {

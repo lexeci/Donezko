@@ -1,3 +1,4 @@
+import generateKeyComp from "@/src/utils/generateKeyComp";
 import clsx from "clsx";
 import Link from "next/link";
 import { PropsWithChildren } from "react";
@@ -12,6 +13,9 @@ interface Button {
 	fullWidth?: boolean;
 	disabled?: boolean;
 	modal?: boolean;
+	selectable?: boolean;
+	selectableArray?: { text: string }[];
+	selectableOnClick?: any;
 }
 
 export default function Button({
@@ -24,6 +28,9 @@ export default function Button({
 	fullWidth = false,
 	disabled = false,
 	modal = false,
+	selectable = false,
+	selectableArray,
+	selectableOnClick,
 }: PropsWithChildren<Button>) {
 	return type === "link" ? (
 		<Link
@@ -38,6 +45,33 @@ export default function Button({
 		>
 			<span>{children}</span>
 		</Link>
+	) : selectable === true ? (
+		<div
+			className={clsx(
+				styles.button,
+				negative && styles.negative,
+				block && styles.block,
+				fullWidth && styles.fullWidth,
+				modal && styles.modal,
+				styles.selectable
+			)}
+		>
+			<span>{children}</span>
+			<div className={styles["selectable__container"]}>
+				{selectableArray?.map((item, i) => (
+					<div
+						className={styles["selectable__item"]}
+						onClick={() =>
+							selectableOnClick &&
+							selectableOnClick(item.text.toLocaleUpperCase())
+						}
+						key={generateKeyComp(`${item.text}__${i}`)}
+					>
+						<p>{item.text}</p>
+					</div>
+				))}
+			</div>
+		</div>
 	) : (
 		<button
 			className={clsx(

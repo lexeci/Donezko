@@ -6,6 +6,7 @@ import type {
 	OrgResponse,
 } from "@/types/org.types";
 import { AxiosResponse } from "axios";
+import { toast } from "sonner";
 
 class OrgService {
 	private BASE_URL = "/user/organizations";
@@ -104,6 +105,7 @@ class OrgService {
 			);
 			return response.data; // Check if the deletion was successful
 		} catch (error) {
+			error && toast.error(error.response.data.message);
 			console.error("Error updating owner of organization:", error);
 			throw new Error("Could not update the owner of organization"); // Handle error appropriately
 		}
@@ -117,6 +119,7 @@ class OrgService {
 			);
 			return response.data; // Check if the deletion was successful
 		} catch (error) {
+			error && toast.error(error.response.data.message);
 			console.error("Error updating owner of organization:", error);
 			throw new Error("Could not update the owner of organization"); // Handle error appropriately
 		}
@@ -130,6 +133,7 @@ class OrgService {
 			);
 			return response.data; // Check if the deletion was successful
 		} catch (error) {
+			error && toast.error(error.response.data.message);
 			console.error("Error updating owner of organization:", error);
 			throw new Error("Could not update the owner of organization"); // Handle error appropriately
 		}

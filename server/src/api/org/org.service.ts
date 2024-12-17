@@ -187,6 +187,31 @@ export class OrgService {
 						role: {
 							not: OrgRole.OWNER
 						}
+					},
+					select: {
+						userId: true,
+						organizationStatus: true,
+						role: true,
+						user: {
+							select: {
+								name: true,
+								email: true,
+								ProjectUser: {
+									select: {
+										project: {
+											select: {
+												title: true
+											}
+										}
+									}
+								},
+								_count: {
+									select: {
+										tasks: true
+									}
+								}
+							}
+						}
 					}
 				}
 			}),

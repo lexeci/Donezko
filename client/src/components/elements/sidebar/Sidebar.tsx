@@ -24,7 +24,7 @@ export default function Sidebar() {
 				{ link: "/workspace", title: "Dashboard" },
 				{
 					link: `/workspace/organizations/${organizationId}`,
-					title: "Organizations",
+					title: "My Organization",
 				},
 				{ link: "/workspace/teams", title: "Teams" },
 				{ link: "/workspace/projects", title: "Projects" },

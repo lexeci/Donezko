@@ -41,19 +41,26 @@ export const OrganizationProvider = ({ children }: PropsWithChildren<{}>) => {
 
 	useEffect(() => {
 		const savedOrganizationId = getOrganizationFromCookies();
+		const isWorkspacePath = pathname.startsWith("/workspace");
+
 		if (savedOrganizationId) {
 			setOrganizationId(savedOrganizationId);
 
-			if (pathname !== "workspace/organizations") {
+			// Якщо ми у workspace, але не на сторінці вибору організації, перенаправляємо на основний workspace
+			if (isWorkspacePath && pathname === "/workspace/organizations") {
 				router.push("/workspace");
 			}
 		} else {
-			// Якщо організація не вибрана, можна переадресувати на сторінку вибору організації
-			if (pathname !== "/workspace") {
+			// Якщо організація не вибрана і ми у workspace
+			if (
+				isWorkspacePath &&
+				pathname !== "/workspace" &&
+				pathname !== "/workspace/organizations"
+			) {
 				router.push("/workspace");
 			}
 		}
-	}, [router]);
+	}, [router, pathname]);
 
 	// Функція для збереження організації
 	const saveOrganization = (orgId: string | null) => {

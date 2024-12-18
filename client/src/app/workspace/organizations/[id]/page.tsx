@@ -12,14 +12,17 @@ import {
 	TeamElements,
 	WindowContainer,
 } from "@/src/components";
+import { useOrganization } from "@/src/context/OrganizationContext";
 import { useDeleteOrg } from "@/src/hooks/organization/useDeleteOrg";
 import { useFetchOrgById } from "@/src/hooks/organization/useFetchOrgById";
 import { OrgUserResponse } from "@/src/types/org.types";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Organization() {
+	const { replace } = useRouter();
+	const { organizationId: cookieOrgId, saveOrganization } = useOrganization();
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
 
@@ -41,6 +44,11 @@ export default function Organization() {
 	useEffect(() => {
 		organization && setOrganizationUsers(organization?.organizationUsers);
 	}, [organization]);
+
+	useEffect(() => {
+		organizationId !== cookieOrgId &&
+			replace(`/workspace/organizations/${cookieOrgId}`);
+	}, [cookieOrgId]);
 
 	const hasPermission = role === "ADMIN" || role === "OWNER";
 
@@ -125,7 +133,11 @@ export default function Organization() {
 							<div className="w-full h-full flex justify-center items-center">
 								<Button
 									type="button"
-									onClick={() => deleteOrganization(organizationId)}
+									onClick={() =>
+										deleteOrganization(organizationId, {
+											onSuccess: () => saveOrganization(null),
+										})
+									}
 								>
 									<Trash size={22} className="mr-4" /> Delete
 								</Button>

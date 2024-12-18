@@ -2,6 +2,7 @@ import { axiosWithAuth } from "@/api/interceptors";
 import type {
 	JoinOrgType,
 	ManageOrgUser,
+	Organization,
 	OrgFormData,
 	OrgResponse,
 	OrgUserResponse,
@@ -16,7 +17,7 @@ class OrgService {
 		try {
 			const response = await axiosWithAuth.get<OrgResponse[]>(this.BASE_URL);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`Fetching organizations error:`, error);
 			throw new Error(`Fetching organizations failed`);
 		}
@@ -28,7 +29,7 @@ class OrgService {
 				`${this.BASE_URL}?organizationId=${organizationId}`
 			);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`Fetching organization error:`, error);
 			throw new Error(`Fetching organization failed`);
 		}
@@ -46,20 +47,20 @@ class OrgService {
 				}${hideFromProject ? `&hide=${hideFromProject}` : ""}`
 			);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`Fetching organization users error:`, error);
 			throw new Error(`Fetching organization users failed`);
 		}
 	}
 
-	async createOrganization(data: OrgFormData): Promise<OrgResponse> {
+	async createOrganization(data: OrgFormData): Promise<Organization> {
 		try {
-			const response = await axiosWithAuth.post<OrgResponse>(
+			const response = await axiosWithAuth.post<Organization>(
 				this.BASE_URL,
 				data
 			);
 			return response.data; // Return only the data part
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Error creating organization:", error);
 			throw new Error("Could not create organization"); // Handle error appropriately
 		}
@@ -75,7 +76,7 @@ class OrgService {
 				data
 			);
 			return response.data; // Return only the data part
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Error updating organization:", error);
 			throw new Error("Could not update organization"); // Handle error appropriately
 		}
@@ -85,7 +86,7 @@ class OrgService {
 		try {
 			const response = await axiosWithAuth.delete(`${this.BASE_URL}/${id}`);
 			return response; // Check if the deletion was successful
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Error deleting organization:", error);
 			throw new Error("Could not delete organization"); // Handle error appropriately
 		}
@@ -97,7 +98,7 @@ class OrgService {
 				`${this.BASE_URL}/${id}/exit`
 			);
 			return response; // Check if the deletion was successful
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Error exiting organization:", error);
 			throw new Error("Could not exiting organization"); // Handle error appropriately
 		}
@@ -107,7 +108,7 @@ class OrgService {
 		try {
 			const response = await axiosWithAuth.post(`${this.BASE_URL}/join`, data);
 			return response.data; // Check if the deletion was successful
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Error joining organization:", error);
 			throw new Error("Could not join organization");
 		}
@@ -123,7 +124,7 @@ class OrgService {
 				{ orgUserId }
 			);
 			return response.data; // Check if the deletion was successful
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error updating owner of organization:", error);
 			throw new Error("Could not update the owner of organization"); // Handle error appropriately
@@ -139,7 +140,7 @@ class OrgService {
 				data
 			);
 			return response.data; // Check if the deletion was successful
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error updating owner of organization:", error);
 			throw new Error("Could not update the owner of organization"); // Handle error appropriately
@@ -153,7 +154,7 @@ class OrgService {
 				data
 			);
 			return response.data; // Check if the deletion was successful
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error updating owner of organization:", error);
 			throw new Error("Could not update the owner of organization"); // Handle error appropriately

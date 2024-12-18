@@ -5,6 +5,7 @@ import { useOrganization } from "@/src/context/OrganizationContext";
 import { CoinVertical } from "@phosphor-icons/react";
 import { SmileyMeh } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Layout({
@@ -23,6 +24,8 @@ export default function Layout({
 
 	const isSelected = organizationId !== null;
 
+	const pathname = usePathname();
+
 	return (
 		<div className="relative overflow-hidden max-h-[calc(100vh-82px)] w-full flex flex-row justify-between items-start">
 			<Sidebar />
@@ -37,7 +40,7 @@ export default function Layout({
 					<div className="h-full flex justify-center items-center">
 						<CoinVertical size={80} className="m-auto animate-spin" />
 					</div>
-				) : isSelected ? (
+				) : isSelected || pathname === "/workspace/organizations" ? (
 					<div className="py-8">{children}</div>
 				) : (
 					<div className="h-full flex flex-col justify-center items-center gap-y-4 max-w-[40rem] mx-auto text-center">

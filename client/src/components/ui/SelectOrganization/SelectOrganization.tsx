@@ -4,7 +4,7 @@ import { useOrganization } from "@/src/context/OrganizationContext";
 import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx"; // Імпортуємо clsx для умовних класів
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OrganizationModal } from "../../elements";
 
 export default function SelectOrganization() {
@@ -21,6 +21,19 @@ export default function SelectOrganization() {
 		saveOrganization(orgId); // Зберігаємо вибрану організацію в контексті
 		setIsOpen(false); // Закриваємо список після вибору організації
 	};
+
+	useEffect(() => {
+		if (organizationId) {
+			// Пошук поточної організації за ID
+			const currentOrganization = organizationList?.find(
+				org => org.organization.id === organizationId
+			);
+			currentOrganization &&
+				setSelectedOrg(currentOrganization.organization.id);
+		} else {
+			setSelectedOrg(null);
+		}
+	}, [organizationId]);
 
 	return (
 		<div className="relative flex flex-row items-center justify-center border-l border-l-foreground pl-6">

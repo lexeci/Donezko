@@ -1,9 +1,11 @@
 import { Button } from "@/components/index";
 import { authService } from "@/services/auth.service";
+import { useOrganization } from "@/src/context/OrganizationContext";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 export default function LogoutButton() {
+	const { saveOrganization } = useOrganization();
 	const router = useRouter();
 
 	const { mutate } = useMutation({
@@ -17,6 +19,7 @@ export default function LogoutButton() {
 	// Wrapping mutate in a function to ensure proper typing
 	const handleLogout = () => {
 		mutate();
+		saveOrganization(null);
 	};
 
 	return (

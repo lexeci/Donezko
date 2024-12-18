@@ -3,6 +3,7 @@
 import pageStyles from "@/app/page.module.scss";
 
 import { Button, EntityItem } from "@/components/index";
+import { useOrganization } from "@/src/context/OrganizationContext";
 import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
 import generateKeyComp from "@/src/utils/generateKeyComp";
 import { Buildings } from "@phosphor-icons/react";
@@ -11,6 +12,7 @@ import { useState } from "react";
 import OrganizationModal from "./OrganizationModal";
 
 export default function OrganizationElements() {
+	const { saveOrganization } = useOrganization();
 	const { organizationList } = useFetchOrgs();
 	const [open, setOpen] = useState<boolean>(false);
 
@@ -37,6 +39,7 @@ export default function OrganizationElements() {
 							title={organization.title}
 							firstStat={`Participants: ${_count?.organizationUsers}`}
 							secondaryStat={`Teams: ${_count?.teams}`}
+							onClick={() => saveOrganization(organization.id)}
 						/>
 					);
 				})}

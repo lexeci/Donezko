@@ -1,5 +1,6 @@
 import {
 	getOrganizationFromCookies,
+	removeOrganizationFromCookies,
 	saveOrganizationToCookies,
 } from "@/utils/cookies"; // Функції для роботи з cookies
 import { usePathname, useRouter } from "next/navigation";
@@ -15,7 +16,7 @@ import { toast } from "sonner";
 // Тип для значення контексту
 interface OrganizationContextType {
 	organizationId: string | null;
-	saveOrganization: (orgId: string) => void;
+	saveOrganization: (orgId: string | null) => void;
 }
 
 // Створюємо контекст з типом
@@ -43,7 +44,7 @@ export const OrganizationProvider = ({ children }: PropsWithChildren<{}>) => {
 		if (savedOrganizationId) {
 			setOrganizationId(savedOrganizationId);
 
-			if (pathname === "/workspace/organizations") {
+			if (pathname !== "workspace/organizations") {
 				router.push("/workspace");
 			}
 		} else {
@@ -55,9 +56,14 @@ export const OrganizationProvider = ({ children }: PropsWithChildren<{}>) => {
 	}, [router]);
 
 	// Функція для збереження організації
-	const saveOrganization = (orgId: string) => {
-		saveOrganizationToCookies(orgId);
-		setOrganizationId(orgId);
+	const saveOrganization = (orgId: string | null) => {
+		if (orgId) {
+			saveOrganizationToCookies(orgId);
+			setOrganizationId(orgId);
+		} else {
+			removeOrganizationFromCookies(); // Видаляємо організацію з куків
+			setOrganizationId(null);
+		}
 	};
 
 	return (

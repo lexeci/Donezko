@@ -1,11 +1,11 @@
 import { orgService } from "@/src/services/org.service";
-import { OrgFormData, OrgResponse } from "@/types/org.types";
+import { Organization, OrgFormData } from "@/types/org.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 export function useCreateOrg() {
 	const queryClient = useQueryClient();
-	const [newOrganization, setNewOrganization] = useState<OrgResponse | null>(
+	const [newOrganization, setNewOrganization] = useState<Organization | null>(
 		null
 	);
 

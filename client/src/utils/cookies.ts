@@ -11,3 +11,8 @@ export const getOrganizationFromCookies = (): string | undefined => {
 	const organizationId = Cookies.get("selectedOrganization");
 	return organizationId; // Повертаємо або undefined, якщо cookie не знайдено
 };
+
+// Функція для видалення організації з cookies
+export const removeOrganizationFromCookies = (): void => {
+	Cookies.remove("selectedOrganization");
+};

@@ -2,9 +2,9 @@ import pageStyles from "@/app/page.module.scss";
 import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
 import {
 	DailyBoardAdvice,
-	OrgBoardStatistic,
 	PageHeader,
 	PageLayout,
+	ProjectBoardStatistic,
 	TasksBoardStatistic,
 	TeamBoardStatistic,
 } from "@/src/components";
@@ -27,7 +27,7 @@ export default function Home() {
 				<TasksBoardStatistic />
 				<TeamBoardStatistic />
 				<DailyBoardAdvice />
-				<OrgBoardStatistic />
+				<ProjectBoardStatistic />
 			</div>
 		</PageLayout>
 	);

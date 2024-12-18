@@ -282,7 +282,13 @@ export class ProjectService {
 				description: true,
 				createdAt: true,
 				updatedAt: true,
-				tasks: true
+				_count: {
+					select: {
+						projectUsers: true,
+						tasks: true,
+						projectTeams: true
+					}
+				}
 			}
 		});
 	}

@@ -8,7 +8,7 @@ import { AccessStatus, OrgRole, Team, TeamRole } from '@prisma/client';
 import {
 	CreateTeamDto,
 	DeleteTeamDto,
-	GetTeamDto,
+	LinkTeamToProjectDto,
 	ManageTeamDto,
 	UpdateTeamDto
 } from './dto/team.dto';
@@ -32,18 +32,22 @@ export class TeamService {
 	 * Ensures the user is part of the organization with an active role and has access to the project.
 	 * Throws an exception if the user lacks the required permissions.
 	 *
-	 * @param orgId - The organization ID.
+	 * @param organizationId - The organization ID.
 	 * @param projectId - The project ID.
 	 * @param currentUserId - The ID of the current user.
 	 * @throws ForbiddenException if the user lacks access.
 	 */
-	private async checkAccess(
-		orgId: string,
-		projectId: string,
-		currentUserId: string
-	): Promise<void> {
+	private async checkAccess({
+		organizationId,
+		projectId,
+		userId
+	}: {
+		organizationId: string;
+		projectId?: string;
+		userId: string;
+	}): Promise<void> {
 		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
-			where: { userId: currentUserId, organizationId: orgId }
+			where: { userId: userId, organizationId: organizationId }
 		});
 
 		if (!currentUserInOrg) {
@@ -66,33 +70,35 @@ export class TeamService {
 			throw new ForbiddenException('Insufficient permissions');
 		}
 
-		const currentUserInProject = await this.prisma.projectUser.findFirst({
-			where: {
-				userId: currentUserId,
-				projectId,
-				projectStatus: AccessStatus.ACTIVE
-			}
-		});
+		if (projectId) {
+			const currentUserInProject = await this.prisma.projectUser.findFirst({
+				where: {
+					userId,
+					projectId,
+					projectStatus: AccessStatus.ACTIVE
+				}
+			});
 
-		if (!currentUserInProject) {
-			throw new ForbiddenException('No access to the specified project');
+			if (!currentUserInProject) {
+				throw new ForbiddenException('No access to the specified project');
+			}
 		}
 	}
 
 	/**
 	 * Verifies if the user is part of the organization and is active.
 	 *
-	 * @param orgId - The organization ID.
+	 * @param organizationId - The organization ID.
 	 * @param userId - The user ID to check.
 	 * @throws NotFoundException if the user is not part of the organization.
 	 * @throws ForbiddenException if the user is not active in the organization.
 	 */
 	private async checkUserInOrganization(
-		orgId: string,
+		organizationId: string,
 		userId: string
 	): Promise<void> {
 		const userInOrg = await this.prisma.organizationUser.findFirst({
-			where: { userId, organizationId: orgId }
+			where: { userId, organizationId: organizationId }
 		});
 
 		if (!userInOrg) {
@@ -164,25 +170,22 @@ export class TeamService {
 	 * This method returns a list of teams for the specified project, filtered by the user's activity.
 	 * The user must have access to the organization and project.
 	 *
-	 * @param dto - The DTO object containing the organization and project information.
+	 * @param organizationId - The DTO object containing the organization id.
 	 * @param userId - The current user ID.
 	 * @returns The list of teams with their members.
 	 */
 	async getAllByOrgProject({
-		dto,
+		organizationId,
 		userId
 	}: {
-		dto: GetTeamDto;
+		organizationId: string;
 		userId: string;
 	}) {
-		const { organizationId, projectId } = dto;
-
-		await this.checkAccess(organizationId, projectId, userId);
+		await this.checkAccess({ organizationId, userId });
 
 		return this.prisma.team.findMany({
 			where: {
 				organizationId,
-				projectTeams: { some: { projectId } },
 				teamUsers: { some: { userId, teamStatus: AccessStatus.ACTIVE } }
 			},
 			select: {
@@ -193,7 +196,13 @@ export class TeamService {
 				updatedAt: true,
 				organizationId: true,
 				teamUsers: true,
-				tasks: true
+				tasks: true,
+				_count: {
+					select: {
+						projectTeams: true,
+						tasks: true
+					}
+				}
 			}
 		});
 	}
@@ -212,18 +221,16 @@ export class TeamService {
 	async getById({
 		userId,
 		id,
-		dto
+		organizationId
 	}: {
 		userId: string;
 		id: string;
-		dto: GetTeamDto;
+		organizationId: string;
 	}) {
-		const { organizationId, projectId } = dto;
-
-		await this.checkAccess(organizationId, projectId, userId);
+		await this.checkAccess({ organizationId, userId });
 
 		const team = await this.prisma.team.findFirst({
-			where: { id, organizationId, projectTeams: { some: { projectId } } },
+			where: { id, organizationId },
 			select: {
 				id: true,
 				title: true,
@@ -259,14 +266,13 @@ export class TeamService {
 		dto: CreateTeamDto;
 		userId: string;
 	}): Promise<Team> {
-		const { projectId, organizationId } = dto;
+		const { organizationId } = dto;
 
-		await this.checkAccess(organizationId, projectId, userId);
+		await this.checkAccess({ organizationId, userId });
 
 		const duplicate = await this.prisma.team.findFirst({
 			where: {
 				organizationId,
-				projectTeams: { some: { projectId } },
 				title: dto.title
 			}
 		});
@@ -278,7 +284,6 @@ export class TeamService {
 		return this.prisma.team.create({
 			data: {
 				...dto,
-				projectTeams: { create: { projectId } },
 				teamUsers: {
 					create: {
 						userId,
@@ -311,9 +316,9 @@ export class TeamService {
 		dto: UpdateTeamDto;
 		userId: string;
 	}): Promise<Team> {
-		const { organizationId, projectId } = dto;
+		const { organizationId } = dto;
 
-		await this.checkAccess(organizationId, projectId, userId);
+		await this.checkAccess({ organizationId, userId });
 
 		if (!(await this.isTeamLeader(id, userId))) {
 			throw new ForbiddenException('Only the team leader can update this team');
@@ -322,6 +327,58 @@ export class TeamService {
 		return this.prisma.team.update({
 			where: { id },
 			data: { ...dto }
+		});
+	}
+
+	/**
+	 * Links a team to a project.
+	 *
+	 * This method allows the team leader to link the team to a specific project.
+	 * The user must have access to the organization and the project.
+	 *
+	 * @param id - The team ID.
+	 * @param dto - The DTO object containing the project ID to link.
+	 * @param userId - The current user ID (leader).
+	 * @throws ForbiddenException if the user is not the leader of the team.
+	 * @throws NotFoundException if the team or project does not exist.
+	 */
+	async linkToProject({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: LinkTeamToProjectDto;
+		userId: string;
+	}): Promise<Team> {
+		const { organizationId, projectId } = dto;
+
+		// Check if the user has access to the organization and project
+		await this.checkAccess({ organizationId, projectId, userId });
+
+		// Ensure the user is the leader of the team
+		if (!(await this.isTeamLeader(id, userId))) {
+			throw new ForbiddenException(
+				'Only the team leader can link the team to a project'
+			);
+		}
+
+		// Check if the project exists within the organization
+		const project = await this.prisma.project.findFirst({
+			where: {
+				id: projectId,
+				organizationId
+			}
+		});
+
+		if (!project) {
+			throw new NotFoundException('Project not found in this organization');
+		}
+
+		// Link the team to the project
+		return this.prisma.team.update({
+			where: { id },
+			data: { projectId }
 		});
 	}
 
@@ -347,7 +404,7 @@ export class TeamService {
 	}) {
 		const { organizationId, teamUserId } = dto;
 
-		await this.checkAccess(organizationId, dto.projectId, userId);
+		await this.checkAccess({ organizationId, userId });
 
 		if (!(await this.isTeamLeader(id, userId))) {
 			throw new ForbiddenException('Only the team leader can add users');
@@ -364,7 +421,7 @@ export class TeamService {
 			}
 		});
 
-		return this.getById({ userId, id, dto });
+		return this.getById({ userId, id, organizationId });
 	}
 
 	/**
@@ -387,7 +444,7 @@ export class TeamService {
 	}): Promise<void> {
 		const { organizationId, teamUserId } = dto;
 
-		await this.checkAccess(organizationId, dto.projectId, userId);
+		await this.checkAccess({ organizationId, userId });
 
 		if (!(await this.isTeamLeader(id, userId))) {
 			throw new ForbiddenException('Only the team leader can remove users');
@@ -421,7 +478,7 @@ export class TeamService {
 	}): Promise<void> {
 		const { organizationId, teamUserId } = dto;
 
-		await this.checkAccess(organizationId, dto.projectId, userId);
+		await this.checkAccess({ organizationId, userId });
 
 		if (!(await this.isTeamLeader(id, userId))) {
 			throw new ForbiddenException(
@@ -518,9 +575,9 @@ export class TeamService {
 		dto: DeleteTeamDto;
 		userId: string;
 	}): Promise<void> {
-		const { organizationId, projectId } = dto;
+		const { organizationId } = dto;
 
-		await this.checkAccess(organizationId, projectId, userId);
+		await this.checkAccess({ organizationId, userId });
 
 		if (!(await this.isTeamLeader(id, userId))) {
 			throw new ForbiddenException('Only the team leader can delete the team');

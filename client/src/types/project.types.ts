@@ -13,6 +13,7 @@ export interface Project extends RootBase {
 	tasks?: TaskResponse[]; // Завдання в рамках проекту
 	projectTeams?: ProjectTeam[]; // Зв'язок з командами
 	_count?: {
+		projectUsers: number;
 		projectTeams: number;
 		tasks: number;
 	};

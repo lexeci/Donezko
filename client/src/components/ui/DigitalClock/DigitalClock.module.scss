@@ -1,3 +1,3 @@
 .digital-clock {
-	@apply text-sm font-semibold tracking-wide border-l border-l-foreground pl-6 w-[125px];
+	@apply text-sm font-semibold tracking-wide border-x border-x-foreground px-6 w-[145px] text-nowrap;
 }

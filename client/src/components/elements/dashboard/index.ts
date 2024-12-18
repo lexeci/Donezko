@@ -1,6 +1,6 @@
 export { default as DailyBoardAdvice } from "./DailyBoardAdvice/DailyBoardAdvice";
 export { default as EntityItem } from "./EntityItem/EntityItem";
-export { default as OrgBoardStatistic } from "./OrgBoardStatistic/OrgBoardStatistic";
+export { default as ProjectBoardStatistic } from "./ProjectBoardStatistic/ProjectBoardStatistic";
 export { default as StatisticBlock } from "./StatisticBlock/StatisticBlock";
 export { default as StatisticItem } from "./StatisticItem/StatisticItem";
 export { default as TasksBoardStatistic } from "./TasksBoardStatistic/TasksBoardStatistic";

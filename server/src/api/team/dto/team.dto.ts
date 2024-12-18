@@ -17,6 +17,20 @@ export class GetTeamDto {
 }
 
 /**
+ * DTO for assigning team to projects.
+ * It ensures that the projectId and organizationId are provided.
+ */
+export class LinkTeamToProjectDto {
+	@IsNotEmpty()
+	@IsString()
+	projectId: string; // The ID of the project to get teams for.
+
+	@IsNotEmpty()
+	@IsString()
+	organizationId: string; // The ID of the organization to get teams for.
+}
+
+/**
  * DTO for creating a new team.
  * It ensures that organizationId, projectId, and title are provided.
  * Description is optional.

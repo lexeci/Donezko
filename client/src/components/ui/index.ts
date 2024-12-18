@@ -7,6 +7,7 @@ export { default as Field } from "./Field/Field";
 export { default as Select } from "./Field/Select";
 export { default as HeaderUserBadge } from "./HeaderUserBadge/HeaderUserBadge";
 export { default as Logo } from "./Logo/logo";
+export { default as SelectOrganization } from "./SelectOrganization/SelectOrganization";
 export { default as Task } from "./Task/Task";
 export { default as ThemeSwitcher } from "./ThemeSwitcher/ThemeSwitcher";
 export { default as TransparentField } from "./TransparentField/TransparentField";

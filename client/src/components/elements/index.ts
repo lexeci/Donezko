@@ -15,12 +15,16 @@ export { default as Welcome } from "./Home/welcome/Welcome";
 
 export { default as Authorization } from "./Authorization/Authorization";
 export { default as ModalWindow } from "./ModalWindow/ModalWindow";
+
+// Workspace
+
 export { default as OrganizationElements } from "./Organization/OrganizationElements";
+export { default as OrganizationModal } from "./Organization/OrganizationModal";
 export { default as OrganizationUpdate } from "./Organization/OrganizationUpdate";
 export { default as OrganizationUsers } from "./Organization/OrganizationUsers";
+export { default as AddProjectUsers } from "./Project/AddProjectUsers";
 export { default as ProjectElements } from "./Project/ProjectElements";
 export { default as ProjectUpdate } from "./Project/ProjectUpdate";
-export { default as AddProjectUsers } from "./Project/AddProjectUsers";
 export { default as ProjectUsers } from "./Project/ProjectUsers";
 export { default as TeamElements } from "./Team/TeamElements";
 
@@ -28,7 +32,7 @@ export { default as TeamElements } from "./Team/TeamElements";
 export {
 	DailyBoardAdvice,
 	EntityItem,
-	OrgBoardStatistic,
+	ProjectBoardStatistic,
 	StatisticBlock,
 	StatisticItem,
 	TasksBoardStatistic,

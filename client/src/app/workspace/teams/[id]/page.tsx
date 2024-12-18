@@ -1,48 +1,20 @@
-import pageStyles from "@/app/page.module.scss";
-import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
-import {
-	Button,
-	EntityItem,
-	PageHeader,
-	PageLayout,
-	WindowContainer,
-} from "@/src/components";
-import generateKeyComp from "@/src/utils/generateKeyComp";
-import { Browsers, Person, Trash } from "@phosphor-icons/react/dist/ssr";
-import { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-	title: `${SITE_NAME} - Team`,
-	...NO_INDEX_PAGE,
-};
+import pageStyles from "@/app/page.module.scss";
+import { Button, PageHeader, PageLayout } from "@/src/components";
+import { useFetchTeamById } from "@/src/hooks/team/useFetchTeamById";
+import { useTeamRemoval } from "@/src/hooks/team/useTeamRemoval";
+import { Trash } from "@phosphor-icons/react/dist/ssr";
+import { useParams } from "next/navigation";
 
 export default function Organization() {
-	const projectArray = [
-		{
-			title: "Insomnia Project",
-			tasks: 128,
-			teams: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Project",
-			tasks: 128,
-			teams: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Project",
-			tasks: 128,
-			teams: 12,
-			id: "2331321213213",
-		},
-		{
-			title: "Insomnia Project",
-			tasks: 128,
-			teams: 12,
-			id: "2331321213213",
-		},
-	];
+	const params = useParams<{ id: string }>();
+	const { id: teamId } = params;
+
+	const { team, setTeam } = useFetchTeamById(teamId, organizationId);
+	const { deleteTeam } = useTeamRemoval();
+
+	console.log(project);
 
 	return (
 		<PageLayout>
@@ -52,7 +24,7 @@ export default function Organization() {
 				desc={`Participants: 32 | Teams: 16 | Projects: 15 | Tasks: 32`}
 			/>
 			<div className={pageStyles["workspace-content-col"]}>
-				<WindowContainer title="Insomnia Works" subtitle="Projects [15]">
+				{/* <WindowContainer title="Insomnia Works" subtitle="Projects [15]">
 					{projectArray.map((item, i) => (
 						<EntityItem
 							icon={<Browsers size={84} />}
@@ -192,9 +164,14 @@ export default function Organization() {
 							</div>
 						</div>
 					</div>
-				</WindowContainer>
+				</WindowContainer> */}
 				<Button type="button">
-					<Trash size={22} className="mr-4" /> Delete Team
+					<Trash
+						size={22}
+						className="mr-4"
+						onClick={() => deleteTeam(teamId)}
+					/>
+					Delete Team
 				</Button>
 			</div>
 		</PageLayout>

@@ -1,5 +1,5 @@
 import { axiosWithAuth } from "@/api/interceptors";
-import { ProjectFormData, ProjectResponse, ProjectUsers } from "@/types/project.types";
+import { Project, ProjectFormData, ProjectUsers } from "@/types/project.types";
 import { AccessStatus } from "@/types/root.types";
 import { toast } from "sonner";
 import { OrgUserResponse } from "../types/org.types";
@@ -15,15 +15,15 @@ class ProjectService {
 	 */
 	async getAllProjects(
 		organizationId?: string
-	): Promise<ProjectResponse[] | undefined> {
+	): Promise<Project[] | undefined> {
 		try {
-			const response = await axiosWithAuth.get<ProjectResponse[] | undefined>(
+			const response = await axiosWithAuth.get<Project[] | undefined>(
 				organizationId
 					? `${this.BASE_URL}/?organizationId=${organizationId}`
 					: this.BASE_URL
 			);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error fetching projects:", error);
 			throw new Error("Could not fetch projects");
@@ -39,7 +39,7 @@ class ProjectService {
 		try {
 			const response = await axiosWithAuth.get<any>(`${this.BASE_URL}/${id}`);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error fetching project:", error);
 			throw new Error("Could not fetch project");
@@ -52,7 +52,7 @@ class ProjectService {
 				`${this.BASE_URL}/${id}/users`
 			);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error fetching project:", error);
 			throw new Error("Could not fetch project");
@@ -68,7 +68,7 @@ class ProjectService {
 		try {
 			const response = await axiosWithAuth.post<any>(this.BASE_URL, data);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error creating project:", error);
 			throw new Error("Could not create project");
@@ -88,7 +88,7 @@ class ProjectService {
 				data
 			);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error updating project:", error);
 			throw new Error("Could not update project");
@@ -102,7 +102,7 @@ class ProjectService {
 	async deleteProject(id: string): Promise<void> {
 		try {
 			await axiosWithAuth.delete(`${this.BASE_URL}/${id}`);
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error deleting project:", error);
 			throw new Error("Could not delete project");
@@ -122,7 +122,7 @@ class ProjectService {
 				{ projectUserId: userId }
 			);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error adding user to project:", error);
 			throw new Error("Could not add user to project");
@@ -149,7 +149,7 @@ class ProjectService {
 				}
 			);
 			return response.data;
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error updating user status in project:", error);
 			throw new Error("Could not update user status in project");
@@ -165,7 +165,7 @@ class ProjectService {
 			await axiosWithAuth.delete(
 				`${this.BASE_URL}/exit/${id}${userId ? `/?userId=${userId}` : ""}`
 			);
-		} catch (error) {
+		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error exiting project:", error);
 			throw new Error("Could not exit project");

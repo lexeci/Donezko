@@ -12,12 +12,12 @@ import { useFetchUserProfile } from "@/src/hooks/useFetchUserProfile";
 import { AuthUser } from "@/src/types/auth.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
 import { useEffect, useState } from "react";
+import { SelectOrganization } from "../../ui";
 import styles from "./Header.module.scss";
 
 export default function Header() {
 	const [user, setUser] = useState<AuthUser | undefined>();
 	const { profileData, isDataLoading } = useFetchUserProfile();
-
 	const [cookiesExist, setCookiesExist] = useState(false);
 
 	// Колбек, коли кука з'являється
@@ -60,8 +60,11 @@ export default function Header() {
 						</li>
 					))}
 				</ul>
-				<div className="options flex flex-row justify-center items-center gap-x-6">
+				<div className="options flex flex-row justify-end items-center gap-x-6">
 					<ThemeSwitcher aria-label="Toggle theme" />
+					{profileData && cookiesExist && (
+						<SelectOrganization aria-label="Select workspace organization" />
+					)}
 					<DigitalClock aria-label="Current time" />
 					<HeaderUserBadge aria-label="User options" />
 				</div>

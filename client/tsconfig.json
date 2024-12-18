@@ -27,6 +27,7 @@
 			"@/types/*": ["./src/types/*"],
 			"@/utils/*": ["./src/utils/*"],
 			"@/config/*": ["./src/config/*"],
+			"@/context/*": ["./src/context/*"],
 			"@/layouts/*": ["./src/layouts/*"],
 			"@/services/*": ["./src/services/*"],
 			"@/constants/*": ["./src/constants/*"],

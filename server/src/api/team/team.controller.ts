@@ -7,6 +7,7 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
@@ -16,7 +17,7 @@ import { Permission } from '../permission/decorators/permission.decorator';
 import {
 	CreateTeamDto,
 	DeleteTeamDto,
-	GetTeamDto,
+	LinkTeamToProjectDto,
 	ManageTeamDto,
 	TeamDto
 } from './dto/team.dto';
@@ -30,7 +31,7 @@ import { TeamService } from './team.service';
  *
  * @module TeamController
  */
-@Controller('user/organizations/projects/teams')
+@Controller('user/organizations/teams')
 export class TeamController {
 	constructor(private readonly teamService: TeamService) {}
 
@@ -49,10 +50,13 @@ export class TeamController {
 	@Permission('viewResources')
 	@Get()
 	async getAll(
-		@Body() dto: GetTeamDto,
+		@Query('organizationId') organizationId: string,
 		@CurrentUser('id') userId: string
 	) {
-		return await this.teamService.getAllByOrgProject({ userId, dto });
+		return await this.teamService.getAllByOrgProject({
+			userId,
+			organizationId
+		});
 	}
 
 	/**
@@ -66,9 +70,7 @@ export class TeamController {
 	@HttpCode(200)
 	@Permission('viewResources') // Вказуємо відповідний дозвіл, якщо потрібен
 	@Get('user-teams') // Новий шлях для цього ендпоінта
-	async getAllByUser(
-		@CurrentUser('id') userId: string
-	) {
+	async getAllByUser(@CurrentUser('id') userId: string) {
 		return await this.teamService.getAllByUserId(userId);
 	}
 
@@ -88,11 +90,11 @@ export class TeamController {
 	@Get(':id')
 	@Permission('viewResources')
 	async getById(
-		@Body() dto: GetTeamDto,
+		@Query('organizationId') organizationId: string,
 		@Param('id') id: string,
 		@CurrentUser('id') userId: string
 	) {
-		return await this.teamService.getById({ userId, id, dto });
+		return await this.teamService.getById({ userId, id, organizationId });
 	}
 
 	/**
@@ -159,6 +161,28 @@ export class TeamController {
 		@CurrentUser('id') userId: string
 	): Promise<void> {
 		await this.teamService.delete({ id, dto, userId });
+	}
+
+	/**
+	 * Links a team to a project.
+	 *
+	 * This endpoint allows a team leader to link their team to a specific project within an organization.
+	 *
+	 * @param id - The ID of the team to link.
+	 * @param dto - Data Transfer Object containing the project ID and organization ID.
+	 * @param userId - The ID of the current user linking the team to the project.
+	 * @returns The updated team.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Put(':id/link-project')
+	@Permission('updateTeam')
+	async linkToProject(
+		@Param('id') id: string,
+		@Body() dto: LinkTeamToProjectDto,
+		@CurrentUser('id') userId: string
+	): Promise<Team> {
+		return await this.teamService.linkToProject({ id, dto, userId });
 	}
 
 	/**

@@ -3,6 +3,7 @@ import type {
 	ManageTeamData,
 	TeamFormData,
 	TeamResponse,
+	TeamsProjectResponse,
 	TeamsResponse,
 	TeamWithUsersResponse,
 } from "@/types/team.types";
@@ -33,16 +34,45 @@ class TeamService {
 	 * @param organizationId - The organization ID.
 	 * @returns A list of teams with their users.
 	 */
-	async getAllTeams(organizationId: string): Promise<TeamsResponse[]> {
+	async getAllTeams(
+		organizationId: string,
+		projectId?: string | null
+	): Promise<TeamsResponse[]> {
 		try {
 			const response = await axiosWithAuth.get<TeamsResponse[]>(
-				`${this.BASE_URL}?organizationId=${organizationId}`
+				`${this.BASE_URL}?organizationId=${organizationId}${
+					projectId ? `&projectId=${projectId}` : ""
+				}`
 			);
+			console.log(response.data);
 			return response.data;
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error fetching all teams:", error);
 			throw new Error("Could not fetch all teams");
+		}
+	}
+
+	/**
+	 * Fetches all teams for a specific project within organization.
+	 * @param organizationId - The organization ID.
+	 * @param projectId - The project ID.
+	 * @returns A list of teams with their users.
+	 */
+	async getAllTeamsByProject(
+		organizationId: string,
+		projectId: string
+	): Promise<TeamsProjectResponse> {
+		try {
+			const response = await axiosWithAuth.get<TeamsProjectResponse>(
+				`${this.BASE_URL}/project/?organizationId=${organizationId}&projectId=${projectId}`
+			);
+			console.log(response.data);
+			return response.data;
+		} catch (error: any) {
+			error && toast.error(error.response.data.message);
+			console.error("Error fetching all teams for project:", error);
+			throw new Error("Could not fetch all teams for project");
 		}
 	}
 
@@ -129,12 +159,18 @@ class TeamService {
 	 * @param data - Data containing the project and organization details.
 	 * @returns The updated team.
 	 */
-	async linkToProject(
-		id: string,
-		data: { projectId: string; organizationId: string }
-	): Promise<TeamResponse> {
+	async linkToProject({
+		id,
+		projectId,
+		organizationId,
+	}: {
+		id: string;
+		projectId: string;
+		organizationId: string;
+	}): Promise<TeamsProjectResponse> {
 		try {
-			const response = await axiosWithAuth.put<TeamResponse>(
+			const data = { projectId, organizationId };
+			const response = await axiosWithAuth.put<TeamsProjectResponse>(
 				`${this.BASE_URL}/${id}/link-project`,
 				data
 			);
@@ -143,6 +179,34 @@ class TeamService {
 			error && toast.error(error.response.data.message);
 			console.error("Error linking team to project:", error);
 			throw new Error("Could not link team to project");
+		}
+	}
+
+	/**
+	 * Unlinks a team from project.
+	 * @param id - The team ID.
+	 * @param data - Data containing the project and organization details.
+	 */
+	async unlinkFromProject({
+		id,
+		projectId,
+		organizationId,
+	}: {
+		id: string;
+		projectId: string;
+		organizationId: string;
+	}): Promise<TeamsProjectResponse> {
+		try {
+			const data = { projectId, organizationId };
+			const response = await axiosWithAuth.put<TeamsProjectResponse>(
+				`${this.BASE_URL}/${id}/unlink-project`,
+				data
+			);
+			return response.data;
+		} catch (error: any) {
+			error && toast.error(error.response.data.message);
+			console.error("Error unlinking team to project:", error);
+			throw new Error("Could not unlink team to project");
 		}
 	}
 

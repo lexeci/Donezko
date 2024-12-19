@@ -42,13 +42,15 @@ export class ProjectController {
 	@Permission('viewResources') // Permission decorator to check if the user has the required permission
 	async getAll(
 		@Query('organizationId') organizationId: string,
+		@Query('projectId') projectId: string,
 		@CurrentUser('id') userId: string
 	) {
 		// If organizationId is provided, get projects from that organization, otherwise get all projects
 		return organizationId
 			? this.projectService.getAllFromOrg({
 					userId,
-					organizationId: organizationId
+					organizationId: organizationId,
+					projectId
 				})
 			: this.projectService.getAll(userId); // Get projects from specific organization// Get all active projects from the organization
 	}

@@ -230,6 +230,14 @@ export class ProjectService {
 										id: true,
 										title: true,
 										description: true,
+										teamUsers: {
+											where: {
+												userId
+											},
+											select: {
+												role: true
+											}
+										},
 										_count: {
 											select: {
 												teamUsers: true,
@@ -261,10 +269,12 @@ export class ProjectService {
 	 */
 	async getAllFromOrg({
 		userId,
-		organizationId
+		organizationId,
+		projectId
 	}: {
 		userId: string;
 		organizationId: string;
+		projectId: string;
 	}) {
 		return this.prisma.project.findMany({
 			where: {
@@ -274,7 +284,14 @@ export class ProjectService {
 						userId,
 						projectStatus: AccessStatus.ACTIVE
 					}
-				}
+				},
+				...(projectId && {
+					projectTeams: {
+						some: {
+							projectId: projectId
+						}
+					}
+				})
 			},
 			select: {
 				id: true,

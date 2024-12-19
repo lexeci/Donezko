@@ -3,7 +3,7 @@ import { TeamResponse } from "@/types/team.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-export function useFetchTeamById(id: string, organizationId?: string | null) {
+export function useFetchTeamById(id: string, organizationId: string | null) {
 	const { data: teamData } = useQuery({
 		queryKey: ["team", id, organizationId],
 		queryFn: () => teamService.getTeamById(id, organizationId as string),

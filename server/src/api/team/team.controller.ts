@@ -36,9 +36,9 @@ export class TeamController {
 	constructor(private readonly teamService: TeamService) {}
 
 	/**
-	 * Fetches all teams for a project.
+	 * Fetches all teams for organization.
 	 *
-	 * This endpoint retrieves the list of teams in a project, along with their members,
+	 * This endpoint retrieves the list of teams in organization, along with their members,
 	 * and is accessible by users with the 'viewResources' permission.
 	 *
 	 * @param dto - Data Transfer Object containing filter parameters for fetching teams.
@@ -56,6 +56,32 @@ export class TeamController {
 		return await this.teamService.getAllByOrg({
 			userId,
 			organizationId
+		});
+	}
+
+	/**
+	 * Fetches all teams for a project.
+	 *
+	 * This endpoint retrieves the list of teams in a project, along with their members,
+	 * and is accessible by users with the 'viewResources' permission.
+	 *
+	 * @param dto - Data Transfer Object containing filter parameters for fetching teams.
+	 * @param userId - The ID of the current user making the request.
+	 * @returns A list of teams with their users.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Permission('viewResources')
+	@Get('/project')
+	async getAllByProject(
+		@Query('organizationId') organizationId: string,
+		@Query('projectId') projectId: string,
+		@CurrentUser('id') userId: string
+	) {
+		return await this.teamService.getAllByProject({
+			userId,
+			organizationId,
+			projectId
 		});
 	}
 
@@ -181,8 +207,30 @@ export class TeamController {
 		@Param('id') id: string,
 		@Body() dto: LinkTeamToProjectDto,
 		@CurrentUser('id') userId: string
-	): Promise<Team> {
+	) {
 		return await this.teamService.linkToProject({ id, dto, userId });
+	}
+
+	/**
+	 * UnLinks a team to a project.
+	 *
+	 * This endpoint allows a team leader to unlink their team from a specific project within an organization.
+	 *
+	 * @param id - The ID of the team to link.
+	 * @param dto - Data Transfer Object containing the project ID and organization ID.
+	 * @param userId - The ID of the current user linking the team to the project.
+	 * @returns The updated team.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Put(':id/unlink-project')
+	@Permission('updateTeam')
+	async unlinkFromProject(
+		@Param('id') id: string,
+		@Body() dto: LinkTeamToProjectDto,
+		@CurrentUser('id') userId: string
+	) {
+		return await this.teamService.unlinkFromProject({ id, dto, userId });
 	}
 
 	/**

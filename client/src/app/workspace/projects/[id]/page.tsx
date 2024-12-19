@@ -13,14 +13,17 @@ import {
 	TeamElements,
 	WindowContainer,
 } from "@/src/components";
+import { useOrganization } from "@/src/context/OrganizationContext";
 import { useDeleteProject } from "@/src/hooks/project/useDeleteProject";
 import { useFetchProjectById } from "@/src/hooks/project/useFetchProjectById";
+import { useFetchTeamsByProject } from "@/src/hooks/team/useFetchTeamsByProject";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Project() {
 	const { replace } = useRouter();
+	const { organizationId } = useOrganization();
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
 	const [openModalAddUser, setOpenModalAddUser] = useState<boolean>(false);
@@ -36,7 +39,11 @@ export default function Project() {
 	const projectStatus = fetchedData?.projectStatus;
 	const role = fetchedData?.user?.organizationUsers[0].role;
 	const organization = project?.organization;
-	const organizationId = organization ? organization?.id : "";
+
+	const { teamList, setTeamList } = useFetchTeamsByProject(
+		organizationId,
+		projectId
+	); // Отримуємо список команд організації
 
 	const hasPermission = role === "ADMIN" || role === "OWNER";
 
@@ -82,20 +89,19 @@ export default function Project() {
 				)}
 				<WindowContainer
 					title={project.title as string}
-					subtitle={`Teams: ${project._count?.projectTeams}`}
+					subtitle={`Teams: ${teamList?.inProject.length}`}
 					fullPage
 				>
-					{project.projectTeams && (
+					{teamList && organizationId && (
 						<TeamElements
 							isWindowElement
 							organizationId={organizationId}
 							organizationTitle={organization?.title}
 							projectId={projectId}
 							projectTitle={project.title}
-							projectTeams={project.projectTeams}
-							isAdministrate={
-								role === "ADMIN" || role === "OWNER" || role === "MEMBER"
-							}
+							projectTeams={teamList}
+							isAdministrate={role === "ADMIN" || role === "OWNER"}
+							setTeamList={setTeamList}
 						/>
 					)}
 				</WindowContainer>

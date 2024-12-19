@@ -7,13 +7,34 @@ export enum TeamRole {
 	MEMBER = "MEMBER",
 }
 
-interface Team extends RootBase {
+interface teamUser {
+	id: UUID;
+	role: TeamRole;
+	teamStatus: AccessStatus;
+	user: {
+		id: UUID;
+		name: string;
+		email: string;
+	};
+}
+
+export interface Team extends RootBase {
 	title: string;
 	description: string;
 	organizationId: UUID;
 	organization: Organization;
 	projectId: UUID;
 	tasks: TaskResponse[];
+	teamUsers?: Array<{
+		id: UUID;
+		role: TeamRole;
+		teamStatus: AccessStatus;
+		user: {
+			id: UUID;
+			name: string;
+			email: string;
+		};
+	}>;
 	_count?: {
 		teamUsers: number;
 		tasks: number;
@@ -31,23 +52,20 @@ export interface TeamsResponse extends RootBase {
 	title: string;
 	description: string;
 	organizationId: string;
+	teamUsers: teamUser[];
 	_count: {
 		teamUsers: true;
 		tasks: true;
 	};
 }
 
+export interface TeamsProjectResponse {
+	inProject: TeamsResponse[];
+	notInProject: TeamsResponse[];
+}
+
 export interface TeamWithUsersResponse extends TeamResponse {
-	teamUsers: Array<{
-		id: UUID;
-		role: TeamRole;
-		teamStatus: AccessStatus;
-		user: {
-			id: UUID;
-			name: string;
-			email: string;
-		};
-	}>;
+	teamUsers: teamUser[];
 }
 
 export interface ManageTeamData {

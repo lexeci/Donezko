@@ -4,34 +4,43 @@ import pageStyles from "@/app/page.module.scss";
 
 import { Button, EntityItem, ModalWindow } from "@/components/index";
 import { useOrganization } from "@/src/context/OrganizationContext";
+import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
 import { useFetchTeams } from "@/src/hooks/team/useFetchTeams";
-import { ProjectTeam } from "@/src/types/project.types";
-import { TeamsResponse } from "@/src/types/team.types";
+import { TeamsProjectResponse, TeamsResponse } from "@/src/types/team.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
-import { Buildings } from "@phosphor-icons/react";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
+import { Plus, UserList } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import TeamCreate from "./TeamCreate";
+import TeamOperate from "./TeamOperate";
 
 interface TeamElementsProps {
 	isWindowElement?: boolean;
 	organizationId?: string;
 	organizationTitle?: string;
+	teams?: TeamsResponse[];
 	projectId?: string;
 	projectTitle?: string;
-	teams?: TeamsResponse[];
-	projectTeams?: ProjectTeam[];
+	projectTeams?: TeamsProjectResponse;
 	isAdministrate?: boolean;
+	setTeamList?: Dispatch<SetStateAction<TeamsProjectResponse | undefined>>;
 }
 
 // Компонента для відображення команд, якщо передано `teams` через пропси
 const TeamElementsWithData = ({
 	fetchedData,
+	onCountChange,
 }: {
 	fetchedData: TeamsResponse[];
+	onCountChange: (count: number) => void;
 }) => {
-	console.log(fetchedData);
+	// Викликаємо `onCountChange` через ефект
+	useEffect(() => {
+		if (fetchedData?.length) {
+			onCountChange(fetchedData.length);
+		}
+	}, [fetchedData, onCountChange]);
+
 	return fetchedData.length > 0 ? (
 		fetchedData.map((team, i) => {
 			const { _count, id, title } = team;
@@ -39,7 +48,7 @@ const TeamElementsWithData = ({
 				title && (
 					<EntityItem
 						key={generateKeyComp(`${title}__${i}`)}
-						icon={<Buildings size={84} />}
+						icon={<UserList size={84} />}
 						linkBase={`/workspace/teams/${id}`}
 						title={title}
 						firstStat={`Participants: ${_count?.teamUsers}`}
@@ -58,10 +67,11 @@ const TeamElementsWithData = ({
 // Компонента для відображення команд, якщо дані не передано через пропси
 const TeamElementsWithoutData = ({
 	onCountChange,
+	organizationId,
 }: {
 	onCountChange: (count: number) => void;
+	organizationId: string | null;
 }) => {
-	const { organizationId } = useOrganization();
 	const { teamList } = useFetchTeams(organizationId);
 
 	// Викликаємо `onCountChange` через ефект
@@ -77,7 +87,7 @@ const TeamElementsWithoutData = ({
 			return (
 				<EntityItem
 					key={generateKeyComp(`${title}__${i}`)}
-					icon={<Buildings size={84} />}
+					icon={<UserList size={84} />}
 					linkBase={`/workspace/teams/${id}`}
 					title={title}
 					firstStat={`Participants: ${_count?.teamUsers}`}
@@ -94,15 +104,31 @@ const TeamElementsWithoutData = ({
 
 export default function TeamElements({
 	isWindowElement,
-	organizationId,
+	organizationId: localId,
 	organizationTitle,
 	projectId,
 	projectTitle,
 	teams,
-	isAdministrate = false,
+	projectTeams,
+	isAdministrate,
+	setTeamList,
 }: TeamElementsProps) {
 	const [open, setOpen] = useState<boolean>(false);
+	const [openAssign, setOpenAssign] = useState<boolean>(false);
 	const [teamCount, setTeamCount] = useState<number>(teams?.length || 0);
+
+	// Якщо `organizationId` передано, використовуємо його, інакше виконуємо запит
+	const { organizationId } = useOrganization();
+	const effectiveOrganizationId = localId || organizationId;
+
+	// Якщо `isAdministrate` передано, використовуємо його, інакше перевіряємо роль
+	const { organizationRole } = useFetchOrgRole(organizationId);
+
+	// Визначаємо, чи може користувач адміністративно діяти
+	const canAdministrate =
+		isAdministrate !== undefined
+			? isAdministrate
+			: organizationRole && organizationRole.role !== "VIEWER"; // Виключення для VIEWER
 
 	return (
 		<div
@@ -111,15 +137,31 @@ export default function TeamElements({
 				isWindowElement && "h-full w-full max-w-full !p-0 !justify-start"
 			)}
 		>
-			{open && isAdministrate && (
+			{open && canAdministrate && (
 				<ModalWindow
-					title="Organization manager.exe"
-					subtitle="The manager to operate your organization"
+					title="Teams manager.exe"
+					subtitle="The manager to operate your teams"
 					onClose={() => setOpen(false)}
 				>
 					<TeamCreate
-						organizationId={organizationId}
+						organizationId={effectiveOrganizationId}
 						organizationTitle={organizationTitle}
+					/>
+				</ModalWindow>
+			)}
+			{openAssign && canAdministrate && projectTeams && (
+				<ModalWindow
+					title="Teams manager.exe"
+					subtitle={`The manager to operate your teams in ${projectTitle}`}
+					onClose={() => setOpenAssign(false)}
+				>
+					<TeamOperate
+						organizationId={effectiveOrganizationId}
+						organizationTitle={organizationTitle}
+						projectId={projectId}
+						projectTitle={projectTitle}
+						teams={projectTeams}
+						setTeamList={setTeamList}
 					/>
 				</ModalWindow>
 			)}
@@ -133,8 +175,13 @@ export default function TeamElements({
 				>
 					<h4>Total Teams: {teamCount}</h4>
 				</div>
-				{isAdministrate && (
-					<Button type="button" onClick={() => setOpen(true)} negative block>
+				{canAdministrate && (
+					<Button
+						type="button"
+						onClick={() => (projectTeams ? setOpenAssign(true) : setOpen(true))}
+						negative
+						block
+					>
 						<Plus size={22} className="mr-4" /> Team
 					</Button>
 				)}
@@ -146,9 +193,20 @@ export default function TeamElements({
 				)}
 			>
 				{teams?.length || teams != undefined ? (
-					<TeamElementsWithData fetchedData={teams} />
+					<TeamElementsWithData
+						fetchedData={teams}
+						onCountChange={setTeamCount}
+					/>
+				) : projectTeams?.inProject?.length || projectTeams != undefined ? (
+					<TeamElementsWithData
+						fetchedData={projectTeams.inProject}
+						onCountChange={setTeamCount}
+					/>
 				) : (
-					!projectId && <TeamElementsWithoutData onCountChange={setTeamCount} />
+					<TeamElementsWithoutData
+						organizationId={effectiveOrganizationId}
+						onCountChange={setTeamCount}
+					/>
 				)}
 			</div>
 		</div>

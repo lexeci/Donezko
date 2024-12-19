@@ -181,30 +181,220 @@ export class TeamService {
 		organizationId: string;
 		userId: string;
 	}) {
+		// Перевірка доступу користувача до організації
 		await this.checkAccess({ organizationId, userId });
 
-		return this.prisma.team.findMany({
-			where: {
-				organizationId,
-				teamUsers: { some: { userId, teamStatus: AccessStatus.ACTIVE } }
-			},
+		// Отримуємо роль користувача в організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId },
 			select: {
-				id: true,
-				title: true,
-				description: true,
-				createdAt: true,
-				updatedAt: true,
-				organizationId: true,
-				teamUsers: true,
-				tasks: true,
-				_count: {
-					select: {
-						teamUsers: true,
-						tasks: true
-					}
-				}
+				role: true
 			}
 		});
+
+		// Створення запиту для отримання команд
+		let teamsQuery: any;
+
+		if (
+			userInOrg?.role === OrgRole.ADMIN ||
+			userInOrg?.role === OrgRole.OWNER
+		) {
+			// Якщо користувач є адміністратором або власником, повертаємо всі команди
+			teamsQuery = {
+				where: {
+					organizationId
+				},
+				select: {
+					id: true,
+					title: true,
+					description: true,
+					projectId: true,
+					teamUsers: {
+						where: {
+							userId // Перевіряємо конкретного користувача в команді
+						},
+						select: {
+							role: true,
+							teamStatus: true
+						}
+					},
+					_count: {
+						select: {
+							teamUsers: true,
+							tasks: true
+						}
+					}
+				}
+			};
+		} else if (userInOrg?.role === OrgRole.MEMBER) {
+			// Якщо користувач є учасником, повертаємо лише ті команди, в яких він бере участь
+			teamsQuery = {
+				where: {
+					organizationId,
+					teamUsers: {
+						some: {
+							userId,
+							OR: [
+								{ role: TeamRole.MEMBER, teamStatus: AccessStatus.ACTIVE },
+								{ role: TeamRole.LEADER, teamStatus: AccessStatus.ACTIVE }
+							]
+						}
+					}
+				},
+				select: {
+					id: true,
+					title: true,
+					description: true,
+					projectId: true,
+					teamUsers: {
+						where: {
+							userId
+						},
+						select: {
+							role: true,
+							teamStatus: true
+						}
+					},
+					_count: {
+						select: {
+							teamUsers: true,
+							tasks: true
+						}
+					}
+				}
+			};
+		} else {
+			// Якщо користувач є лише переглядачем, не повертаємо команди
+			teamsQuery = {
+				where: {
+					organizationId,
+					teamUsers: {
+						none: {
+							userId
+						}
+					}
+				},
+				select: {
+					id: true,
+					title: true,
+					description: true,
+					projectId: true,
+					teamUsers: {
+						where: {
+							userId
+						},
+						select: {
+							role: true,
+							teamStatus: true
+						}
+					},
+					_count: {
+						select: {
+							teamUsers: true,
+							tasks: true
+						}
+					}
+				}
+			};
+		}
+
+		// Отримуємо команди з бази даних за допомогою Prisma
+		const teams = await this.prisma.team.findMany(teamsQuery);
+
+		// Повертаємо команди разом з ролями і статусами користувача в кожній команді
+		return teams;
+	}
+
+	/**
+	 * Retrieves all active teams for a project.
+	 *
+	 * This method returns a list of teams for the specified project, filtered by the availability in project.
+	 * The user must have access to the organization and project.
+	 *
+	 * @param organizationId - The DTO object containing the organization id.
+	 * @param userId - The current user ID.
+	 * @returns The list of teams in project and not in project.
+	 */
+	async getAllByProject({
+		organizationId,
+		projectId,
+		userId
+	}: {
+		userId: string;
+		projectId: string;
+		organizationId: string;
+	}) {
+		// Перевірка доступу користувача до організації
+		await this.checkAccess({ organizationId, userId });
+
+		// Отримуємо роль користувача в організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId },
+			select: {
+				role: true
+			}
+		});
+
+		if (!userInOrg) {
+			throw new ForbiddenException('You are not a member of this organization');
+		}
+
+		if (
+			userInOrg.role === OrgRole.MEMBER ||
+			userInOrg.role === OrgRole.VIEWER
+		) {
+			throw new ForbiddenException('You cannot perform such action');
+		}
+
+		const regularSelect = {
+			id: true,
+			title: true,
+			description: true,
+			teamUsers: {
+				where: {
+					userId
+				},
+				select: {
+					role: true,
+					teamStatus: true
+				}
+			},
+			_count: {
+				select: {
+					teamUsers: true,
+					tasks: true
+				}
+			}
+		};
+
+		const teamsInProject = await this.prisma.team.findMany({
+			where: {
+				organizationId,
+				projectTeams: {
+					some: {
+						projectId
+					}
+				}
+			},
+			select: regularSelect
+		});
+
+		const teamsNotInProject = await this.prisma.team.findMany({
+			where: {
+				organizationId,
+				projectTeams: {
+					none: {
+						projectId
+					}
+				}
+			},
+			select: regularSelect
+		});
+
+		return {
+			inProject: teamsInProject,
+			notInProject: teamsNotInProject
+		};
 	}
 
 	/**
@@ -424,20 +614,29 @@ export class TeamService {
 		id: string;
 		dto: LinkTeamToProjectDto;
 		userId: string;
-	}): Promise<Team> {
+	}) {
 		const { organizationId, projectId } = dto;
 
-		// Check if the user has access to the organization and project
+		// Перевірка доступу до організації та проекту
 		await this.checkAccess({ organizationId, projectId, userId });
 
-		// Ensure the user is the leader of the team
-		if (!(await this.isTeamLeader(id, userId))) {
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
+		if (
+			!(
+				userInOrg &&
+				([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+			)
+		) {
 			throw new ForbiddenException(
-				'Only the team leader can link the team to a project'
+				'Only the admin or owner can link the team to a project'
 			);
 		}
 
-		// Check if the project exists within the organization
+		// Перевірка існування проекту в організації
 		const project = await this.prisma.project.findFirst({
 			where: {
 				id: projectId,
@@ -449,10 +648,128 @@ export class TeamService {
 			throw new NotFoundException('Project not found in this organization');
 		}
 
-		// Link the team to the project
-		return this.prisma.team.update({
-			where: { id },
-			data: { projectId }
+		// Перевірка, чи вже пов’язана команда з проектом
+		const existingLink = await this.prisma.projectTeam.findFirst({
+			where: {
+				projectId,
+				teamId: id
+			}
+		});
+
+		if (existingLink) {
+			throw new ForbiddenException(
+				'The team is already linked to this project'
+			);
+		}
+
+		// Прив'язка команди до проекту
+		await this.prisma.projectTeam.create({
+			data: {
+				projectId,
+				teamId: id
+			}
+		});
+
+		// Повернення оновленої команди
+		return this.getAllByProject({
+			projectId,
+			organizationId,
+			userId
+		});
+	}
+
+	/**
+	 * Unlinks a team from a project.
+	 *
+	 * This method allows the team leader to unlink the team from a specific project.
+	 * The user must have access to the organization and the project.
+	 *
+	 * @param id - The team ID.
+	 * @param dto - The DTO object containing the project ID to unlink.
+	 * @param userId - The current user ID (leader).
+	 * @throws ForbiddenException if the user is not the leader of the team.
+	 * @throws NotFoundException if the team or project does not exist or the team is not linked to the project.
+	 */
+	async unlinkFromProject({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: { projectId: string; organizationId: string };
+		userId: string;
+	}) {
+		const { organizationId, projectId } = dto;
+
+		// Перевірка доступу до організації та проекту
+		await this.checkAccess({ organizationId, projectId, userId });
+
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
+		if (
+			!(
+				userInOrg &&
+				([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+			)
+		) {
+			throw new ForbiddenException(
+				'Only the admin or owner can unlink the team from a project'
+			);
+		}
+
+		// Перевірка, чи існує команда
+		const team = await this.prisma.team.findUnique({
+			where: { id }
+		});
+
+		if (!team) {
+			throw new NotFoundException('Team not found');
+		}
+
+		// Перевірка існування проекту в організації
+		const project = await this.prisma.project.findFirst({
+			where: {
+				id: projectId,
+				organizationId
+			}
+		});
+
+		if (!project) {
+			throw new NotFoundException('Project not found in this organization');
+		}
+
+		// Перевірка, чи команда вже від'єднана від проекту
+		const projectTeam = await this.prisma.projectTeam.findUnique({
+			where: {
+				projectId_teamId: {
+					projectId,
+					teamId: id
+				}
+			}
+		});
+
+		if (!projectTeam) {
+			throw new NotFoundException('The team is not linked to this project');
+		}
+
+		// Відключення команди від проекту
+		await this.prisma.projectTeam.delete({
+			where: {
+				projectId_teamId: {
+					projectId,
+					teamId: id
+				}
+			}
+		});
+
+		// Повернення оновленої команди
+		return this.getAllByProject({
+			projectId,
+			organizationId,
+			userId
 		});
 	}
 

@@ -70,6 +70,24 @@ export class OrgController {
 	}
 
 	/**
+	 * Get the role of the current user in a specific organization.
+	 * @param organizationId The ID of the organization.
+	 * @param userId The ID of the current user.
+	 * @returns The role of the user in the organization.
+	 */
+	@Get(':id/role')
+	@Auth()
+	async getOrganizationRole(
+		@Param('id') organizationId: string,
+		@CurrentUser('id') userId: string
+	) {
+		return this.orgService.getOrganizationRole({
+			organizationId,
+			userId
+		});
+	}
+
+	/**
 	 * Create a new organization.
 	 * @param dto The details of the organization to be created.
 	 * @param userId The ID of the current user who is creating the organization.

@@ -2,7 +2,7 @@ import { AuthUser } from "./auth.types";
 import { Organization, OrgUserResponse } from "./org.types";
 import type { AccessStatus, RootBase, UUID } from "./root.types";
 import { TaskResponse } from "./task.types";
-import { TeamFormData } from "./team.types";
+import { Team } from "./team.types";
 
 // Тип для сутності "Project"
 export interface Project extends RootBase {
@@ -40,7 +40,7 @@ export interface ProjectTeam extends RootBase {
 	projectId: UUID; // Ідентифікатор проекту
 	teamId: UUID; // Ідентифікатор команди
 	project: Project; // Проект
-	team: TeamFormData; // Команда
+	team: Team; // Команда
 }
 
 export type ProjectFormData = Partial<Omit<Project, "id" | "updatedAt">>;

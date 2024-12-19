@@ -12,7 +12,7 @@ export default function ProjectCreate({
 	organizationId,
 	organizationTitle,
 }: {
-	organizationId?: string;
+	organizationId?: string | null;
 	organizationTitle?: string;
 }) {
 	const [organizations, setOrganizations] = useState<OrgResponse[]>();

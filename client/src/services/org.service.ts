@@ -5,6 +5,7 @@ import type {
 	Organization,
 	OrgFormData,
 	OrgResponse,
+	OrgRole,
 	OrgUserResponse,
 } from "@/types/org.types";
 import { AxiosResponse } from "axios";
@@ -50,6 +51,20 @@ class OrgService {
 		} catch (error: any) {
 			console.error(`Fetching organization users error:`, error);
 			throw new Error(`Fetching organization users failed`);
+		}
+	}
+
+	async getOrganizationRole(
+		organizationId: string
+	): Promise<{ role: OrgRole }> {
+		try {
+			const response = await axiosWithAuth.get<{ role: OrgRole }>(
+				`${this.BASE_URL}/${organizationId}/role`
+			);
+			return response.data;
+		} catch (error: any) {
+			console.error(`Fetching organization error:`, error);
+			throw new Error(`Fetching organization failed`);
 		}
 	}
 

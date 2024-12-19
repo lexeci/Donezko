@@ -12,7 +12,7 @@ export default function TeamCreate({
 	organizationId: localOrgId,
 	organizationTitle: localOrgTitle,
 }: {
-	organizationId?: string;
+	organizationId?: string | null;
 	organizationTitle?: string;
 }) {
 	const [organizations, setOrganizations] = useState<OrgResponse[]>();

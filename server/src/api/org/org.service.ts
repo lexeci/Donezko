@@ -287,6 +287,44 @@ export class OrgService {
 	}
 
 	/**
+	 * Get the role of the current user in a specific organization.
+	 * @param organizationId The ID of the organization.
+	 * @param userId The ID of the user.
+	 * @returns The role of the user in the organization.
+	 */
+	async getOrganizationRole({
+		organizationId,
+		userId
+	}: {
+		organizationId: string;
+		userId: string;
+	}) {
+		// Знаходимо користувача в організації
+		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
+			where: { organizationId, userId },
+			select: {
+				role: true,
+				organizationStatus: true
+			}
+		});
+
+		// Якщо користувач не знайдений, кидаємо помилку
+		if (!currentUserInOrg) {
+			throw new ForbiddenException('You are not part of this organization');
+		}
+
+		// Якщо статус користувача BANNED, кидаємо помилку
+		if (currentUserInOrg.organizationStatus === AccessStatus.BANNED) {
+			throw new ForbiddenException('Insufficient permissions');
+		}
+
+		// Повертаємо роль користувача
+		return {
+			role: currentUserInOrg.role
+		};
+	}
+
+	/**
 	 * Get all active organization user in current organization.
 	 * @param userId The ID of the user.
 	 * @param id The ID of the organization.

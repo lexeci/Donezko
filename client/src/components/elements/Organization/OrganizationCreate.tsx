@@ -32,7 +32,6 @@ export default function OrganizationCreate() {
 	};
 
 	useEffect(() => {
-		console.log(newOrganization);
 		newOrganization?.id && reset();
 	}, [newOrganization]);
 

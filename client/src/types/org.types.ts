@@ -2,7 +2,7 @@ import { AuthUser } from "./auth.types";
 import { Project } from "./project.types";
 import type { AccessStatus, RootBase, UUID } from "./root.types";
 import { TaskResponse } from "./task.types";
-import { TeamResponse } from "./team.types";
+import { TeamsResponse } from "./team.types";
 
 // Перелічення для ролей в організації
 export enum OrgRole {
@@ -30,7 +30,7 @@ export interface Organization extends RootBase {
 	joinCode?: string; // Код для приєднання до організації (опційно)
 	organizationUsers?: OrgUserResponse[]; // Користувачі організації
 	projects?: Project[]; // Проекти в межах організації
-	teams?: TeamResponse[]; // Команди, що належать організації
+	teams?: TeamsResponse[]; // Команди, що належать організації
 	tasks?: TaskResponse[];
 	_count?: {
 		organizationUsers: number;

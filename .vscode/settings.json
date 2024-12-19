@@ -4,15 +4,20 @@
 		"Chernivtsy",
 		"CHRONO",
 		"clsx",
+		"cuid",
+		"datasource",
+		"dotenv",
 		"elon",
 		"kanban",
 		"Neaijko",
 		"nestjs",
 		"pangea",
+		"pids",
 		"Pomodoro",
 		"Skoda",
 		"sonner",
 		"tailwindcss",
-		"tanstack"
+		"tanstack",
+		"vercel"
 	]
 }

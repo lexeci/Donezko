@@ -2,42 +2,32 @@
 
 import { Button, Field, Select } from "@/components/index";
 import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
-import { useFetchProjects } from "@/src/hooks/project/useFetchProjects";
 import { useTeamCreation } from "@/src/hooks/team/useTeamCreation";
 import { OrgResponse } from "@/src/types/org.types";
-import { ProjectResponse } from "@/src/types/project.types";
 import { TeamFormData } from "@/src/types/team.types";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function TeamCreate({
 	organizationId: localOrgId,
-	projectId: localProjectId,
 	organizationTitle: localOrgTitle,
-	projectTitle,
 }: {
 	organizationId?: string;
 	organizationTitle?: string;
-	projectId?: string;
-	projectTitle?: string;
 }) {
 	const [organizations, setOrganizations] = useState<OrgResponse[]>();
 	const [organizationId, setOrganizationId] = useState<string | undefined>();
-	const [projects, setProjects] = useState<ProjectResponse[]>();
-	const [projectId, setProjectId] = useState<string | undefined>();
-
 	const { organizationList } = useFetchOrgs(); // Отримуємо список організацій
-	const { projects: projectList } = useFetchProjects(organizationId); // Отримуємо проекти для вибраної організації
 	const { createTeam, newTeam } = useTeamCreation();
 
-	const { register, handleSubmit, reset, setValue, watch } =
-		useForm<TeamFormData>({
-			mode: "onChange",
-		});
+	const { register, handleSubmit, reset, setValue } = useForm<TeamFormData>({
+		mode: "onChange",
+	});
 
 	// Хендлер для вибору організації
 	const handleOrgSelect = (value: string) => {
 		setValue("organizationId", value); // Встановлюємо це значення в форму
+		setOrganizationId(value);
 	};
 
 	const onSubmit: SubmitHandler<TeamFormData> = data => {
@@ -46,27 +36,14 @@ export default function TeamCreate({
 
 	useEffect(() => {
 		localOrgId && setOrganizationId(localOrgId);
-		localProjectId && setProjectId(localProjectId);
-
 		localOrgId && setValue("organizationId", localOrgId);
-		localProjectId && setValue("projectId", localProjectId);
-	}, [localOrgId, localProjectId]);
+	}, [localOrgId]);
 
 	useEffect(() => {
 		if (organizationList) {
 			setOrganizations(organizationList); // Оновлюємо список організацій
 		}
 	}, [organizationList]);
-
-	// Оновлення списку проектів після вибору організації
-	useEffect(() => {
-		if (organizationId) {
-			// Збираємо проекти тільки для вибраної організації
-			setProjects(projectList);
-		} else {
-			setProjects([]); // Якщо організація не вибрана, проекти порожні
-		}
-	}, [organizationId, projectList]);
 
 	// Скидання форми після створення нової команди
 	useEffect(() => {
@@ -132,42 +109,10 @@ export default function TeamCreate({
 								disabled
 							/>
 						)}
-						{/* Якщо організацію вибрано, показуємо список проектів */}
-						{organizationId &&
-							projects &&
-							(!localProjectId ? (
-								<Select
-									id="project-select"
-									label="Select Project:"
-									placeholder="Choose a Project"
-									options={projects.map(item => ({
-										value: item.id,
-										label: item.project.title,
-									}))}
-									{...register("projectId", {
-										required: "Project is required!",
-									})}
-									extra="flex flex-col max-w-80 w-full"
-								/>
-							) : (
-								<Field
-									extra="flex flex-col max-w-80 w-full"
-									id="project-select"
-									label="Select Project:"
-									placeholder="Choose an Project"
-									type="text"
-									value={projectTitle ? projectTitle : "Current Project"}
-									disabled
-								/>
-							))}
 
 						{/* Кнопка для створення команди */}
 						<div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
-							<Button
-								type="button"
-								block
-								disabled={!organizationId && !projectId}
-							>
+							<Button type="button" block disabled={!organizationId}>
 								Create Team
 							</Button>
 						</div>

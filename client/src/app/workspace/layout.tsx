@@ -31,8 +31,7 @@ export default function Layout({
 			<Sidebar />
 			<div
 				className={clsx(
-					"content-base max-h-[calc(100vh-82px)] overflow-auto",
-					(isLoading || !isSelected) && "h-[calc(100vh-82px)]"
+					"content-base max-h-[calc(100vh-82px)] h-[calc(100vh-82px)] overflow-auto"
 				)}
 				style={{ width: "calc(100% - 20rem)" }}
 			>
@@ -41,7 +40,7 @@ export default function Layout({
 						<CoinVertical size={80} className="m-auto animate-spin" />
 					</div>
 				) : isSelected || pathname === "/workspace/organizations" ? (
-					<div className="py-8">{children}</div>
+					<div className="py-8 h-full">{children}</div>
 				) : (
 					<div className="h-full flex flex-col justify-center items-center gap-y-4 max-w-[40rem] mx-auto text-center">
 						<SmileyMeh size={80} className="animate-spin" />

@@ -42,10 +42,6 @@ export class CreateTeamDto {
 
 	@IsNotEmpty()
 	@IsString()
-	projectId: string; // The ID of the project the team belongs to.
-
-	@IsNotEmpty()
-	@IsString()
 	title: string; // The title/name of the team.
 
 	@IsOptional()
@@ -89,7 +85,7 @@ export class DeleteTeamDto {
 	@IsString()
 	organizationId: string; // The ID of the organization the team belongs to.
 
-	@IsNotEmpty()
+	@IsOptional()
 	@IsString()
 	projectId: string; // The ID of the project the team belongs to.
 }
@@ -107,7 +103,7 @@ export class ManageTeamDto {
 	@IsString()
 	organizationId: string; // The ID of the organization the team belongs to.
 
-	@IsNotEmpty()
+	@IsOptional()
 	@IsString()
 	projectId: string; // The ID of the project the team belongs to.
 

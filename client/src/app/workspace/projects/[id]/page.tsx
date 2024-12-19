@@ -5,6 +5,7 @@ import {
 	AddProjectUsers,
 	Button,
 	ModalWindow,
+	NotFoundId,
 	PageHeader,
 	PageLayout,
 	ProjectUpdate,
@@ -15,10 +16,11 @@ import {
 import { useDeleteProject } from "@/src/hooks/project/useDeleteProject";
 import { useFetchProjectById } from "@/src/hooks/project/useFetchProjectById";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Project() {
+	const { replace } = useRouter();
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
 	const [openModalAddUser, setOpenModalAddUser] = useState<boolean>(false);
@@ -38,17 +40,17 @@ export default function Project() {
 
 	const hasPermission = role === "ADMIN" || role === "OWNER";
 
-	return (
+	return project ? (
 		<PageLayout>
 			<PageHeader
 				pageTitle="Project"
-				title={project?.title as string}
-				desc={project?.description as string}
+				title={project.title as string}
+				desc={project.description as string}
 				extraDesc={
 					project &&
-					`Teams: ${project?._count?.projectTeams} | Tasks: ${project?._count?.tasks}`
+					`Teams: ${project._count?.projectTeams} | Tasks: ${project._count?.tasks}`
 				}
-				extraInfo={organization && `Organization: ${organization?.title}`}
+				extraInfo={organization && `Organization: ${organization.title}`}
 				button={hasPermission && "Update Project"}
 				buttonAction={() => hasPermission && setOpenModalUpdate(true)}
 			/>
@@ -79,18 +81,18 @@ export default function Project() {
 					</div>
 				)}
 				<WindowContainer
-					title={project?.title as string}
-					subtitle={`Teams: ${project?._count?.projectTeams}`}
+					title={project.title as string}
+					subtitle={`Teams: ${project._count?.projectTeams}`}
 					fullPage
 				>
-					{project?.projectTeams && (
+					{project.projectTeams && (
 						<TeamElements
 							isWindowElement
 							organizationId={organizationId}
 							organizationTitle={organization?.title}
 							projectId={projectId}
 							projectTitle={project.title}
-							teams={project?.projectTeams}
+							projectTeams={project.projectTeams}
 							isAdministrate={
 								role === "ADMIN" || role === "OWNER" || role === "MEMBER"
 							}
@@ -98,7 +100,7 @@ export default function Project() {
 					)}
 				</WindowContainer>
 				{hasPermission && (
-					<Button type="button" onClick={() => deleteProject(projectId)}>
+					<Button type="button" onClick={() => setOpenModal(true)}>
 						<Trash size={22} className="mr-4" /> Delete Project
 					</Button>
 				)}
@@ -112,13 +114,20 @@ export default function Project() {
 							<div className="desc max-w-80 flex flex-col justify-center items-center text-center gap-y-2">
 								<h1 className="font-bold text-lg">Hey did you know?</h1>
 								<p>
-									If you proceed on this action you will delete teams and tasks
-									which are related to this project. Make sure that you
-									understand that.
+									If you proceed on this action you will delete tasks and
+									assigns of teams which are related to this project. Make sure
+									that you understand that.
 								</p>
 							</div>
 							<div className="w-full h-full flex justify-center items-center">
-								<Button type="button" onClick={() => deleteProject(projectId)}>
+								<Button
+									type="button"
+									onClick={() =>
+										deleteProject(projectId, {
+											onSuccess: () => replace("/workspace/teams"),
+										})
+									}
+								>
 									<Trash size={22} className="mr-4" /> Delete
 								</Button>
 							</div>
@@ -172,5 +181,7 @@ export default function Project() {
 				)}
 			</div>
 		</PageLayout>
+	) : (
+		<NotFoundId elementTitle="Project" />
 	);
 }

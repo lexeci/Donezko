@@ -2,21 +2,33 @@
 
 import { Button, Field } from "@/components/index";
 import { useModifyTeam } from "@/src/hooks/team/useModifyTeam";
-import { TeamFormData } from "@/src/types/team.types";
-import { useEffect } from "react";
+import { TeamFormData, TeamResponse } from "@/src/types/team.types";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface TeamUpdate {
 	id: string;
 	data: TeamFormData;
+	pullUpdatedData: Dispatch<SetStateAction<TeamResponse | undefined>>;
+	pullCloseModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function TeamUpdate({ id, data: localData }: TeamUpdate) {
+export default function TeamUpdate({
+	id,
+	data: localData,
+	pullUpdatedData,
+	pullCloseModal,
+}: TeamUpdate) {
 	const { updateTeam, updatedTeam } = useModifyTeam();
 
 	const { register, handleSubmit, setValue, reset } = useForm<TeamFormData>({
 		mode: "onChange",
 	});
+
+	useEffect(() => {
+		setValue("title", localData.title);
+		setValue("description", localData.description);
+	}, []);
 
 	const onSubmit: SubmitHandler<TeamFormData> = data => {
 		updateTeam({ id, data });
@@ -24,6 +36,9 @@ export default function TeamUpdate({ id, data: localData }: TeamUpdate) {
 
 	useEffect(() => {
 		updatedTeam?.team.id && reset(updatedTeam.team);
+		updatedTeam?.team.id && pullUpdatedData(updatedTeam);
+
+		updatedTeam?.team.id && pullCloseModal(false);
 	}, [updatedTeam]);
 
 	return (
@@ -48,7 +63,6 @@ export default function TeamUpdate({ id, data: localData }: TeamUpdate) {
 						{...register("title", {
 							required: "Title is required!",
 						})}
-						value={localData.title}
 					/>
 					<Field
 						extra="flex flex-col max-w-80 w-full"
@@ -59,7 +73,6 @@ export default function TeamUpdate({ id, data: localData }: TeamUpdate) {
 						{...register("description", {
 							maxLength: { value: 500, message: "Description is too long" }, // Валідація на довжину
 						})}
-						value={localData.description}
 					/>
 					<div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
 						<Button type="button" block>

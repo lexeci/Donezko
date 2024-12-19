@@ -3,6 +3,7 @@ import type {
 	ManageTeamData,
 	TeamFormData,
 	TeamResponse,
+	TeamsResponse,
 	TeamWithUsersResponse,
 } from "@/types/team.types";
 import { toast } from "sonner";
@@ -32,9 +33,9 @@ class TeamService {
 	 * @param organizationId - The organization ID.
 	 * @returns A list of teams with their users.
 	 */
-	async getAllTeams(organizationId: string): Promise<TeamWithUsersResponse[]> {
+	async getAllTeams(organizationId: string): Promise<TeamsResponse[]> {
 		try {
-			const response = await axiosWithAuth.get<TeamWithUsersResponse[]>(
+			const response = await axiosWithAuth.get<TeamsResponse[]>(
 				`${this.BASE_URL}?organizationId=${organizationId}`
 			);
 			return response.data;
@@ -51,12 +52,9 @@ class TeamService {
 	 * @param organizationId - The organization ID.
 	 * @returns A team object with its users.
 	 */
-	async getTeamById(
-		id: string,
-		organizationId: string
-	): Promise<TeamWithUsersResponse> {
+	async getTeamById(id: string, organizationId: string): Promise<TeamResponse> {
 		try {
-			const response = await axiosWithAuth.get<TeamWithUsersResponse>(
+			const response = await axiosWithAuth.get<TeamResponse>(
 				`${this.BASE_URL}/${id}?organizationId=${organizationId}`
 			);
 			return response.data;
@@ -111,9 +109,13 @@ class TeamService {
 	 * @param id - The team ID.
 	 * @param data - Data required for deletion.
 	 */
-	async deleteTeam(id: string): Promise<void> {
+	async deleteTeam(id: string, organizationId: string): Promise<void> {
 		try {
-			await axiosWithAuth.delete(`${this.BASE_URL}/${id}`);
+			await axiosWithAuth.delete(`${this.BASE_URL}/${id}`, {
+				data: {
+					organizationId,
+				},
+			});
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error deleting team:", error);

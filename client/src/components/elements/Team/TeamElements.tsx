@@ -3,9 +3,10 @@
 import pageStyles from "@/app/page.module.scss";
 
 import { Button, EntityItem, ModalWindow } from "@/components/index";
-import { useFetchUserTeams } from "@/src/hooks/team/useFetchUserTeams";
+import { useOrganization } from "@/src/context/OrganizationContext";
+import { useFetchTeams } from "@/src/hooks/team/useFetchTeams";
 import { ProjectTeam } from "@/src/types/project.types";
-import { TeamResponse } from "@/src/types/team.types";
+import { TeamsResponse } from "@/src/types/team.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
 import { Buildings } from "@phosphor-icons/react";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
@@ -16,10 +17,11 @@ import TeamCreate from "./TeamCreate";
 interface TeamElementsProps {
 	isWindowElement?: boolean;
 	organizationId?: string;
-	projectId?: string;
 	organizationTitle?: string;
+	projectId?: string;
 	projectTitle?: string;
-	teams?: TeamResponse[] | ProjectTeam[];
+	teams?: TeamsResponse[];
+	projectTeams?: ProjectTeam[];
 	isAdministrate?: boolean;
 }
 
@@ -27,17 +29,11 @@ interface TeamElementsProps {
 const TeamElementsWithData = ({
 	fetchedData,
 }: {
-	fetchedData: TeamResponse[] | ProjectTeam[];
+	fetchedData: TeamsResponse[];
 }) => {
 	console.log(fetchedData);
 	return fetchedData.length > 0 ? (
-		fetchedData.map((item, i) => {
-			// Динамічна перевірка на тип
-			const isTeamResponse = (
-				team: TeamResponse | ProjectTeam
-			): team is TeamResponse => "title" in team;
-			
-			const team = isTeamResponse(item) ? item : item.team;
+		fetchedData.map((team, i) => {
 			const { _count, id, title } = team;
 			return (
 				title && (
@@ -65,7 +61,8 @@ const TeamElementsWithoutData = ({
 }: {
 	onCountChange: (count: number) => void;
 }) => {
-	const { userTeamList: teamList } = useFetchUserTeams();
+	const { organizationId } = useOrganization();
+	const { teamList } = useFetchTeams(organizationId);
 
 	// Викликаємо `onCountChange` через ефект
 	useEffect(() => {
@@ -76,13 +73,13 @@ const TeamElementsWithoutData = ({
 
 	return teamList && teamList.length > 0 ? (
 		teamList?.map((team, i) => {
-			const { _count } = team;
+			const { id, title, _count } = team;
 			return (
 				<EntityItem
-					key={generateKeyComp(`${team.title}__${i}`)}
+					key={generateKeyComp(`${title}__${i}`)}
 					icon={<Buildings size={84} />}
-					linkBase={`/workspace/teams/${team.id}`}
-					title={team.title}
+					linkBase={`/workspace/teams/${id}`}
+					title={title}
 					firstStat={`Participants: ${_count?.teamUsers}`}
 					secondaryStat={`Tasks: ${_count?.tasks}`}
 				/>
@@ -98,9 +95,9 @@ const TeamElementsWithoutData = ({
 export default function TeamElements({
 	isWindowElement,
 	organizationId,
+	organizationTitle,
 	projectId,
 	projectTitle,
-	organizationTitle,
 	teams,
 	isAdministrate = false,
 }: TeamElementsProps) {
@@ -122,9 +119,7 @@ export default function TeamElements({
 				>
 					<TeamCreate
 						organizationId={organizationId}
-						projectId={projectId}
 						organizationTitle={organizationTitle}
-						projectTitle={projectTitle}
 					/>
 				</ModalWindow>
 			)}
@@ -153,7 +148,7 @@ export default function TeamElements({
 				{teams?.length || teams != undefined ? (
 					<TeamElementsWithData fetchedData={teams} />
 				) : (
-					<TeamElementsWithoutData onCountChange={setTeamCount} />
+					!projectId && <TeamElementsWithoutData onCountChange={setTeamCount} />
 				)}
 			</div>
 		</div>

@@ -174,7 +174,7 @@ export class TeamService {
 	 * @param userId - The current user ID.
 	 * @returns The list of teams with their members.
 	 */
-	async getAllByOrgProject({
+	async getAllByOrg({
 		organizationId,
 		userId
 	}: {
@@ -199,7 +199,7 @@ export class TeamService {
 				tasks: true,
 				_count: {
 					select: {
-						projectTeams: true,
+						teamUsers: true,
 						tasks: true
 					}
 				}
@@ -229,17 +229,45 @@ export class TeamService {
 	}) {
 		await this.checkAccess({ organizationId, userId });
 
-		const team = await this.prisma.team.findFirst({
-			where: { id, organizationId },
+		const team = await this.prisma.teamUser.findFirst({
+			where: { teamId: id, team: { organizationId } },
 			select: {
 				id: true,
-				title: true,
-				description: true,
-				createdAt: true,
-				updatedAt: true,
-				organizationId: true,
-				teamUsers: true,
-				tasks: true
+				teamId: true,
+				role: true,
+				teamStatus: true,
+				team: {
+					select: {
+						id: true,
+						title: true,
+						description: true,
+						createdAt: true,
+						updatedAt: true,
+						organization: {
+							select: {
+								id: true,
+								title: true,
+								description: true,
+								organizationUsers: {
+									where: {
+										userId
+									},
+									select: {
+										role: true
+									}
+								}
+							}
+						},
+						organizationId: true,
+						tasks: true,
+						_count: {
+							select: {
+								teamUsers: true,
+								tasks: true
+							}
+						}
+					}
+				}
 			}
 		});
 
@@ -315,7 +343,7 @@ export class TeamService {
 		id: string;
 		dto: UpdateTeamDto;
 		userId: string;
-	}): Promise<Team> {
+	}) {
 		const { organizationId } = dto;
 
 		await this.checkAccess({ organizationId, userId });
@@ -324,10 +352,56 @@ export class TeamService {
 			throw new ForbiddenException('Only the team leader can update this team');
 		}
 
-		return this.prisma.team.update({
+		await this.prisma.team.update({
 			where: { id },
 			data: { ...dto }
 		});
+
+		const team = await this.prisma.teamUser.findFirst({
+			where: { teamId: id, team: { organizationId } },
+			select: {
+				id: true,
+				teamId: true,
+				role: true,
+				teamStatus: true,
+				team: {
+					select: {
+						id: true,
+						title: true,
+						description: true,
+						createdAt: true,
+						updatedAt: true,
+						organization: {
+							select: {
+								id: true,
+								title: true,
+								description: true,
+								organizationUsers: {
+									where: {
+										userId
+									},
+									select: {
+										role: true
+									}
+								}
+							}
+						},
+						organizationId: true,
+						tasks: true,
+						_count: {
+							select: {
+								teamUsers: true,
+								tasks: true
+							}
+						}
+					}
+				}
+			}
+		});
+
+		if (!team) throw new NotFoundException('Team not found');
+
+		return team;
 	}
 
 	/**

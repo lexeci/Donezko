@@ -10,7 +10,7 @@ interface EntityItem {
 	secondaryStat: string; // Для "Teams" або "Tasks"
 	icon: ReactNode; // <Buildings /> або <UsersThree />
 	linkBase: string;
-	onClick: () => void;
+	onClick?: () => void;
 }
 
 export default function EntityItem({

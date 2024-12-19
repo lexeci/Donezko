@@ -49,11 +49,11 @@ export class TeamController {
 	@HttpCode(200)
 	@Permission('viewResources')
 	@Get()
-	async getAll(
+	async getAllByOrg(
 		@Query('organizationId') organizationId: string,
 		@CurrentUser('id') userId: string
 	) {
-		return await this.teamService.getAllByOrgProject({
+		return await this.teamService.getAllByOrg({
 			userId,
 			organizationId
 		});
@@ -138,7 +138,7 @@ export class TeamController {
 		@Param('id') id: string,
 		@CurrentUser('id') userId: string,
 		@Body() dto: TeamDto
-	): Promise<Team> {
+	) {
 		return await this.teamService.update({ id, dto, userId });
 	}
 

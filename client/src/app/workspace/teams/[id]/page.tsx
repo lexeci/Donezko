@@ -1,27 +1,61 @@
 "use client";
 
 import pageStyles from "@/app/page.module.scss";
-import { Button, PageHeader, PageLayout } from "@/src/components";
+import {
+	Button,
+	ModalWindow,
+	NotFoundId,
+	PageHeader,
+	PageLayout,
+	TeamUpdate,
+} from "@/src/components";
+import { useOrganization } from "@/src/context/OrganizationContext";
 import { useFetchTeamById } from "@/src/hooks/team/useFetchTeamById";
 import { useTeamRemoval } from "@/src/hooks/team/useTeamRemoval";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function Organization() {
+export default function Team() {
+	const { replace } = useRouter();
+	const { organizationId } = useOrganization();
+	const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+	const [openModal, setOpenModal] = useState<boolean>(false);
+
 	const params = useParams<{ id: string }>();
 	const { id: teamId } = params;
 
-	const { team, setTeam } = useFetchTeamById(teamId, organizationId);
+	const { team: fetchedData, setTeam } = useFetchTeamById(
+		teamId,
+		organizationId
+	);
+
+	const role = fetchedData?.role;
+	const orgRole = fetchedData?.team.organization.organizationUsers?.[0].role;
+
 	const { deleteTeam } = useTeamRemoval();
 
-	console.log(project);
+	const hasPermission =
+		role === "LEADER" || orgRole === "OWNER" || orgRole === "ADMIN";
 
-	return (
+	console.log(fetchedData);
+
+	return fetchedData ? (
 		<PageLayout>
 			<PageHeader
 				pageTitle="Team"
-				title="Insomnia Works"
-				desc={`Participants: 32 | Teams: 16 | Projects: 15 | Tasks: 32`}
+				title={fetchedData.team?.title as string}
+				desc={fetchedData.team?.description as string}
+				extraDesc={
+					fetchedData.team &&
+					`Participants: ${fetchedData.team?._count?.teamUsers} | Tasks: ${fetchedData.team?._count?.tasks}`
+				}
+				extraInfo={
+					fetchedData.team.organization &&
+					`Organization: ${fetchedData.team.organization.title}`
+				}
+				button={hasPermission && "Update Team"}
+				buttonAction={() => hasPermission && setOpenModalUpdate(true)}
 			/>
 			<div className={pageStyles["workspace-content-col"]}>
 				{/* <WindowContainer title="Insomnia Works" subtitle="Projects [15]">
@@ -165,15 +199,66 @@ export default function Organization() {
 						</div>
 					</div>
 				</WindowContainer> */}
-				<Button type="button">
-					<Trash
-						size={22}
-						className="mr-4"
-						onClick={() => deleteTeam(teamId)}
-					/>
-					Delete Team
-				</Button>
+				{hasPermission && organizationId && (
+					<Button type="button" onClick={() => setOpenModal(true)}>
+						<Trash size={22} className="mr-4" />
+						Delete Team
+					</Button>
+				)}
 			</div>
+			{openModal && organizationId && (
+				<ModalWindow
+					title="Program to ask of sure action.exe"
+					subtitle="Hey do you really know what you are doing ?"
+					onClose={() => setOpenModal(false)}
+				>
+					<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
+						<div className="desc max-w-80 flex flex-col justify-center items-center text-center gap-y-2">
+							<h1 className="font-bold text-lg">Hey did you know?</h1>
+							<p>
+								If you proceed on this action you will delete this team which
+								are related to project or tasks. Make sure that you understand
+								that.
+							</p>
+						</div>
+						<div className="w-full h-full flex justify-center items-center">
+							<Button
+								type="button"
+								onClick={() =>
+									deleteTeam(
+										{ teamId, organizationId },
+										{
+											onSuccess: () => replace("/workspace/teams"),
+										}
+									)
+								}
+							>
+								<Trash size={22} className="mr-4" /> Delete
+							</Button>
+						</div>
+					</div>
+				</ModalWindow>
+			)}
+			{openModalUpdate && (
+				<ModalWindow
+					title="Update Project.exe"
+					subtitle="It's time to update :()"
+					onClose={() => setOpenModalUpdate(false)}
+				>
+					{fetchedData.team && organizationId && (
+						<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
+							<TeamUpdate
+								id={teamId}
+								data={fetchedData.team}
+								pullCloseModal={setOpenModalUpdate}
+								pullUpdatedData={setTeam}
+							/>
+						</div>
+					)}
+				</ModalWindow>
+			)}
 		</PageLayout>
+	) : (
+		<NotFoundId elementTitle="Team" />
 	);
 }

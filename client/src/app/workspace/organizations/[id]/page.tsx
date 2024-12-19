@@ -88,7 +88,9 @@ export default function Organization() {
 							isWindowElement
 							organizationId={organizationId}
 							teams={organization?.teams}
-							isAdministrate={hasPermission}
+							isAdministrate={
+								role === "ADMIN" || role === "OWNER" || role === "MEMBER"
+							}
 						/>
 					)}
 				</WindowContainer>

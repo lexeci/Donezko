@@ -7,7 +7,13 @@ export function useTeamRemoval() {
 	const [isDeleted, setIsDeleted] = useState<boolean>(false);
 
 	const { mutate: deleteTeam } = useMutation({
-		mutationFn: (teamId: string) => teamService.deleteTeam(teamId),
+		mutationFn: ({
+			teamId,
+			organizationId,
+		}: {
+			teamId: string;
+			organizationId: string;
+		}) => teamService.deleteTeam(teamId, organizationId),
 		onSuccess: () => {
 			setIsDeleted(true);
 			queryClient.invalidateQueries({ queryKey: ["teams"] }); // Інвалідуємо список проектів

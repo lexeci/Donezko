@@ -1,3 +1,4 @@
+import { Organization } from "./org.types";
 import { AccessStatus, RootBase, UUID } from "./root.types";
 import { TaskResponse } from "./task.types";
 
@@ -10,9 +11,7 @@ interface Team extends RootBase {
 	title: string;
 	description: string;
 	organizationId: UUID;
-	organization: {
-		title: string;
-	};
+	organization: Organization;
 	projectId: UUID;
 	tasks: TaskResponse[];
 	_count?: {
@@ -21,7 +20,22 @@ interface Team extends RootBase {
 	};
 }
 
-export interface TeamResponse extends Team {}
+export interface TeamResponse extends RootBase {
+	teamId: string;
+	role: TeamRole;
+	teamStatus: AccessStatus;
+	team: Team;
+}
+
+export interface TeamsResponse extends RootBase {
+	title: string;
+	description: string;
+	organizationId: string;
+	_count: {
+		teamUsers: true;
+		tasks: true;
+	};
+}
 
 export interface TeamWithUsersResponse extends TeamResponse {
 	teamUsers: Array<{
@@ -42,4 +56,6 @@ export interface ManageTeamData {
 	teamUserId: UUID;
 }
 
-export type TeamFormData = Partial<Omit<Team, "updatedAt">>;
+export type TeamFormData = Partial<
+	Omit<Team, "id" | "updatedAt" | "updatedAt">
+>;

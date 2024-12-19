@@ -1,15 +1,16 @@
 import { teamService } from "@/src/services/team.service";
-import { TeamWithUsersResponse } from "@/types/team.types";
+import { TeamsResponse } from "@/types/team.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-export function useFetchTeams(organizationId: string, projectId: string) {
+export function useFetchTeams(organizationId?: string | null) {
 	const { data: teamsData } = useQuery({
-		queryKey: ["teams", organizationId, projectId],
-		queryFn: () => teamService.getAllTeams(organizationId, projectId),
+		queryKey: ["teams", organizationId],
+		queryFn: () => teamService.getAllTeams(organizationId as string),
+		enabled: !!organizationId,
 	});
 
-	const [teamList, setTeamList] = useState<TeamWithUsersResponse[] | undefined>(
+	const [teamList, setTeamList] = useState<TeamsResponse[] | undefined>(
 		teamsData
 	);
 

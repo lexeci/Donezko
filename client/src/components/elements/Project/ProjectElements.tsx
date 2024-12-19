@@ -3,6 +3,7 @@
 import pageStyles from "@/app/page.module.scss";
 
 import { Button, EntityItem, ModalWindow } from "@/components/index";
+import { useOrganization } from "@/src/context/OrganizationContext";
 import { useFetchProjects } from "@/src/hooks/project/useFetchProjects";
 import { Project } from "@/src/types/project.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
@@ -47,7 +48,8 @@ const ProjectElementsWithoutData = ({
 }: {
 	onCountChange: (count: number) => void;
 }) => {
-	const { projects } = useFetchProjects();
+	const { organizationId } = useOrganization();
+	const { projects } = useFetchProjects(organizationId);
 
 	// Використовуємо `useEffect` для оновлення кількості проектів
 	useEffect(() => {
@@ -55,6 +57,8 @@ const ProjectElementsWithoutData = ({
 			onCountChange(projects.length);
 		}
 	}, [projects, onCountChange]);
+
+	console.log(projects);
 
 	return projects.length > 0 ? (
 		projects?.map((project, i) => {

@@ -1,5 +1,5 @@
 import { projectService } from "@/src/services/project.service";
-import { Project, ProjectResponse } from "@/src/types/project.types";
+import { Project } from "@/src/types/project.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -10,9 +10,7 @@ export function useFetchProjects(organizationId?: string | null) {
 		enabled: !!organizationId,
 	});
 
-	const [projects, setProjects] = useState<Project[]>(
-		projectsData || []
-	);
+	const [projects, setProjects] = useState<Project[]>(projectsData || []);
 
 	useEffect(() => {
 		if (projectsData) {

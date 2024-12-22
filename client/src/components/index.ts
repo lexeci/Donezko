@@ -9,6 +9,7 @@ export {
 	Features,
 	Footer,
 	Header,
+	LackPermission,
 	ModalWindow,
 	NotFoundId,
 	OrganizationElements,

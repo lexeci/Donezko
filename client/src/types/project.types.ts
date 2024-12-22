@@ -4,6 +4,11 @@ import type { AccessStatus, RootBase, UUID } from "./root.types";
 import { TaskResponse } from "./task.types";
 import { Team } from "./team.types";
 
+export enum ProjectRole {
+	MEMBER = "MEMBER",
+	MANAGER = "MANAGER",
+}
+
 // Тип для сутності "Project"
 export interface Project extends RootBase {
 	title: string; // Назва проекту
@@ -23,11 +28,13 @@ export interface ProjectUsers extends RootBase {
 	userId: UUID;
 	user: AuthUser;
 	projectStatus: AccessStatus;
+	role: ProjectRole;
 }
 
 export interface ProjectResponse extends RootBase {
 	projectId: UUID;
 	projectStatus: AccessStatus;
+	role: ProjectRole;
 	project: Project;
 	userId: UUID;
 	user: {
@@ -43,7 +50,11 @@ export interface ProjectTeam extends RootBase {
 	team: Team; // Команда
 }
 
-export type ProjectFormData = Partial<Omit<Project, "id" | "updatedAt">>;
+type ProjectManagerId = { projectManagerId: string };
+
+export type ProjectFormData = Partial<
+	Omit<Project, "id" | "updatedAt"> & ProjectManagerId
+>;
 export type ProjectTeamFormData = Partial<
 	Omit<ProjectTeam, "id" | "updatedAt">
 >;

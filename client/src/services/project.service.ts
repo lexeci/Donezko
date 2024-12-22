@@ -118,7 +118,7 @@ class ProjectService {
 	async addUserToProject(id: string, userId: string): Promise<OrgUserResponse> {
 		try {
 			const response = await axiosWithAuth.post<OrgUserResponse>(
-				`${this.BASE_URL}/add-user/${id}`,
+				`${this.BASE_URL}/${id}/add-user`,
 				{ projectUserId: userId }
 			);
 			return response.data;
@@ -126,6 +126,29 @@ class ProjectService {
 			error && toast.error(error.response.data.message);
 			console.error("Error adding user to project:", error);
 			throw new Error("Could not add user to project");
+		}
+	}
+
+	/**
+	 * Removes user from a project.
+	 * @param id - The project ID.
+	 * @param userId - The user ID to add.
+	 * @returns The project with the removed user.
+	 */
+	async removeUserToProject(
+		id: string,
+		userId: string
+	): Promise<OrgUserResponse> {
+		try {
+			const response = await axiosWithAuth.post<OrgUserResponse>(
+				`${this.BASE_URL}/${id}/remove-user`,
+				{ projectUserId: userId }
+			);
+			return response.data;
+		} catch (error: any) {
+			error && toast.error(error.response.data.message);
+			console.error("Error removing user from project:", error);
+			throw new Error("Could not remove user from project");
 		}
 	}
 
@@ -142,7 +165,7 @@ class ProjectService {
 	): Promise<any> {
 		try {
 			const response = await axiosWithAuth.put<any>(
-				`${this.BASE_URL}/update-status/${id}`,
+				`${this.BASE_URL}/${id}/update-status`,
 				{
 					projectUserId: userId,
 					projectStatus: status,
@@ -157,13 +180,63 @@ class ProjectService {
 	}
 
 	/**
+	 * Updates the status of a user in a project.
+	 * @param id - The project ID.
+	 * @param data - The user ID and new status.
+	 * @returns The updated project user status.
+	 */
+	async transferProjectManager(
+		id: string,
+		userId: string
+	): Promise<ProjectUsers> {
+		try {
+			const response = await axiosWithAuth.put<any>(
+				`${this.BASE_URL}/${id}/transfer-manager`,
+				{
+					newManagerId: userId,
+				}
+			);
+			return response.data;
+		} catch (error: any) {
+			error && toast.error(error.response.data.message);
+			console.error(
+				"Error transferring manager role to user in project:",
+				error
+			);
+			throw new Error("Could not update user role in project");
+		}
+	}
+
+	/**
+	 * Updates the status of a user in a project.
+	 * @param id - The project ID.
+	 * @param data - The user ID and new status.
+	 * @returns The updated project user status.
+	 */
+	async useUpdateManager(id: string, userId: string): Promise<ProjectUsers> {
+		try {
+			const response = await axiosWithAuth.put<any>(
+				`${this.BASE_URL}/${id}/transfer-manager`,
+				{
+					newManagerId: userId,
+				}
+			);
+			return response.data;
+		} catch (error: any) {
+			error && toast.error(error.response.data.message);
+			console.error("Error transferring project manager in project", error);
+			throw new Error("Could not transfer project manager in project");
+		}
+	}
+
+	/**
 	 * Exits the project for the current user.
 	 * @param id - The project ID.
 	 */
 	async exitProject(id: string, userId?: string): Promise<void> {
 		try {
 			await axiosWithAuth.delete(
-				`${this.BASE_URL}/exit/${id}${userId ? `/?userId=${userId}` : ""}`
+				`${this.BASE_URL}/${id}/exit${userId ? `/?userId=${userId}` : ""}`
 			);
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);

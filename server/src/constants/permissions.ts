@@ -3,7 +3,7 @@ import { PermissionType } from '../types/permissions.types'; // Importing the Pe
 
 // A mapping of organization roles to their respective permissions
 export const RolePermissions: Record<OrgRole, PermissionType[]> = {
-	// Permissions for the 'OWNER' role
+	// Permissions for the OrgRole.OWNER role
 	[OrgRole.OWNER]: [
 		'updateOrganization', // Can update organization details
 		'deleteOrganization', // Can delete the organization
@@ -14,6 +14,7 @@ export const RolePermissions: Record<OrgRole, PermissionType[]> = {
 		'createProject', // Can create new projects
 		'updateProject', // Can update existing projects
 		'deleteProject', // Can delete projects
+		'TransferManagerProject', // Can transfer managers projects
 		'createTeam', // Can create new teams
 		'updateTeam', // Can update team details
 		'deleteTeam', // Can delete teams
@@ -21,7 +22,7 @@ export const RolePermissions: Record<OrgRole, PermissionType[]> = {
 		'manageTeamUsers' // Can manage team users (add/remove from teams)
 	],
 
-	// Permissions for the 'ADMIN' role
+	// Permissions for the OrgRole.ADMIN role
 	[OrgRole.ADMIN]: [
 		'manageUsers', // Can manage users
 		'viewResources', // Can view resources
@@ -29,6 +30,7 @@ export const RolePermissions: Record<OrgRole, PermissionType[]> = {
 		'createProject', // Can create new projects
 		'updateProject', // Can update projects
 		'deleteProject', // Can delete projects
+		'TransferManagerProject', // Can transfer managers projects
 		'createTeam', // Can create teams
 		'updateTeam', // Can update teams
 		'deleteTeam', // Can delete teams

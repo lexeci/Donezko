@@ -35,7 +35,6 @@ export default function ProjectBoardStatistic() {
 			{projects ? (
 				projects?.length > 0 ? (
 					projects?.map((project, i) => {
-						console.log(project);
 						const { _count, title, description, id } = project;
 
 						return (

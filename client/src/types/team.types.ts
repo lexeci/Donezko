@@ -74,6 +74,8 @@ export interface ManageTeamData {
 	teamUserId: UUID;
 }
 
+type TeamLeaderId = { teamLeaderId: string };
+
 export type TeamFormData = Partial<
-	Omit<Team, "id" | "updatedAt" | "updatedAt">
+	Omit<Team, "id" | "updatedAt" | "updatedAt"> & TeamLeaderId
 >;

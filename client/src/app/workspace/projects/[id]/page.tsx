@@ -17,6 +17,7 @@ import { useOrganization } from "@/src/context/OrganizationContext";
 import { useDeleteProject } from "@/src/hooks/project/useDeleteProject";
 import { useFetchProjectById } from "@/src/hooks/project/useFetchProjectById";
 import { useFetchTeamsByProject } from "@/src/hooks/team/useFetchTeamsByProject";
+import { ProjectRole } from "@/types/project.types";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -37,6 +38,7 @@ export default function Project() {
 
 	const project = fetchedData?.project;
 	const projectStatus = fetchedData?.projectStatus;
+	const projectRole = fetchedData?.role;
 	const role = fetchedData?.user?.organizationUsers[0].role;
 	const organization = project?.organization;
 
@@ -45,7 +47,8 @@ export default function Project() {
 		projectId
 	); // Отримуємо список команд організації
 
-	const hasPermission = role === "ADMIN" || role === "OWNER";
+	const hasPermission =
+		role === "ADMIN" || role === "OWNER" || projectRole === ProjectRole.MANAGER;
 
 	return project ? (
 		<PageLayout>
@@ -76,14 +79,16 @@ export default function Project() {
 							>
 								Manage user
 							</Button>
-							<Button
-								block
-								negative
-								type="button"
-								onClick={() => setOpenModalAddUser(true)}
-							>
-								Add user
-							</Button>
+							{(role === "ADMIN" || role === "OWNER") && (
+								<Button
+									block
+									negative
+									type="button"
+									onClick={() => setOpenModalAddUser(true)}
+								>
+									Add user
+								</Button>
+							)}
 						</div>
 					</div>
 				)}
@@ -130,7 +135,7 @@ export default function Project() {
 									type="button"
 									onClick={() =>
 										deleteProject(projectId, {
-											onSuccess: () => replace("/workspace/teams"),
+											onSuccess: () => replace("/workspace/projects"),
 										})
 									}
 								>
@@ -181,7 +186,7 @@ export default function Project() {
 						onClose={() => setOpenModalUser(false)}
 					>
 						{organization && organizationId && (
-							<ProjectUsers projectId={projectId} />
+							<ProjectUsers projectId={projectId} role={role} />
 						)}
 					</ModalWindow>
 				)}

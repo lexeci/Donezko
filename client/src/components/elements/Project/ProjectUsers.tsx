@@ -1,18 +1,28 @@
 "use client";
 
 import { Button } from "@/components/index";
-import { useExitProject } from "@/src/hooks/project/useExitProject";
 import { useFetchProjectUsers } from "@/src/hooks/project/useFetchProjectUser";
+import { useRemoveProjectUser } from "@/src/hooks/project/useRemoveProjectUser";
+import { useTransferProjectManager } from "@/src/hooks/project/useTransferProjectManager";
 import { useUpdateProjectUser } from "@/src/hooks/project/useUpdateProjectUser";
+import { OrgRole } from "@/src/types/org.types";
 import { ProjectUsers as ProjectUsersType } from "@/src/types/project.types";
 import { AccessStatus } from "@/src/types/root.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
 import { Person } from "@phosphor-icons/react";
 
-export default function ProjectUsers({ projectId }: { projectId: string }) {
-	const { projectUsers, setProjectUsers } = useFetchProjectUsers(projectId);
+export default function ProjectUsers({
+	projectId,
+	role,
+}: {
+	projectId: string;
+	role?: OrgRole;
+}) {
+	const { projectUsers, setProjectUsers, handleRefetch } =
+		useFetchProjectUsers(projectId); // Залишаємо доступ до даних та рефетч функції
 	const { updateStatus } = useUpdateProjectUser();
-	const { exitProject } = useExitProject();
+	const { removeUser } = useRemoveProjectUser();
+	const { transferManager } = useTransferProjectManager();
 
 	const handleUpdateArray = (updatedUser: ProjectUsersType) => {
 		// Оновлення списку користувачів
@@ -28,36 +38,55 @@ export default function ProjectUsers({ projectId }: { projectId: string }) {
 		setProjectUsers(updatedUsers);
 	};
 
-	const handleRemoveFromArray = (userId: string) => {
-		// Оновлення списку користувачів
-		const updatedUsers = projectUsers.filter(
-			user => user.userId !== userId && user
-		);
-
-		setProjectUsers(updatedUsers);
-	};
-
 	const handleChangeStatus = (userId: string, projectStatus: AccessStatus) => {
 		updateStatus(
 			{
 				projectId,
 				userId,
 				status:
-					projectStatus !== "BANNED"
-						? ("BANNED" as AccessStatus)
-						: ("ACTIVE" as AccessStatus),
+					projectStatus !== AccessStatus.BANNED
+						? AccessStatus.BANNED
+						: AccessStatus.ACTIVE,
 			},
 			{
-				onSuccess: updatedUser => handleUpdateArray(updatedUser),
+				onSuccess: updatedUser => {
+					handleUpdateArray(updatedUser);
+					handleRefetch(); // Викликаємо рефетчінг після оновлення статусу
+				},
 			}
 		);
 	};
 
 	const handleExitProject = (projectId: string, userId: string) => {
-		exitProject(
-			{ projectId, userId: userId },
+		removeUser(
 			{
-				onSuccess: () => handleRemoveFromArray(userId),
+				projectId,
+				userId,
+			},
+			{
+				onSuccess: removeUser => {
+					const updatedUsers = projectUsers.filter(
+						user => user.userId !== removeUser.userId
+					);
+
+					setProjectUsers(updatedUsers);
+					handleRefetch(); // Викликаємо рефетчінг після видалення користувача
+				},
+			}
+		);
+	};
+
+	const handleTransferProject = (projectId: string, userId: string) => {
+		transferManager(
+			{
+				projectId,
+				userId,
+			},
+			{
+				onSuccess: updatedUser => {
+					handleUpdateArray(updatedUser);
+					handleRefetch(); // Викликаємо рефетчінг після передачі ролі
+				},
 			}
 		);
 	};
@@ -85,6 +114,9 @@ export default function ProjectUsers({ projectId }: { projectId: string }) {
 								<div className="status">
 									<p>Status: "{userItem.projectStatus}"</p>
 								</div>
+								<div className="role">
+									<p>Role: "{userItem.role}"</p>
+								</div>
 							</div>
 							<div className="actions flex flex-col gap-y-2 ml-auto">
 								<Button
@@ -95,18 +127,34 @@ export default function ProjectUsers({ projectId }: { projectId: string }) {
 										handleChangeStatus(userItem.userId, userItem.projectStatus)
 									}
 								>
-									{userItem.projectStatus === "BANNED"
+									{userItem.projectStatus === AccessStatus.BANNED
 										? "Remove Ban"
 										: "Ban from Project"}
 								</Button>
-								<Button
-									type="button"
-									modal
-									fullWidth
-									onClick={() => handleExitProject(projectId, userItem.userId)}
-								>
-									Remove from Project
-								</Button>
+								{role && (role === OrgRole.ADMIN || role === OrgRole.OWNER) && (
+									<Button
+										type="button"
+										modal
+										fullWidth
+										onClick={() =>
+											handleExitProject(projectId, userItem.userId)
+										}
+									>
+										Remove from Project
+									</Button>
+								)}
+								{role && (role === OrgRole.ADMIN || role === OrgRole.OWNER) && (
+									<Button
+										type="button"
+										modal
+										fullWidth
+										onClick={() =>
+											handleTransferProject(projectId, userItem.userId)
+										}
+									>
+										Transfer Manager Role
+									</Button>
+								)}
 							</div>
 						</div>
 					))

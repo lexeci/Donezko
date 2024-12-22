@@ -90,8 +90,14 @@ export class TaskService {
 	 * @param {string} userId - The ID of the user to retrieve tasks for.
 	 * @returns {Promise<Task[]>} A list of tasks assigned to the user.
 	 */
-	async getAll(userId: string) {
-		return this.prisma.task.findMany({ where: { userId } });
+	async getAll({
+		userId,
+		projectId
+	}: {
+		userId: string;
+		projectId: string;
+	}) {
+		return this.prisma.task.findMany({ where: { userId, projectId } });
 	}
 
 	/**

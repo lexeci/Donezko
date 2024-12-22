@@ -14,9 +14,10 @@ import {
 	ValidationPipe
 } from '@nestjs/common';
 import {
-	AddProjectUserDto,
+	ManageProjectUserDto,
 	ProjectDto,
-	ProjectStatusDto
+	ProjectStatusDto,
+	TransferManagerDto
 } from './dto/project.dto';
 import { ProjectService } from './project.service';
 
@@ -116,16 +117,38 @@ export class ProjectController {
 	 * @throws NotFoundException - If the project or user does not exist.
 	 */
 	@UsePipes(new ValidationPipe())
-	@Post('/add-user/:id')
+	@Post(':id/add-user')
 	@HttpCode(201) // 201 Created for POST requests
 	@Permission('manageUsers') // Permission decorator to check if the user has the required permission
 	async addUser(
-		@Body() dto: AddProjectUserDto,
+		@Body() dto: ManageProjectUserDto,
 		@CurrentUser('id') userId: string,
 		@Param('id') id: string
 	) {
 		// Add user to the project by calling the service
 		return this.projectService.addUser({ id, dto, userId });
+	}
+
+	/**
+ * Remove a member from the project.
+	 * @param dto - The details of the user to be added to the project.
+	 * @param userId - The ID of the current user managing the project.
+	 * @param id - The ID of the project where the user should be added.
+	 * @returns The project user relationship after removing the user.
+	 * @throws ForbiddenException - If the user does not have permission to manage users in the project.
+	 * @throws NotFoundException - If the project or user does not exist.
+	 */
+	@UsePipes(new ValidationPipe())
+	@Post(':id/remove-user')
+	@HttpCode(201) // 201 Created for POST requests
+	@Permission('manageUsers') // Permission decorator to check if the user has the required permission
+	async removeUser(
+		@Body() dto: ManageProjectUserDto,
+		@CurrentUser('id') userId: string,
+		@Param('id') id: string
+	) {
+		// Add user to the project by calling the service
+		return this.projectService.removeUser({ id, dto, userId });
 	}
 
 	/**
@@ -137,7 +160,7 @@ export class ProjectController {
 	 * @throws ForbiddenException - If the user does not have permission to manage users in the project.
 	 */
 	@UsePipes(new ValidationPipe())
-	@Put('/update-status/:id')
+	@Put(':id/update-status')
 	@HttpCode(200) // 200 OK for PUT requests
 	@Permission('manageUsers') // Permission decorator to check if the user has the required permission
 	async updateStatus(
@@ -171,6 +194,27 @@ export class ProjectController {
 	}
 
 	/**
+	 * Update the details of an existing project.
+	 * @param id - The ID of the project to be updated.
+	 * @param dto - The new project data.
+	 * @param userId - The ID of the current user updating the project.
+	 * @returns The updated project data.
+	 * @throws ForbiddenException - If the user does not have permission to update the project.
+	 */
+	@UsePipes(new ValidationPipe())
+	@Put(':id/transfer-manager')
+	@HttpCode(200) // 200 OK for PUT requests
+	@Permission('TransferManagerProject') // Permission decorator to check if the user has the required permission
+	async transferManagerRole(
+		@Param('id') id: string,
+		@Body() dto: TransferManagerDto,
+		@CurrentUser('id') userId: string
+	) {
+		// Call the service to update the project
+		return this.projectService.transferManagerRole({ id, dto, userId });
+	}
+
+	/**
 	 * Exit the project (Leave the project).
 	 * @param userId - The ID of the user who wants to exit the project.
 	 * @param queryUserId - The ID of the user who wants to exit the project (from query).
@@ -178,7 +222,7 @@ export class ProjectController {
 	 * @returns A confirmation response that the user has exited the project.
 	 * @throws ForbiddenException - If the user cannot leave the project (e.g., admins, owners).
 	 */
-	@Delete('/exit/:id')
+	@Delete(':id/exit')
 	@HttpCode(204) // 204 No Content for DELETE requests (no content in response body)
 	@Permission('viewResources') // Permission decorator to check if the user has the required permission
 	async exit(

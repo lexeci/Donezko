@@ -1,5 +1,5 @@
 .button {
-	@apply w-auto min-h-10 h-12 flex items-center justify-center uppercase font-semibold px-8 border border-foreground hover:bg-foreground hover:text-linkColor transition duration-500 ease-in-out;
+	@apply w-fit min-h-10 h-12 flex items-center justify-center uppercase font-semibold px-8 border border-foreground hover:bg-foreground hover:text-linkColor transition duration-500 ease-in-out;
 
 	& > span {
 		@apply inline-flex;
@@ -41,11 +41,11 @@
 		@apply w-full text-center border-b border-foreground text-foreground transition ease-in py-0.5;
 
 		&:hover {
-			@apply text-inherit
+			@apply text-inherit;
 		}
 
 		&:last-child {
-			@apply border-b-0
+			@apply border-b-0;
 		}
 	}
 }

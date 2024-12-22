@@ -22,7 +22,7 @@ export function ManageTeams({
 					<p>There are teams assigned to your project that can be managed.</p>
 				</div>
 			</div>
-			<div className="operate-window flex justify-center items-center h-full border-t border-foreground mt-0.5 pt-4">
+			<div className="operate-window flex flex-col justify-center items-center gap-y-2 border-t border-foreground mt-0.5 pt-4">
 				{assignedTeams && assignedTeams.length > 0 ? (
 					assignedTeams.map((team, i) => {
 						return (

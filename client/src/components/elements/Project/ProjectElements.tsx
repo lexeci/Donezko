@@ -2,13 +2,19 @@
 
 import pageStyles from "@/app/page.module.scss";
 
-import { Button, EntityItem, ModalWindow } from "@/components/index";
+import {
+	Button,
+	EntityItem,
+	LackPermission,
+	ModalWindow,
+} from "@/components/index";
 import { useOrganization } from "@/src/context/OrganizationContext";
 import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
 import { useFetchProjects } from "@/src/hooks/project/useFetchProjects";
+import { OrgRole } from "@/src/types/org.types";
 import { Project } from "@/src/types/project.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
-import { Buildings } from "@phosphor-icons/react";
+import { Buildings, CoinVertical } from "@phosphor-icons/react";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
@@ -22,46 +28,9 @@ interface ProjectElementsProps {
 	isAdministrate?: boolean;
 }
 
-const ProjectElementsWithData = ({ projects }: { projects: Project[] }) => {
+const ProjectElementsItem = ({ projects }: { projects: Project[] }) => {
 	return projects.length > 0 ? (
 		projects.map((project, i) => {
-			const { _count } = project;
-			return (
-				<EntityItem
-					key={generateKeyComp(`${project.title}__${i}`)}
-					icon={<Buildings size={84} />}
-					linkBase={`/workspace/projects/${project.id}`}
-					title={project.title}
-					firstStat={`Teams: ${_count?.projectTeams}`}
-					secondaryStat={`Tasks: ${_count?.tasks}`}
-				/>
-			);
-		})
-	) : (
-		<div className="w-full h-full bg-background p-8">
-			<h5 className="font-bold text-base">There is no project for you</h5>
-		</div>
-	);
-};
-
-const ProjectElementsWithoutData = ({
-	onCountChange,
-	organizationId,
-}: {
-	onCountChange: (count: number) => void;
-	organizationId: string;
-}) => {
-	const { projects } = useFetchProjects(organizationId);
-
-	// Використовуємо `useEffect` для оновлення кількості проектів
-	useEffect(() => {
-		if (projects?.length) {
-			onCountChange(projects.length);
-		}
-	}, [projects, onCountChange]);
-
-	return projects.length > 0 ? (
-		projects?.map((project, i) => {
 			const { _count } = project;
 			return (
 				<EntityItem
@@ -108,63 +77,72 @@ export default function ProjectElements({
 			  (organizationRole.role === "OWNER" ||
 					organizationRole.role === "ADMIN");
 
-	return (
-		<div
-			className={clsx(
-				pageStyles["workspace-content-col"],
-				isWindowElement && "h-full w-full max-w-full !p-0 !justify-start"
-			)}
-		>
-			{/* Модальне вікно */}
-			{open && canAdministrate && (
-				<ModalWindow
-					title="Project manager.exe"
-					subtitle="The manager to operate your project"
-					onClose={() => setOpen(false)}
-				>
-					<ProjectCreate
-						organizationId={effectiveOrganizationId}
-						organizationTitle={organizationTitle}
-					/>
-				</ModalWindow>
-			)}
+	// Отримуємо або передані, або завантажені проекти
+	const { projects: projectList, setProjects } = projects?.length
+		? { projects, setProjects: () => {} }
+		: useFetchProjects(effectiveOrganizationId);
 
-			{/* Лічильник проєктів та кнопка створення */}
-			<div className="counter w-full flex flex-row justify-between items-center">
-				<div
-					className={clsx(
-						"title",
-						isWindowElement &&
-							"py-2 px-4 bg-background border border-foreground"
-					)}
-				>
-					<h4>Total Projects: {projectCount}</h4>
-				</div>
-				{canAdministrate && (
-					<Button type="button" onClick={() => setOpen(true)} negative block>
-						<Plus size={22} className="mr-4" /> Project
-					</Button>
-				)}
-			</div>
+	useEffect(() => {
+		setProjectCount(projectList.length);
+	}, [projectList]);
 
-			{/* Відображення проєктів */}
+	return organizationRole ? (
+		organizationRole.role === OrgRole.VIEWER ? (
+			<LackPermission />
+		) : (
 			<div
 				className={clsx(
-					pageStyles["workspace-content-grid-3"],
-					isWindowElement && "!p-0"
+					pageStyles["workspace-content-col"],
+					isWindowElement && "h-full w-full max-w-full !p-0 !justify-start"
 				)}
 			>
-				{projects?.length || projects != undefined ? (
-					<ProjectElementsWithData projects={projects} />
-				) : (
-					effectiveOrganizationId && (
-						<ProjectElementsWithoutData
+				{/* Модальне вікно */}
+				{open && canAdministrate && (
+					<ModalWindow
+						title="Project manager.exe"
+						subtitle="The manager to operate your project"
+						onClose={() => setOpen(false)}
+					>
+						<ProjectCreate
 							organizationId={effectiveOrganizationId}
-							onCountChange={setProjectCount}
+							organizationTitle={organizationTitle}
+							setProjects={setProjects}
 						/>
-					)
+					</ModalWindow>
 				)}
+
+				{/* Лічильник проєктів та кнопка створення */}
+				<div className="counter w-full flex flex-row justify-between items-center">
+					<div
+						className={clsx(
+							"title",
+							isWindowElement &&
+								"py-2 px-4 bg-background border border-foreground"
+						)}
+					>
+						<h4>Total Projects: {projectCount}</h4>
+					</div>
+					{canAdministrate && (
+						<Button type="button" onClick={() => setOpen(true)} negative block>
+							<Plus size={22} className="mr-4" /> Project
+						</Button>
+					)}
+				</div>
+
+				{/* Відображення проєктів */}
+				<div
+					className={clsx(
+						pageStyles["workspace-content-grid-3"],
+						isWindowElement && "!p-0"
+					)}
+				>
+					<ProjectElementsItem projects={projectList} />
+				</div>
 			</div>
+		)
+	) : (
+		<div className="h-full flex justify-center items-center">
+			<CoinVertical size={80} className="m-auto animate-spin" />
 		</div>
 	);
 }

@@ -4,7 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 export function useFetchProjectUsers(id: string) {
-	const { data: projectUsersData } = useQuery<ProjectUsers[] | undefined>({
+	const { data: projectUsersData, refetch } = useQuery<
+		ProjectUsers[] | undefined
+	>({
 		queryKey: ["project users", id],
 		queryFn: () => projectService.getAllProjectUsers(id),
 	});
@@ -19,5 +21,10 @@ export function useFetchProjectUsers(id: string) {
 		}
 	}, [projectUsersData]);
 
-	return { projectUsers, setProjectUsers };
+	// Функція для рефетчінгу
+	const handleRefetch = () => {
+		refetch(); // Викликає повторний запит
+	};
+
+	return { projectUsers, setProjectUsers, handleRefetch };
 }

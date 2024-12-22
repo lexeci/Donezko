@@ -30,7 +30,7 @@ export function AssignTeams({
 					</p>
 				</div>
 			</div>
-			<div className="operate-window border-t border-foreground pt-2 flex justify-center items-center h-full">
+			<div className="operate-window border-t border-foreground pt-4 flex flex-col justify-center items-center gap-y-2">
 				{unAssignedTeams && unAssignedTeams.length > 0 ? (
 					unAssignedTeams.map((item, i) => {
 						return (

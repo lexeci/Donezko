@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 export function useFetchOrgUsers(
-	organizationId: string,
+	organizationId?: string | null,
 	projectId?: string,
 	hideFromProject?: boolean
 ) {
@@ -12,10 +12,11 @@ export function useFetchOrgUsers(
 		queryKey: ["organization users", organizationId],
 		queryFn: () =>
 			orgService.getOrganizationUsers(
-				organizationId,
+				organizationId as string,
 				projectId,
 				hideFromProject
 			),
+		enabled: !!organizationId,
 	});
 
 	const [organizationUserList, setOrganizationUserList] = useState<

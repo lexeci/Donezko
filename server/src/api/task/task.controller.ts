@@ -10,6 +10,7 @@ import {
 	Patch,
 	Post,
 	Put,
+	Query,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
@@ -45,8 +46,11 @@ export class TaskController {
 	@Auth() // Authenticated access required
 	@Permission('viewResources') // Permission required
 	@HttpCode(200)
-	async getAll(@CurrentUser('id') userId: string) {
-		return this.taskService.getAll(userId);
+	async getAll(
+		@CurrentUser('id') userId: string,
+		@Query('projectId') projectId: string
+	) {
+		return this.taskService.getAll({ userId, projectId });
 	}
 
 	/**

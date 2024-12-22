@@ -331,7 +331,8 @@ export class TeamService {
 		const userInOrg = await this.prisma.organizationUser.findFirst({
 			where: { userId, organizationId },
 			select: {
-				role: true
+				role: true,
+				organizationStatus: true
 			}
 		});
 
@@ -340,7 +341,7 @@ export class TeamService {
 		}
 
 		if (
-			userInOrg.role === OrgRole.MEMBER ||
+			userInOrg.organizationStatus === AccessStatus.BANNED ||
 			userInOrg.role === OrgRole.VIEWER
 		) {
 			throw new ForbiddenException('You cannot perform such action');
@@ -484,7 +485,7 @@ export class TeamService {
 		dto: CreateTeamDto;
 		userId: string;
 	}): Promise<Team> {
-		const { organizationId } = dto;
+		const { organizationId, teamLeaderId, ...restDto } = dto;
 
 		await this.checkAccess({ organizationId, userId });
 
@@ -499,14 +500,50 @@ export class TeamService {
 			throw new ForbiddenException('A team with this title already exists');
 		}
 
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
+		if (
+			!(
+				userInOrg &&
+				([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+			)
+		) {
+			throw new ForbiddenException(
+				'Only the admin or owner can create the team in organization'
+			);
+		}
+
 		return this.prisma.team.create({
 			data: {
-				...dto,
+				...restDto,
+				organizationId,
 				teamUsers: {
-					create: {
-						userId,
-						role: TeamRole.LEADER,
-						teamStatus: AccessStatus.ACTIVE
+					create: [
+						{
+							userId: teamLeaderId,
+							role: TeamRole.LEADER,
+							teamStatus: AccessStatus.ACTIVE
+						}
+					]
+				}
+			},
+			include: {
+				teamUsers: {
+					where: {
+						userId
+					},
+					select: {
+						role: true,
+						teamStatus: true
+					}
+				},
+				_count: {
+					select: {
+						teamUsers: true,
+						tasks: true
 					}
 				}
 			}
@@ -538,8 +575,22 @@ export class TeamService {
 
 		await this.checkAccess({ organizationId, userId });
 
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
 		if (!(await this.isTeamLeader(id, userId))) {
 			throw new ForbiddenException('Only the team leader can update this team');
+		} else if (
+			!(
+				userInOrg &&
+				([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+			)
+		) {
+			throw new ForbiddenException(
+				'Only the admin or owner can link the team to a project'
+			);
 		}
 
 		await this.prisma.team.update({

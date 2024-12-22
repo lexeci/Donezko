@@ -100,7 +100,7 @@ export default function TeamOperate({
 				</div>
 			</div>
 
-			<div className="tabs-container w-full border border-foreground p-4">
+			<div className="tabs-container w-full border border-foreground p-4 overflow-y-auto">
 				{tabActive === "manage" && localProjectTitle && (
 					<ManageTeams
 						projectTitle={localProjectTitle}

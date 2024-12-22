@@ -12,7 +12,7 @@ export interface AuthForm {
  */
 export interface AuthUser {
 	id: number; // Unique identifier for the user
-	name?: string; // Optional user's name
+	name: string; // Optional user's name
 	email: string; // User's email address
 
 	workInterval?: number; // Optional work session duration in minutes

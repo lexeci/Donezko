@@ -66,9 +66,9 @@ export default function OrganizationUsers({
 				id: organizationId,
 				orgUserId,
 				organizationStatus:
-					organizationStatus !== "BANNED"
-						? ("BANNED" as AccessStatus)
-						: ("ACTIVE" as AccessStatus),
+					organizationStatus !== AccessStatus.BANNED
+						? AccessStatus.BANNED
+						: AccessStatus.ACTIVE,
 			},
 			{
 				onSuccess: updatedUser => handleUpdateArray(updatedUser),
@@ -140,7 +140,7 @@ export default function OrganizationUsers({
 										)
 									}
 								>
-									{userItem.organizationStatus !== "BANNED"
+									{userItem.organizationStatus !== AccessStatus.BANNED
 										? "Ban"
 										: "Remove Ban"}
 								</Button>

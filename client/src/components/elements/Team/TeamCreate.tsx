@@ -2,32 +2,35 @@
 
 import { Button, Field, Select } from "@/components/index";
 import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
+import { useFetchOrgUsers } from "@/src/hooks/organization/useFetchOrgUsers";
 import { useTeamCreation } from "@/src/hooks/team/useTeamCreation";
 import { OrgResponse } from "@/src/types/org.types";
-import { TeamFormData } from "@/src/types/team.types";
+import { TeamFormData, TeamsResponse } from "@/src/types/team.types";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function TeamCreate({
 	organizationId: localOrgId,
 	organizationTitle: localOrgTitle,
+	setTeams,
 }: {
 	organizationId?: string | null;
 	organizationTitle?: string;
+	setTeams: (newTeam: TeamsResponse) => void;
 }) {
 	const [organizations, setOrganizations] = useState<OrgResponse[]>();
 	const [organizationId, setOrganizationId] = useState<string | undefined>();
 	const { organizationList } = useFetchOrgs(); // Отримуємо список організацій
 	const { createTeam, newTeam } = useTeamCreation();
+	const { organizationUserList } = useFetchOrgUsers(organizationId);
 
 	const { register, handleSubmit, reset, setValue } = useForm<TeamFormData>({
 		mode: "onChange",
 	});
 
 	// Хендлер для вибору організації
-	const handleOrgSelect = (value: string) => {
-		setValue("organizationId", value); // Встановлюємо це значення в форму
-		setOrganizationId(value);
+	const handleUserSelect = (value: string) => {
+		setValue("teamLeaderId", value); // Встановлюємо це значення в форму
 	};
 
 	const onSubmit: SubmitHandler<TeamFormData> = data => {
@@ -36,8 +39,10 @@ export default function TeamCreate({
 
 	useEffect(() => {
 		localOrgId && setOrganizationId(localOrgId);
-		localOrgId && setValue("organizationId", localOrgId);
-	}, [localOrgId]);
+		localOrgId
+			? setValue("organizationId", localOrgId)
+			: setOrganizationId(organizationId);
+	}, [localOrgId, organizationId]);
 
 	useEffect(() => {
 		if (organizationList) {
@@ -49,6 +54,8 @@ export default function TeamCreate({
 	useEffect(() => {
 		if (newTeam?.id) {
 			reset(); // Скидаємо форму після успішного створення команди
+			setValue("organizationId", organizationId);
+			setTeams && setTeams(newTeam);
 		}
 	}, [newTeam]);
 
@@ -86,27 +93,17 @@ export default function TeamCreate({
 								maxLength: { value: 500, message: "Description is too long" },
 							})}
 						/>
-						{!localOrgId ? (
+						{organizationUserList && (
 							<Select
-								id="organization-select"
-								label="Select Organization:"
-								placeholder="Choose an organization"
-								options={organizations.map(item => ({
-									value: item.organization.id,
-									label: item.organization.title,
+								id="leader-select"
+								label="Select Leader:"
+								placeholder="Choose a leader"
+								options={organizationUserList.map(item => ({
+									value: item.userId,
+									label: item.user.name,
 								}))}
-								onChange={e => handleOrgSelect(e.target.value)} // Оновлення організації
+								onChange={e => handleUserSelect(e.target.value)} // Оновлення організації
 								extra="flex flex-col max-w-80 w-full"
-							/>
-						) : (
-							<Field
-								extra="flex flex-col max-w-80 w-full"
-								id="organization-select"
-								label="Select Organization:"
-								placeholder="Choose an organization"
-								type="text"
-								value={localOrgTitle ? localOrgTitle : "Current organization"}
-								disabled
 							/>
 						)}
 

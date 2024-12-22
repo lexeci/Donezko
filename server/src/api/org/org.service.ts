@@ -20,7 +20,7 @@ export class OrgService {
 	 * @returns The organization ownership record.
 	 * @throws ForbiddenException If the user is not the owner.
 	 */
-	private async checkOwner(organizationId: string, userId: string) {
+	private async getOwner(organizationId: string, userId: string) {
 		const organizationOwner = await this.prisma.organizationUser.findFirst({
 			where: { organizationId, userId, role: OrgRole.OWNER }
 		});
@@ -40,15 +40,11 @@ export class OrgService {
 	 * @returns The organization ownership record.
 	 * @throws ForbiddenException If the user is not the owner.
 	 */
-	private async checkAdmin(organizationId: string, userId: string) {
+	private async getAdmin(organizationId: string, userId: string) {
 		const organizationAdmin = await this.prisma.organizationUser.findFirst({
 			where: { organizationId, userId, role: OrgRole.ADMIN }
 		});
-		if (!organizationAdmin) {
-			throw new ForbiddenException(
-				'Only the organization admin can perform this action.'
-			);
-		}
+
 		return organizationAdmin;
 	}
 
@@ -105,7 +101,9 @@ export class OrgService {
 		}
 
 		// Перевірка, чи має користувач роль OWNER або ADMIN
-		const isPermitted = ['OWNER', 'ADMIN'].includes(currentUserInOrg.role);
+		const isPermitted = ([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
+			currentUserInOrg.role
+		);
 
 		// Логіка для вибору додаткових полів
 		const organizationSelect = {
@@ -357,7 +355,9 @@ export class OrgService {
 		}
 
 		// Перевірка, чи має користувач роль OWNER або ADMIN
-		const isPermitted = ['OWNER', 'ADMIN'].includes(currentUserInOrg.role);
+		const isPermitted = ([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
+			currentUserInOrg.role
+		);
 
 		if (!isPermitted) {
 			throw new ForbiddenException('You do not have permission on such action');
@@ -370,7 +370,7 @@ export class OrgService {
 				// Виключаємо користувачів зі статусом 'BANNED'
 				organizationStatus: { not: 'BANNED' },
 				// Виключаємо ролі OWNER та ADMIN
-				role: { notIn: ['OWNER', 'ADMIN'] },
+				role: { notIn: [OrgRole.OWNER, OrgRole.ADMIN] },
 				...(projectId && {
 					user: {
 						ProjectUser: {
@@ -473,7 +473,7 @@ export class OrgService {
 		dto: Partial<OrgDto>;
 		userId: string;
 	}) {
-		const organizationOwner = await this.checkOwner(id, userId);
+		const organizationOwner = await this.getOwner(id, userId);
 
 		if (!organizationOwner) {
 			throw new ForbiddenException(
@@ -638,19 +638,11 @@ export class OrgService {
 		userId: string;
 	}) {
 		const { orgUserId, role: updatedRole } = dto;
-		const organizationAdmin = await this.checkAdmin(id, userId);
+		const organizationAdmin = await this.getAdmin(id, userId);
 
+		// Якщо користувач не є адміністратором, перевіряємо чи він власник
 		if (!organizationAdmin) {
-			const organizationOwner = await this.checkOwner(id, userId);
-
-			if (!organizationOwner) {
-				throw new ForbiddenException(
-					'Only the owner  can update the role in organization.'
-				);
-			}
-			throw new ForbiddenException(
-				'Only the admin can update the role in organization.'
-			);
+			await this.getOwner(id, userId); // Якщо користувач не є власником, помилка викидається в getOwner
 		}
 
 		const existingMembership = await this.prisma.organizationUser.findFirst({
@@ -706,7 +698,7 @@ export class OrgService {
 		userId: string;
 	}) {
 		const { orgUserId, organizationStatus: updatedStatus } = dto;
-		const organizationOwner = await this.checkOwner(id, userId);
+		const organizationOwner = await this.getOwner(id, userId);
 
 		const existingMembership = await this.prisma.organizationUser.findFirst({
 			where: { userId: orgUserId, organizationId: id }
@@ -836,7 +828,7 @@ export class OrgService {
 	 * @throws ForbiddenException If the user is not the owner.
 	 */
 	async delete({ id, userId }: { id: string; userId: string }) {
-		const organizationOwner = await this.checkOwner(id, userId);
+		const organizationOwner = await this.getOwner(id, userId);
 
 		if (!organizationOwner) {
 			throw new ForbiddenException(

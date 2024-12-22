@@ -1,23 +1,26 @@
 "use client";
 
 import { Button, Field, Select } from "@/components/index";
-import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
+import { useFetchOrgUsers } from "@/src/hooks/organization/useFetchOrgUsers";
 import { useCreateProject } from "@/src/hooks/project/useCreateProject";
-import { OrgResponse } from "@/src/types/org.types";
-import { ProjectFormData } from "@/src/types/project.types";
-import { useEffect, useState } from "react";
+import { OrgUserResponse } from "@/src/types/org.types";
+import { Project, ProjectFormData } from "@/src/types/project.types";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function ProjectCreate({
 	organizationId,
 	organizationTitle,
+	setProjects,
 }: {
 	organizationId?: string | null;
 	organizationTitle?: string;
+	setProjects?: Dispatch<SetStateAction<Project[]>>;
 }) {
-	const [organizations, setOrganizations] = useState<OrgResponse[]>();
+	const { organizationUserList } = useFetchOrgUsers(organizationId);
+	const [organizationUsers, setOrganizationUsersList] =
+		useState<OrgUserResponse[]>();
 
-	const { organizationList } = useFetchOrgs();
 	const { createProject, createdProject } = useCreateProject();
 
 	const { register, handleSubmit, setValue, reset } = useForm<ProjectFormData>({
@@ -33,25 +36,28 @@ export default function ProjectCreate({
 	}, []);
 
 	useEffect(() => {
-		if (organizationList) {
-			setOrganizations(organizationList);
+		if (organizationUserList) {
+			setOrganizationUsersList(organizationUserList);
 		}
-	}, [organizationList]);
+	}, [organizationUserList]);
 
 	useEffect(() => {
-		createdProject?.id && reset();
+		if (createdProject?.id) {
+			reset();
+			setProjects && setProjects(prevState => [...prevState, createdProject]);
+		}
 	}, [createdProject]);
 
 	return (
 		<div className="container bg-background w-full h-full border border-foreground p-4 py-8">
 			<div className="title text-lg font-bold">
-				<h5>Create your own project</h5>
+				<h5>Create your own project in {organizationTitle}</h5>
 			</div>
 			<div className="text-block">
 				<p>Please write the title and description for your project.</p>
 			</div>
 			<div className="operate-window flex justify-center items-center h-full">
-				{organizations && (
+				{organizationUsers && (
 					<form
 						className="w-full relative flex flex-col items-center flex-wrap md:justify-between gap-y-3 px-6 py-8"
 						onSubmit={handleSubmit(onSubmit)}
@@ -76,33 +82,20 @@ export default function ProjectCreate({
 								maxLength: { value: 500, message: "Description is too long" }, // Валідація на довжину
 							})}
 						/>
-						{!organizationId ? (
-							<Select
-								id="organization-select"
-								label="Select Organization:"
-								placeholder="Choose an organization"
-								options={organizations.map(item => ({
-									value: item.organization.id,
-									label: item.organization.title,
-								}))}
-								{...register("organizationId", {
-									required: "Organization is required!",
-								})}
-								extra="flex flex-col max-w-80 w-full"
-							/>
-						) : (
-							<Field
-								extra="flex flex-col max-w-80 w-full"
-								id="organization-select"
-								label="Select Organization:"
-								placeholder="Choose an organization"
-								type="text"
-								value={
-									organizationTitle ? organizationTitle : "Current organization"
-								}
-								disabled
-							/>
-						)}
+						<Select
+							id="manager-select"
+							label="Select Manager:"
+							placeholder="Choose an manager"
+							options={organizationUsers.map(item => ({
+								value: item.userId,
+								label: item.user.name,
+							}))}
+							{...register("projectManagerId", {
+								required: "Manager is required!",
+							})}
+							extra="flex flex-col max-w-80 w-full"
+						/>
+
 						<div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
 							<Button type="button" block>
 								Create Project

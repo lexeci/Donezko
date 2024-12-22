@@ -3,6 +3,7 @@
 import pageStyles from "@/app/page.module.scss";
 import {
 	Button,
+	LackPermission,
 	ModalWindow,
 	OrganizationUpdate,
 	OrganizationUsers,
@@ -15,7 +16,7 @@ import {
 import { useOrganization } from "@/src/context/OrganizationContext";
 import { useDeleteOrg } from "@/src/hooks/organization/useDeleteOrg";
 import { useFetchOrgById } from "@/src/hooks/organization/useFetchOrgById";
-import { OrgUserResponse } from "@/src/types/org.types";
+import { OrgRole, OrgUserResponse } from "@/src/types/org.types";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -63,110 +64,112 @@ export default function Organization() {
 				button={role === "OWNER" && "Update Organization"}
 				buttonAction={() => role === "OWNER" && setOpenModalUpdate(true)}
 			/>
-			<div className={pageStyles["workspace-content-col"]}>
-				<WindowContainer
-					title={organization?.title as string}
-					subtitle={`Projects: ${organization?._count?.projects}`}
-					fullPage
-				>
-					{fetchedData?.organization.projects && (
-						<ProjectElements
-							isWindowElement
-							organizationId={organizationId}
-							projects={organization?.projects}
-							isAdministrate={hasPermission}
-						/>
-					)}
-				</WindowContainer>
-				<WindowContainer
-					title={organization?.title as string}
-					subtitle={`Teams: ${organization?._count?.teams}`}
-					fullPage
-				>
-					{fetchedData?.organization.teams && (
-						<TeamElements
-							isWindowElement
-							organizationId={organizationId}
-							teams={organization?.teams}
-							isAdministrate={
-								role === "ADMIN" || role === "OWNER" || role === "MEMBER"
-							}
-						/>
-					)}
-				</WindowContainer>
-				{hasPermission && (
+			{role === OrgRole.VIEWER ? (
+				<LackPermission />
+			) : (
+				<div className={pageStyles["workspace-content-col"]}>
 					<WindowContainer
 						title={organization?.title as string}
-						subtitle={`Participants: ${organization?._count?.organizationUsers}`}
+						subtitle={`Projects: ${organization?._count?.projects}`}
 						fullPage
 					>
-						{organizationUsers && (
-							<OrganizationUsers
+						{fetchedData?.organization.projects && (
+							<ProjectElements
+								isWindowElement
 								organizationId={organizationId}
-								organizationUsers={organizationUsers}
-								setOrganizationUsers={setOrganizationUsers}
-								administrateRole={role}
+								projects={organization?.projects}
+								isAdministrate={hasPermission}
 							/>
 						)}
 					</WindowContainer>
-				)}
-				{role === "OWNER" && (
-					<Button type="button" onClick={() => setOpenModal(true)}>
-						<Trash size={22} className="mr-4" />
-						Delete organization
-					</Button>
-				)}
-
-				{openModal && (
-					<ModalWindow
-						title="Program to ask of sure action.exe"
-						subtitle="Hey do you really know what you are doing ?"
-						onClose={() => setOpenModal(false)}
+					<WindowContainer
+						title={organization?.title as string}
+						subtitle={`Teams: ${organization?._count?.teams}`}
+						fullPage
 					>
-						<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
-							<div className="desc max-w-80 flex flex-col justify-center items-center text-center gap-y-2">
-								<h1 className="font-bold text-lg">Hey did you know?</h1>
-								<p>
-									If you proceed on this action you will delete teams and
-									projects which are related to this organization. Make sure
-									that you understand that.
-								</p>
-							</div>
-							<div className="w-full h-full flex justify-center items-center">
-								<Button
-									type="button"
-									onClick={() =>
-										deleteOrganization(organizationId, {
-											onSuccess: () => saveOrganization(null),
-										})
-									}
-								>
-									<Trash size={22} className="mr-4" /> Delete
-								</Button>
-							</div>
-						</div>
-					</ModalWindow>
-				)}
-
-				{openModalUpdate && (
-					<ModalWindow
-						title="Update Organization.exe"
-						subtitle="It's time to update :()"
-						onClose={() => setOpenModalUpdate(false)}
-					>
-						{organization && (
-							<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
-								<OrganizationUpdate
-									id={organization.id}
-									data={organization}
-									pullUpdatedData={setOrganization}
-									pullCloseModal={setOpenModalUpdate}
-								/>
-							</div>
+						{fetchedData?.organization.teams && (
+							<TeamElements
+								isWindowElement
+								organizationId={organizationId}
+								teams={organization?.teams}
+								isAdministrate={hasPermission}
+							/>
 						)}
-					</ModalWindow>
-				)}
-			</div>
+					</WindowContainer>
+					{hasPermission && (
+						<WindowContainer
+							title={organization?.title as string}
+							subtitle={`Participants: ${organization?._count?.organizationUsers}`}
+							fullPage
+						>
+							{organizationUsers && (
+								<OrganizationUsers
+									organizationId={organizationId}
+									organizationUsers={organizationUsers}
+									setOrganizationUsers={setOrganizationUsers}
+									administrateRole={role}
+								/>
+							)}
+						</WindowContainer>
+					)}
+					{role === "OWNER" && (
+						<Button type="button" onClick={() => setOpenModal(true)}>
+							<Trash size={22} className="mr-4" />
+							Delete organization
+						</Button>
+					)}
+
+					{openModal && (
+						<ModalWindow
+							title="Program to ask of sure action.exe"
+							subtitle="Hey do you really know what you are doing ?"
+							onClose={() => setOpenModal(false)}
+						>
+							<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
+								<div className="desc max-w-80 flex flex-col justify-center items-center text-center gap-y-2">
+									<h1 className="font-bold text-lg">Hey did you know?</h1>
+									<p>
+										If you proceed on this action you will delete teams and
+										projects which are related to this organization. Make sure
+										that you understand that.
+									</p>
+								</div>
+								<div className="w-full h-full flex justify-center items-center">
+									<Button
+										type="button"
+										onClick={() =>
+											deleteOrganization(organizationId, {
+												onSuccess: () => saveOrganization(null),
+											})
+										}
+									>
+										<Trash size={22} className="mr-4" /> Delete
+									</Button>
+								</div>
+							</div>
+						</ModalWindow>
+					)}
+
+					{openModalUpdate && (
+						<ModalWindow
+							title="Update Organization.exe"
+							subtitle="It's time to update :()"
+							onClose={() => setOpenModalUpdate(false)}
+						>
+							{organization && (
+								<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
+									<OrganizationUpdate
+										id={organization.id}
+										data={organization}
+										pullUpdatedData={setOrganization}
+										pullCloseModal={setOpenModalUpdate}
+									/>
+								</div>
+							)}
+						</ModalWindow>
+					)}
+				</div>
+			)}
 		</PageLayout>
 	);
 }

@@ -37,6 +37,7 @@ export type PermissionType =
 	| 'createProject'
 	| 'updateProject'
 	| 'deleteProject'
+	| 'TransferManagerProject'
 	| 'createTeam'
 	| 'updateTeam'
 	| 'deleteTeam'

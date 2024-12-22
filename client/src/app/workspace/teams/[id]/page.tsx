@@ -38,8 +38,6 @@ export default function Team() {
 	const hasPermission =
 		role === "LEADER" || orgRole === "OWNER" || orgRole === "ADMIN";
 
-	console.log(fetchedData);
-
 	return fetchedData ? (
 		<PageLayout>
 			<PageHeader

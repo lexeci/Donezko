@@ -34,8 +34,8 @@ model User {
 
 model Organization {
   id                String             @id @default(cuid())
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt()
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt() @map("updated_at")
   title             String             @unique
   description       String?
   joinCode          String?            @unique @map("join_code") // code for joining
@@ -71,11 +71,12 @@ enum OrgRole {
 }
 
 model Project {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt() @map("updated_at")
-  title       String   @unique
-  description String
+  id            String        @id @default(cuid())
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt() @map("updated_at")
+  title         String        @unique
+  description   String
+  projectStatus ProjectStatus @default(ONGOING) @map("project_status") // Статус проекту (наприклад, "ONGOING", "COMPLETED", "ON_HOLD")
 
   organizationId String       @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -88,21 +89,33 @@ model Project {
   @@map("project")
 }
 
+enum ProjectStatus {
+  ONGOING
+  COMPLETED
+  ON_HOLD
+}
+
 model ProjectUser {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt() @map("updated_at")
 
-  projectId String
+  projectId String  @map("project_id")
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String       @map("user_id")
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectStatus AccessStatus @default(ACTIVE) @map("project_status")
 
-  projectStatus AccessStatus @default(ACTIVE) // Статус користувача в цьому проєкті
+  role ProjectRole @default(MEMBER) // Додавання ролі користувача в проекті
 
-  @@unique([projectId, userId]) // Унікальність поєднання проєкту і користувача
+  @@unique([projectId, userId])
   @@map("project_user")
+}
+
+enum ProjectRole {
+  MANAGER // Менеджер проекту
+  MEMBER // Звичайний учасник проекту
 }
 
 model ProjectTeam {
@@ -164,20 +177,22 @@ enum AccessStatus {
 }
 
 model Task {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt() @map("updated_at")
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt() @map("updated_at")
+  dueDate   DateTime? @map("due_date") // Дата виконання задачі
 
   title       String
-  priority    Priority?
-  isCompleted Boolean?  @default(false) @map("is_completed")
+  priority    Priority?   @default(LOW)
+  TaskStatus  TaskStatus? @default(NOT_STARTED) @map("task_status")
+  isCompleted Boolean?    @default(false) @map("is_completed")
   description String?
 
   userId String? @map("user_id") // Конкретний відповідальний користувач
   user   User?   @relation(fields: [userId], references: [id])
 
-  projectId String?  @map("project_id") // Зв’язок із проектом
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String  @map("project_id") // Зв’язок із проектом
+  project   Project @relation(fields: [projectId], references: [id])
 
   teamId String? @map("team_id") // Зв’язок із командою
   team   Team?   @relation(fields: [teamId], references: [id])
@@ -185,6 +200,19 @@ model Task {
   comments Comment[] // Зв’язок із коментарями
 
   @@map("task")
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
 }
 
 model Comment {
@@ -245,12 +273,6 @@ model TimerRound {
   timerSessionId String       @map("timer_session_id")
 
   @@map("timer_round")
-}
-
-enum Priority {
-  low
-  medium
-  high
 }
 
 model Chat {

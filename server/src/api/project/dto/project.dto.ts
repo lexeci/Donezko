@@ -19,7 +19,7 @@ export class GetProjectDto {
  * DTO for adding a user to a project.
  * This contains the ID of the user being added to the project.
  */
-export class AddProjectUserDto {
+export class ManageProjectUserDto {
 	/**
 	 * The ID of the user to be added to the project.
 	 * This field is required.
@@ -27,6 +27,20 @@ export class AddProjectUserDto {
 	@IsString()
 	@IsNotEmpty()
 	projectUserId: string;
+}
+
+/**
+ * DTO for transferring manager to a project.
+ * This contains the ID of the user being changed in manager to the project.
+ */
+export class TransferManagerDto {
+	/**
+	 * The ID of the user to be added to the project.
+	 * This field is required.
+	 */
+	@IsString()
+	@IsNotEmpty()
+	newManagerId: string;
 }
 
 /**
@@ -65,6 +79,14 @@ export class ProjectDto {
 	@IsString()
 	@IsNotEmpty()
 	organizationId: string;
+
+	/**
+	 * The ID of the projectManager to which the project belongs.
+	 * This field is not required (as it can be added later).
+	 */
+	@IsString()
+	@IsOptional()
+	projectManagerId;
 
 	/**
 	 * The title of the project.

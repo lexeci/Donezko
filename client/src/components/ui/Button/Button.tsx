@@ -38,7 +38,8 @@ export default function Button({
 				styles.button,
 				negative && styles.negative,
 				block && styles.block,
-				fullWidth && styles.fullWidth
+				fullWidth && styles.fullWidth,
+				modal && styles.modal
 			)}
 			href={link}
 			onClick={onClick}

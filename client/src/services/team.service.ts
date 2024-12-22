@@ -44,7 +44,6 @@ class TeamService {
 					projectId ? `&projectId=${projectId}` : ""
 				}`
 			);
-			console.log(response.data);
 			return response.data;
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);
@@ -67,7 +66,6 @@ class TeamService {
 			const response = await axiosWithAuth.get<TeamsProjectResponse>(
 				`${this.BASE_URL}/project/?organizationId=${organizationId}&projectId=${projectId}`
 			);
-			console.log(response.data);
 			return response.data;
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);
@@ -100,9 +98,9 @@ class TeamService {
 	 * @param data - Team form data.
 	 * @returns The newly created team.
 	 */
-	async createTeam(data: TeamFormData): Promise<TeamResponse> {
+	async createTeam(data: TeamFormData): Promise<TeamsResponse> {
 		try {
-			const response = await axiosWithAuth.post<TeamResponse>(
+			const response = await axiosWithAuth.post<TeamsResponse>(
 				this.BASE_URL,
 				data
 			);

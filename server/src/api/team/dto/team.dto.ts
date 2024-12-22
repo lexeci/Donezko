@@ -42,6 +42,10 @@ export class CreateTeamDto {
 
 	@IsNotEmpty()
 	@IsString()
+	teamLeaderId: string; // The ID of the new leader of the team
+
+	@IsNotEmpty()
+	@IsString()
 	title: string; // The title/name of the team.
 
 	@IsOptional()

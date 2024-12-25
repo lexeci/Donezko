@@ -39,14 +39,23 @@ class OrgService {
 	async getOrganizationUsers(
 		organizationId: string,
 		projectId?: string,
-		hideFromProject?: boolean
+		hideFromProject?: boolean,
+		teamId?: string,
+		hideFromTeam?: boolean
 	): Promise<OrgUserResponse[]> {
+		const params = new URLSearchParams();
+
+		if (projectId) params.append("projectId", projectId);
+		if (hideFromProject) params.append("hideProject", "true");
+		if (teamId) params.append("teamId", teamId);
+		if (hideFromTeam) params.append("hideTeam", "true");
+
+		const url = `${this.BASE_URL}/${organizationId}/users${
+			params.toString() ? `?${params.toString()}` : ""
+		}`;
+
 		try {
-			const response = await axiosWithAuth.get<OrgUserResponse[]>(
-				`${this.BASE_URL}/${organizationId}/users/${
-					projectId ? `?projectId=${projectId}` : ""
-				}${hideFromProject ? `&hide=${hideFromProject}` : ""}`
-			);
+			const response = await axiosWithAuth.get<OrgUserResponse[]>(url);
 			return response.data;
 		} catch (error: any) {
 			console.error(`Fetching organization users error:`, error);

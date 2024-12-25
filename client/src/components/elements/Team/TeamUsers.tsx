@@ -11,6 +11,8 @@ import { AccessStatus } from "@/types/root.types";
 import { TeamRole, TeamUsersResponse } from "@/types/team.types";
 import generateKeyComp from "@/utils/generateKeyComp";
 import { Person } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
+import AddUserToTeams from "./OperateElements/AddUserToTeams";
 
 export default function TeamUsers({
 	teamId,
@@ -21,16 +23,15 @@ export default function TeamUsers({
 	orgRole?: OrgRole;
 	role?: TeamRole;
 }) {
+	const [showModal, setShowModal] = useState<boolean>(false);
+
 	const { organizationId } = useOrganization();
 	const { teamUsers, setTeamUsers, handleRefetch } = useFetchUsersTeam({
 		organizationId,
 		id: teamId,
 	}); // Залишаємо доступ до даних та рефетч функції
 
-	console.log(teamUsers);
-
 	const { updateStatus } = useUpdateTeamStatus();
-	// const {addUser} = useAddTeamUser()
 	const { removeUser } = useRemoveUserFromTeam();
 	const { transferLeadership } = useTransferLeadership();
 
@@ -55,64 +56,82 @@ export default function TeamUsers({
 	};
 
 	const handleChangeStatus = (userId: string, projectStatus: AccessStatus) => {
-		updateStatus(
-			{
-				id: teamId,
-				userId,
-				teamStatus:
-					projectStatus !== AccessStatus.BANNED
-						? AccessStatus.BANNED
-						: AccessStatus.ACTIVE,
-			},
-			{
-				onSuccess: updatedUser => {
-					handleUpdateArray(updatedUser);
-					handleRefetch(); // Викликаємо рефетчінг після оновлення статусу
+		if (organizationId)
+			updateStatus(
+				{
+					id: teamId,
+					teamUserId: userId,
+					teamStatus:
+						projectStatus !== AccessStatus.BANNED
+							? AccessStatus.BANNED
+							: AccessStatus.ACTIVE,
+					organizationId,
 				},
-			}
-		);
+				{
+					onSuccess: updatedUser => {
+						handleUpdateArray(updatedUser);
+						handleRefetch(); // Викликаємо рефетчінг після оновлення статусу
+					},
+				}
+			);
 	};
 
 	const handleRemoveUser = (teamId: string, userId: string) => {
-		removeUser(
-			{
-				id: teamId,
-				teamUserId: userId,
-			},
-			{
-				onSuccess: removeUser => {
-					if (teamUsers) {
-						const updatedUsers = teamUsers.filter(
-							user => user.userId !== removeUser.userId
-						);
-
-						setTeamUsers(updatedUsers);
-						handleRefetch(); // Викликаємо рефетчінг після видалення користувача
-					}
+		if (organizationId)
+			removeUser(
+				{
+					id: teamId,
+					teamUserId: userId,
+					organizationId,
 				},
-			}
-		);
+				{
+					onSuccess: removeUser => {
+						if (teamUsers) {
+							const updatedUsers = teamUsers.filter(
+								user => user.userId !== removeUser.userId
+							);
+
+							setTeamUsers(updatedUsers);
+							handleRefetch(); // Викликаємо рефетчінг після видалення користувача
+						}
+					},
+				}
+			);
 	};
 
 	const handleTransferLeader = (teamId: string, userId: string) => {
-		transferLeadership(
-			{
-				id: teamId,
-				teamUserId: userId,
-			},
-			{
-				onSuccess: updatedUser => {
-					handleUpdateArray(updatedUser);
-					handleRefetch(); // Викликаємо рефетчінг після передачі ролі
+		if (organizationId)
+			transferLeadership(
+				{
+					id: teamId,
+					teamUserId: userId,
+					organizationId,
 				},
-			}
-		);
+				{
+					onSuccess: updatedUser => {
+						handleUpdateArray(updatedUser);
+						handleRefetch(); // Викликаємо рефетчінг після передачі ролі
+					},
+				}
+			);
 	};
 
 	return (
 		<div className="container flex flex-col w-full h-full bg-background border border-foreground p-4">
-			<div className="title">
-				<h5>Users in current project:</h5>
+			<div className="header flex flex-row justify-between items-center w-full">
+				<div className="title">
+					<h5>Users in current project:</h5>
+				</div>
+				<div className="w-48">
+					<Button
+						type="button"
+						modal
+						fullWidth
+						onClick={() => setShowModal(true)}
+					>
+						Connect more Users
+					</Button>
+				</div>
 			</div>
 			<div className="users flex flex-col w-full h-full overflow-auto pt-4 gap-y-4">
 				{teamUsers && teamUsers.length > 0 ? (
@@ -165,7 +184,7 @@ export default function TeamUsers({
 										fullWidth
 										onClick={() => handleRemoveUser(teamId, userItem.userId)}
 									>
-										Remove from Project
+										Remove from Team
 									</Button>
 								)}
 								{(isLeader || hasPermission) && (
@@ -177,7 +196,7 @@ export default function TeamUsers({
 											handleTransferLeader(teamId, userItem.userId)
 										}
 									>
-										Transfer Manager Role
+										Transfer Leader Role
 									</Button>
 								)}
 							</div>
@@ -192,6 +211,13 @@ export default function TeamUsers({
 					</div>
 				)}
 			</div>
+			{showModal && (
+				<AddUserToTeams
+					teamId={teamId}
+					setOpenModalUpdate={setShowModal}
+					refetch={handleRefetch}
+				/>
+			)}
 		</div>
 	);
 }

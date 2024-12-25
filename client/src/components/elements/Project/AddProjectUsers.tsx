@@ -14,11 +14,11 @@ export default function AddProjectUsers({
 	organizationId: string;
 	projectId: string;
 }) {
-	const { organizationUserList, setOrganizationUserList } = useFetchOrgUsers(
+	const { organizationUserList, setOrganizationUserList } = useFetchOrgUsers({
 		organizationId,
 		projectId,
-		true
-	);
+		hideFromProject: true,
+	});
 	const { addUser } = useAddProjectUser();
 
 	const handleUpdateArray = (updatedUser: OrgUserResponse) => {

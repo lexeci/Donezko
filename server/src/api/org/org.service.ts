@@ -332,12 +332,16 @@ export class OrgService {
 		id,
 		userId,
 		projectId,
-		hide
+		hideProject,
+		teamId,
+		hideTeam
 	}: {
 		id: string;
 		userId: string;
 		projectId?: string;
-		hide?: boolean;
+		hideProject?: boolean;
+		teamId?: string;
+		hideTeam?: boolean;
 	}) {
 		// Шукаємо користувача в організації
 		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
@@ -368,26 +372,29 @@ export class OrgService {
 			where: {
 				organizationId: id,
 				// Виключаємо користувачів зі статусом 'BANNED'
-				organizationStatus: { not: 'BANNED' },
+				organizationStatus: { not: AccessStatus.BANNED },
 				// Виключаємо ролі OWNER та ADMIN
 				role: { notIn: [OrgRole.OWNER, OrgRole.ADMIN] },
-				...(projectId && {
-					user: {
-						ProjectUser: {
-							...(hide
-								? {
-										none: {
-											projectId // Виключаємо користувачів, пов'язаних із проектом
-										}
-									}
-								: {
-										some: {
-											projectId // Виключаємо користувачів, пов'язаних із проектом
-										}
-									})
+				...(projectId &&
+					hideProject !== undefined && {
+						user: {
+							projectUser: {
+								[hideProject ? 'none' : 'some']: {
+									projectId
+								}
+							}
 						}
-					}
-				})
+					}),
+				...(teamId &&
+					hideTeam !== undefined && {
+						user: {
+							teamUsers: {
+								[hideTeam ? 'none' : 'some']: {
+									teamId
+								}
+							}
+						}
+					})
 			},
 			select: {
 				userId: true,
@@ -401,12 +408,14 @@ export class OrgService {
 						email: true,
 						...(projectId && {
 							ProjectUser: {
-								where: {
-									projectId
-								},
-								select: {
-									projectStatus: true
-								}
+								where: { projectId },
+								select: { projectStatus: true }
+							}
+						}),
+						...(teamId && {
+							teamUsers: {
+								where: { teamId },
+								select: { teamStatus: true }
 							}
 						})
 					}

@@ -325,6 +325,31 @@ export class TeamController {
 		});
 	}
 
+		/**
+	 * Transfers leadership within a team.
+	 *
+	 * This endpoint transfers the leadership of a team to another user. The current user must have the 'manageTeamUsers' permission.
+	 *
+	 * @param id - The ID of the team to transfer leadership in.
+	 * @param dto - Data Transfer Object containing the new leader's details.
+	 * @param userId - The ID of the current user initiating the leadership transfer.
+	 */
+		@UsePipes(new ValidationPipe())
+		@HttpCode(200)
+		@Put(':id/update-status')
+		@Permission('manageTeamUsers')
+		async updateStatus(
+			@Param('id') id: string,
+			@Body() dto: ManageTeamDto,
+			@CurrentUser('id') userId: string
+		): Promise<void> {
+			await this.teamService.updateStatus({
+				id,
+				dto,
+				userId
+			});
+		}
+
 	/**
 	 * Allows a user to exit a team.
 	 *

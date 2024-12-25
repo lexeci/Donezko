@@ -64,9 +64,18 @@ export class OrgController {
 		@Param('id') id: string,
 		@CurrentUser('id') userId: string,
 		@Query('projectId') projectId: string,
-		@Query('hide') hide: boolean
+		@Query('hideProject') hideProject: boolean,
+		@Query('teamId') teamId: string,
+		@Query('hideTeam') hideTeam: boolean
 	) {
-		return this.orgService.getUsers({ id, userId, projectId, hide });
+		return this.orgService.getUsers({
+			id,
+			userId,
+			projectId,
+			hideProject,
+			teamId,
+			hideTeam
+		});
 	}
 
 	/**

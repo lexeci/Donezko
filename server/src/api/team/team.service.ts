@@ -539,6 +539,11 @@ export class TeamService {
 						...(hasPermission && { email: true })
 					}
 				}
+			},
+			orderBy: {
+				user: {
+					name: 'desc'
+				}
 			}
 		});
 
@@ -997,13 +1002,27 @@ export class TeamService {
 
 		await this.checkAccess({ organizationId, userId });
 
-		if (!(await this.isTeamLeader(id, userId))) {
-			throw new ForbiddenException('Only the team leader can add users');
-		}
-
 		await this.checkUserInOrganization(organizationId, teamUserId);
 
-		await this.prisma.teamUser.create({
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
+		if (!(await this.isTeamLeader(id, userId))) {
+			if (
+				!(
+					userInOrg &&
+					([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+				)
+			) {
+				throw new ForbiddenException(
+					'Only the admin,owner or team leader can update this team'
+				);
+			}
+		}
+
+		return await this.prisma.teamUser.create({
 			data: {
 				teamId: id,
 				userId: teamUserId,
@@ -1011,8 +1030,6 @@ export class TeamService {
 				teamStatus: AccessStatus.ACTIVE
 			}
 		});
-
-		return this.getById({ userId, id, organizationId });
 	}
 
 	/**
@@ -1037,8 +1054,22 @@ export class TeamService {
 
 		await this.checkAccess({ organizationId, userId });
 
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
 		if (!(await this.isTeamLeader(id, userId))) {
-			throw new ForbiddenException('Only the team leader can remove users');
+			if (
+				!(
+					userInOrg &&
+					([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+				)
+			) {
+				throw new ForbiddenException(
+					'Only the admin,owner or team leader can update this team'
+				);
+			}
 		}
 
 		await this.prisma.teamUser.delete({
@@ -1071,10 +1102,21 @@ export class TeamService {
 
 		await this.checkAccess({ organizationId, userId });
 
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
+		const hasPermission =
+			userInOrg &&
+			([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role);
+
 		if (!(await this.isTeamLeader(id, userId))) {
-			throw new ForbiddenException(
-				'Only the current leader can transfer leadership'
-			);
+			if (!hasPermission) {
+				throw new ForbiddenException(
+					'Only the admin,owner or team leader can update this team'
+				);
+			}
 		}
 
 		if (!teamUserId) {
@@ -1089,16 +1131,84 @@ export class TeamService {
 			throw new NotFoundException('New leader must be an active team member');
 		}
 
-		await this.prisma.$transaction([
-			this.prisma.teamUser.update({
-				where: { userId_teamId: { teamId: id, userId } },
-				data: { role: TeamRole.MEMBER }
-			}),
-			this.prisma.teamUser.update({
-				where: { userId_teamId: { teamId: id, userId: teamUserId } },
-				data: { role: TeamRole.LEADER }
-			})
-		]);
+		if (newLeader.role === TeamRole.LEADER) {
+			throw new ForbiddenException(
+				'Current participant is already a leader of team'
+			);
+		}
+
+		if (hasPermission) {
+			const oldLeader = await this.prisma.teamUser.findFirst({
+				where: {
+					teamId: id,
+					teamStatus: AccessStatus.ACTIVE,
+					role: TeamRole.LEADER
+				}
+			});
+
+			await this.prisma.$transaction([
+				this.prisma.teamUser.update({
+					where: { userId_teamId: { teamId: id, userId: oldLeader.userId } },
+					data: { role: TeamRole.MEMBER }
+				}),
+				this.prisma.teamUser.update({
+					where: { userId_teamId: { teamId: id, userId: teamUserId } },
+					data: { role: TeamRole.LEADER }
+				})
+			]);
+		} else {
+			await this.prisma.$transaction([
+				this.prisma.teamUser.update({
+					where: { userId_teamId: { teamId: id, userId: userId } },
+					data: { role: TeamRole.MEMBER }
+				}),
+				this.prisma.teamUser.update({
+					where: { userId_teamId: { teamId: id, userId: teamUserId } },
+					data: { role: TeamRole.LEADER }
+				})
+			]);
+		}
+	}
+
+	async updateStatus({
+		id,
+		dto,
+		userId
+	}: {
+		id: string;
+		dto: ManageTeamDto;
+		userId: string;
+	}) {
+		const { organizationId, teamUserId, teamStatus } = dto;
+
+		await this.checkAccess({ organizationId, userId });
+
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
+		if (!(await this.isTeamLeader(id, userId))) {
+			if (
+				!(
+					userInOrg &&
+					([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+				)
+			) {
+				throw new ForbiddenException(
+					'Only the admin,owner or team leader can update this team'
+				);
+			}
+		}
+
+		return this.prisma.teamUser.update({
+			where: {
+				userId_teamId: { teamId: id, userId: teamUserId }
+			},
+			data: {
+				teamStatus
+			}
+		});
 	}
 
 	/**

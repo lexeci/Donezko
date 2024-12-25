@@ -287,12 +287,12 @@ class TeamService {
 	 * @param data - Data about the user to add.
 	 * @returns The updated team with its users.
 	 */
-	async addUserToTeam(
-		id: string,
-		data: ManageTeamUser
-	): Promise<TeamWithUsersResponse> {
+	async addUserToTeam({
+		id,
+		...data
+	}: ManageTeamUser): Promise<TeamUsersResponse> {
 		try {
-			const response = await axiosWithAuth.post<TeamWithUsersResponse>(
+			const response = await axiosWithAuth.post<TeamUsersResponse>(
 				`${this.BASE_URL}/${id}/users`,
 				data
 			);

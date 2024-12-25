@@ -3,18 +3,30 @@ import { OrgUserResponse } from "@/types/org.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-export function useFetchOrgUsers(
-	organizationId?: string | null,
-	projectId?: string,
-	hideFromProject?: boolean
-) {
+interface useFetchOrgUsers {
+	organizationId?: string | null;
+	projectId?: string;
+	teamId?: string;
+	hideFromProject?: boolean;
+	hideFromTeam?: boolean;
+}
+
+export function useFetchOrgUsers({
+	organizationId,
+	projectId,
+	teamId,
+	hideFromProject,
+	hideFromTeam,
+}: useFetchOrgUsers) {
 	const { data: orgData } = useQuery({
 		queryKey: ["organization users", organizationId],
 		queryFn: () =>
 			orgService.getOrganizationUsers(
 				organizationId as string,
 				projectId,
-				hideFromProject
+				hideFromProject,
+				teamId,
+				hideFromTeam
 			),
 		enabled: !!organizationId,
 	});

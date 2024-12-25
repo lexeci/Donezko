@@ -17,7 +17,7 @@ export default function ProjectCreate({
 	organizationTitle?: string;
 	setProjects?: Dispatch<SetStateAction<Project[]>>;
 }) {
-	const { organizationUserList } = useFetchOrgUsers(organizationId);
+	const { organizationUserList } = useFetchOrgUsers({ organizationId });
 	const [organizationUsers, setOrganizationUsersList] =
 		useState<OrgUserResponse[]>();
 

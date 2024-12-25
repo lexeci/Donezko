@@ -9,7 +9,7 @@ import {
 	Logger
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AccessStatus } from '@prisma/client';
+import { AccessStatus, OrgRole } from '@prisma/client';
 
 /**
  * PermissionGuard is a custom guard that checks if a user has the required permissions
@@ -78,7 +78,13 @@ export class PermissionGuard implements CanActivate {
 			);
 		}
 		if (teamId) {
-			await this.checkAccess('team', teamId, projectId, user.id, user.name);
+			await this.checkAccess(
+				'team',
+				teamId,
+				organizationId,
+				user.id,
+				user.name
+			);
 		}
 		if (projectId) {
 			await this.checkAccess(
@@ -130,7 +136,7 @@ export class PermissionGuard implements CanActivate {
 	private async checkAccess(
 		entity: 'organization' | 'team' | 'project',
 		entityId: string,
-		projectId: string,
+		organizationId: string,
 		userId: string,
 		userName: string
 	): Promise<void> {
@@ -139,7 +145,7 @@ export class PermissionGuard implements CanActivate {
 				await this.checkOrganizationAccess(entityId, userId, userName);
 				break;
 			case 'team':
-				await this.checkTeamAccess(entityId, projectId, userId, userName);
+				await this.checkTeamAccess(entityId, userId, userName, organizationId);
 				break;
 			case 'project':
 				await this.checkProjectAccess(entityId, userId, userName);
@@ -183,71 +189,55 @@ export class PermissionGuard implements CanActivate {
 	 * Denies access if the user is not a member of the team or project, or if banned.
 	 *
 	 * @param teamId The ID of the team.
-	 * @param projectId The ID of the project.
+	 * @param organizationId The ID of the project.
 	 * @param userId The ID of the user.
 	 * @param userName The name of the user.
 	 */
 	private async checkTeamAccess(
 		teamId: string,
-		projectId: string,
 		userId: string,
-		userName: string
+		userName: string,
+		organizationId: string
 	): Promise<void> {
 		const team = await this.prisma.team.findUnique({ where: { id: teamId } });
 		if (!team) {
 			throw new ForbiddenException(`Team ${teamId} does not exist.`);
 		}
-		if (!projectId) {
-			throw new ForbiddenException('Please provide the correct projectId.');
-		}
-
-		const project = await this.prisma.project.findUnique({
-			where: { id: projectId },
-			select: { organizationId: true, title: true }
-		});
-		if (!project) {
-			throw new ForbiddenException(`Project ${projectId} does not exist.`);
-		}
 
 		const organizationUser = await this.prisma.organizationUser.findFirst({
 			where: {
 				userId,
-				organizationId: project.organizationId,
+				organizationId: organizationId,
 				organizationStatus: AccessStatus.ACTIVE
 			}
 		});
 		if (!organizationUser) {
 			throw new ForbiddenException(
-				`User ${userName} is not a member of organization ${project.organizationId}.`
+				`User ${userName} is not a member of organization ${organizationId}.`
 			);
 		}
 
-		const projectUser = await this.prisma.projectUser.findFirst({
-			where: { userId, projectId, projectStatus: AccessStatus.ACTIVE }
-		});
-		if (!projectUser) {
-			throw new ForbiddenException(
-				`User ${userName} is not a member of project ${project.title}.`
-			);
-		}
-
-		const teamUser = await this.prisma.teamUser.findFirst({
-			where: { userId, teamId }
-		});
-		if (!teamUser) {
-			throw new ForbiddenException(
-				`User ${userName} is not a member of team ${teamId}.`
-			);
-		}
-		if (teamUser.teamStatus === AccessStatus.BANNED) {
-			throw new ForbiddenException(
-				`User ${userName} is banned from team ${teamId}.`
-			);
-		}
-
-		this.logger.log(
-			`User ${userName} granted access to team ${teamId} in project ${project.title}.`
+		const isPermitted = ([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
+			organizationUser.role
 		);
+
+		if (!isPermitted) {
+			const teamUser = await this.prisma.teamUser.findFirst({
+				where: { userId, teamId }
+			});
+			if (!teamUser) {
+				throw new ForbiddenException(
+					`User ${userName} is not a member of team ${teamId}.`
+				);
+			}
+			if (teamUser.teamStatus === AccessStatus.BANNED) {
+				throw new ForbiddenException(
+					`User ${userName} is banned from team ${teamId}.`
+				);
+			}
+		}
+
+		this.logger.log(`User ${userName} granted access to team ${teamId}`);
 	}
 
 	/**

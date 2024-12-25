@@ -19,9 +19,7 @@ import {
 	ChangeTaskAssigneeDto,
 	ChangeTaskTeamDto,
 	CreateTaskDto,
-	GetProjectTaskDto,
 	GetTaskCommentDto,
-	GetTeamTaskDto,
 	ManageTaskDto,
 	TaskCommentDto,
 	UpdateTaskDto
@@ -48,9 +46,18 @@ export class TaskController {
 	@HttpCode(200)
 	async getAll(
 		@CurrentUser('id') userId: string,
-		@Query('projectId') projectId: string
+		@Query('organizationId') organizationId: string,
+		@Query('projectId') projectId: string,
+		@Query('teamId') teamId: string,
+		@Query('available') available: string
 	) {
-		return this.taskService.getAll({ userId, projectId });
+		return this.taskService.getAll({
+			organizationId,
+			userId,
+			projectId,
+			teamId,
+			available
+		});
 	}
 
 	/**
@@ -108,46 +115,6 @@ export class TaskController {
 		@CurrentUser('id') userId: string
 	) {
 		await this.taskService.delete({ id, dto, userId });
-	}
-
-	/**
-	 * Get all tasks for a specific project.
-	 *
-	 * @param id The ID of the project.
-	 * @param dto Additional data (e.g., organization).
-	 * @param userId The ID of the authenticated user.
-	 * @returns A list of tasks for the specified project.
-	 */
-	@Get('project/:id')
-	@Auth() // Authenticated access required
-	@Permission('viewResources') // Permission required
-	@HttpCode(200)
-	async getAllForProject(
-		@Param('id') id: string,
-		@Body() dto: GetProjectTaskDto,
-		@CurrentUser('id') userId: string
-	) {
-		return this.taskService.getAllForProject({ id, dto, userId });
-	}
-
-	/**
-	 * Get all tasks for a specific team.
-	 *
-	 * @param id The ID of the team.
-	 * @param dto Additional data (e.g., organization).
-	 * @param userId The ID of the authenticated user.
-	 * @returns A list of tasks for the specified team.
-	 */
-	@Get('team/:id')
-	@Auth() // Authenticated access required
-	@Permission('viewResources') // Permission required
-	@HttpCode(200)
-	async getAllForTeam(
-		@Param('id') id: string,
-		@Body() dto: GetTeamTaskDto,
-		@CurrentUser('id') userId: string
-	) {
-		return this.taskService.getAllForTeam({ id, dto, userId });
 	}
 
 	/**

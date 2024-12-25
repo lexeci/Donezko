@@ -15,51 +15,49 @@ export default function Sidebar() {
 	const { organizationRole } = useFetchOrgRole(organizationId);
 
 	// Стейт для лінків
-	const [links, setLinks] = useState([
+
+	const baseLinks = [
 		{ link: "/workspace", title: "Dashboard" },
 		{ link: "/workspace/pomodoro", title: "Pomodoro Timer" },
 		{ link: "/workspace/settings", title: "Settings" },
-	]);
+	];
+
+	const additionalLinks = [
+		{ link: "/workspace/tasks", title: "Tasks" },
+		{ link: "/workspace/teams", title: "Teams" },
+		{ link: "/workspace/projects", title: "Projects" },
+	];
+
+	const [links, setLinks] = useState(baseLinks);
 
 	useEffect(() => {
-		const isViewer = organizationRole
-			? organizationRole.role === OrgRole.VIEWER
-			: true;
+		const isViewer = organizationRole?.role === OrgRole.VIEWER;
+		let updatedLinks = [...baseLinks];
 
-		// Оновлюємо список лінків при зміні organizationId
 		if (organizationId) {
-			if (isViewer === false) {
-				setLinks([
-					{ link: "/workspace", title: "Dashboard" },
-					{
-						link: `/workspace/organizations/${organizationId}`,
-						title: "My Organization",
-					},
-					{ link: "/workspace/teams", title: "Teams" },
-					{ link: "/workspace/projects", title: "Projects" },
-					{ link: "/workspace/pomodoro", title: "Pomodoro Timer" },
-					{ link: "/workspace/settings", title: "Settings" },
-				]);
-			} else {
-				setLinks([
-					{ link: "/workspace", title: "Dashboard" },
-					{
-						link: `/workspace/organizations/${organizationId}`,
-						title: "My Organization",
-					},
-					{ link: "/workspace/pomodoro", title: "Pomodoro Timer" },
-					{ link: "/workspace/settings", title: "Settings" },
-				]);
+			// Додаємо посилання на організацію після Dashboard
+			updatedLinks.splice(1, 0, {
+				link: `/workspace/organizations/${organizationId}`,
+				title: "My Organization",
+			});
+
+			if (!isViewer) {
+				// Вставляємо additionalLinks між Pomodoro та Settings
+				const pomodoroIndex = updatedLinks.findIndex(
+					link => link.title === "Pomodoro Timer"
+				);
+				updatedLinks.splice(pomodoroIndex + 1, 0, ...additionalLinks);
 			}
 		} else {
-			setLinks([
-				{ link: "/workspace", title: "Dashboard" },
-				{ link: "/workspace/organizations", title: "Organizations" },
-				{ link: "/workspace/pomodoro", title: "Pomodoro Timer" },
-				{ link: "/workspace/settings", title: "Settings" },
-			]);
+			// Додаємо Organizations для користувачів без організації
+			updatedLinks.splice(1, 0, {
+				link: "/workspace/organizations",
+				title: "Organizations",
+			});
 		}
-	}, [organizationId, organizationRole]); // Залежність від organizationId
+
+		setLinks(updatedLinks);
+	}, [organizationId, organizationRole]); // Залежність від organizationId та organizationRole
 
 	return (
 		<div className={styles.sidebar}>

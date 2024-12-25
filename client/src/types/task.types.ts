@@ -21,7 +21,7 @@ export interface TaskResponse extends RootBase {
 	project?: Project; // Проект, до якого належить задача (якщо є)
 	teamId?: string; // Ідентифікатор команди, до якої належить задача
 	team?: TeamResponse; // Команда, до якої належить задача (якщо є)
-	comments: CommentResponse[]; // Коментарі до задачі
+	comments?: CommentResponse[]; // Коментарі до задачі
 }
 
 export type TaskFormData = Partial<

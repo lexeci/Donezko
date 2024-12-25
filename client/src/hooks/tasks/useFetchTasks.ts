@@ -5,21 +5,42 @@ import { TaskResponse } from "@/types/task.types";
 
 import { taskService } from "@/src/services/task.service";
 
-export function useFetchTasks() {
-	// Зміна назви хуку для унікальності
-	const { data: tasksData } = useQuery({
-		// Зміна назви змінної для унікальності
-		queryKey: ["tasks"],
-		queryFn: () => taskService.getTasks(),
+export function useFetchTasks({
+	organizationId,
+	projectId,
+	teamId,
+	available = false,
+}: {
+	organizationId?: string | null;
+	projectId?: string | null;
+	teamId?: string | null;
+	available?: boolean;
+}) {
+	const { data: tasksData, refetch } = useQuery({
+		queryKey: ["tasks", projectId, teamId, available],
+		queryFn: () => {
+			// Перевірка параметрів перед виконанням функції
+			return taskService.getTasks({
+				organizationId,
+				projectId: projectId,
+				teamId: teamId,
+				available: available,
+			});
+		},
+		enabled: !!organizationId && !!projectId, // Запит виконується лише якщо projectId визначений
 	});
 
 	const [taskList, setTaskList] = useState<TaskResponse[] | undefined>(
 		tasksData
-	); // Зміна назви змінної
+	);
 
 	useEffect(() => {
-		setTaskList(tasksData); // Зміна назви змінної для унікальності
-	}, [tasksData]); // Зміна назви змінної для унікальності
+		setTaskList(tasksData); // Оновлюємо стан, коли tasksData змінюється
+	}, [tasksData]);
 
-	return { taskList, setTaskList }; // Зміна назви змінної для унікальності
+	const handleRefetch = () => {
+		refetch(); // Виклик повторного запиту
+	};
+
+	return { taskList, setTaskList, handleRefetch };
 }

@@ -40,7 +40,7 @@ export default function Layout({
 						<CoinVertical size={80} className="m-auto animate-spin" />
 					</div>
 				) : isSelected || pathname === "/workspace/organizations" ? (
-					<div className="py-8 h-full">{children}</div>
+					<div className="pt-8 h-full">{children}</div>
 				) : (
 					<div className="h-full flex flex-col justify-center items-center gap-y-4 max-w-[40rem] mx-auto text-center">
 						<SmileyMeh size={80} className="animate-spin" />

@@ -37,3 +37,7 @@
 		@apply block border-b border-foreground;
 	}
 }
+
+.join-code {
+	@apply cursor-pointer;
+}

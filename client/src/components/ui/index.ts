@@ -3,6 +3,7 @@ export { default as AnimatedLink } from "./AnimatedLink/AnimatedLink";
 export { default as AsciiElement } from "./AsciiElement/AsciiElement";
 export { default as Button } from "./Button/Button";
 export { default as DigitalClock } from "./DigitalClock/DigitalClock";
+export { default as Checkbox } from "./Field/Checkbox";
 export { default as Field } from "./Field/Field";
 export { default as Select } from "./Field/Select";
 export { default as HeaderUserBadge } from "./HeaderUserBadge/HeaderUserBadge";

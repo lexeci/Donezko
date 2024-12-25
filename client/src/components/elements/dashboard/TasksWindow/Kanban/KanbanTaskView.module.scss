@@ -9,12 +9,12 @@
 	}
 
 	.column {
-		@apply w-[21.5rem] border border-foreground relative;
+		@apply w-[21.5rem] bg-white/30 border border-foreground relative;
 		white-space: nowrap;
 		min-height: 79vh;
 
 		& > div:first-child {
-			@apply bg-background border-b border-t border-b-foreground  border-t-foreground p-2 sticky top-0 z-10;
+			@apply bg-background border-b border-t border-b-foreground  border-t-foreground p-2 sticky top-0 z-10 text-xs;
 		}
 
 		.container {

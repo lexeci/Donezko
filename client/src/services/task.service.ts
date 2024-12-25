@@ -6,9 +6,30 @@ import type { TaskFormData, TaskResponse } from "@/types/task.types";
 class TaskService {
 	private BASE_URL = "/user/tasks";
 
-	async getTasks(): Promise<TaskResponse[]> {
+	async getTasks({
+		organizationId,
+		projectId,
+		teamId,
+		available,
+	}: {
+		organizationId?: string | null;
+		projectId?: string | null;
+		teamId?: string | null;
+		available?: boolean;
+	}): Promise<TaskResponse[]> {
+		const params = new URLSearchParams();
+
+		if (organizationId) params.append("organizationId", organizationId);
+		if (projectId) params.append("projectId", projectId);
+		if (teamId) params.append("teamId", teamId);
+		if (available) params.append("available", "true");
+
+		const url = `${this.BASE_URL}${
+			params.toString() ? `?${params.toString()}` : ""
+		}`;
+
 		try {
-			const response = await axiosWithAuth.get<TaskResponse[]>(this.BASE_URL);
+			const response = await axiosWithAuth.get<TaskResponse[]>(url);
 			return response.data; // Return only the data part
 		} catch (error) {
 			console.error("Error fetching tasks:", error);

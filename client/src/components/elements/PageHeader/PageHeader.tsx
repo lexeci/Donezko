@@ -1,5 +1,5 @@
 import { Button } from "@/components/index";
-import clsx from "clsx";
+import JoinCode from "./JoinCode";
 import styles from "./PageHeader.module.scss";
 
 interface PageHeader {
@@ -27,13 +27,7 @@ export default function PageHeader({
 		<div className={styles["page-section"]}>
 			<div className={styles["section-title"]}>
 				<h4>{pageTitle}</h4>
-				{joinCode && (
-					<p className={clsx(styles["join-code"], "bg-radial-grid-mini")}>
-						<span>
-							Join Code: <span>{joinCode}</span>
-						</span>
-					</p>
-				)}
+				{joinCode && <JoinCode joinCode={joinCode} />}
 				{extraInfo && (
 					<p className={styles["join-code"]}>
 						<span>{extraInfo}</span>

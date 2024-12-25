@@ -28,6 +28,7 @@ package-lock.json
 /*/.nyc_output
 
 # IDEs and editors
+/*/.vscode
 /*/.idea
 /*/.project
 /*/.classpath
@@ -40,6 +41,7 @@ package-lock.json
 .project
 .classpath
 .c9/
+.vscode
 *.launch
 .settings/
 *.sublime-workspace

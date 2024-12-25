@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 
 interface SelectFieldProps {
 	id: string;
-	label: string;
+	label?: string;
 	placeholder?: string;
 	options: { value: string; label: string }[];
 	value?: string;
@@ -28,9 +28,11 @@ const Select = forwardRef<HTMLSelectElement, SelectFieldProps>(
 	) => {
 		return (
 			<div className={`${extra}`}>
-				<label htmlFor={id} className="text-sm text-foreground font-mono">
-					{label}
-				</label>
+				{label && (
+					<label htmlFor={id} className="text-sm text-foreground font-mono">
+						{label}
+					</label>
+				)}
 				<select
 					ref={ref}
 					id={id}

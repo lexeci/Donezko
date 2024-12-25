@@ -5,9 +5,7 @@ import {
 	ChangeTaskAssigneeDto,
 	ChangeTaskTeamDto,
 	CreateTaskDto,
-	GetProjectTaskDto,
 	GetTaskCommentDto,
-	GetTeamTaskDto,
 	ManageTaskDto,
 	TaskCommentDto,
 	UpdateTaskDto
@@ -91,78 +89,70 @@ export class TaskService {
 	 * @returns {Promise<Task[]>} A list of tasks assigned to the user.
 	 */
 	async getAll({
+		organizationId,
 		userId,
-		projectId
+		projectId,
+		teamId,
+		available
 	}: {
+		organizationId: string;
 		userId: string;
 		projectId: string;
+		teamId: string;
+		available: string;
 	}) {
-		return this.prisma.task.findMany({ where: { userId, projectId } });
-	}
-
-	/**
-	 * Retrieves all tasks for a specific project.
-	 *
-	 * @param {string} id - The project ID to fetch tasks for.
-	 * @param {string} userId - The ID of the user requesting the tasks.
-	 * @param {GetProjectTaskDto} dto - The DTO containing additional filters (like organizationId).
-	 * @returns {Promise<Task[]>} A list of tasks associated with the project.
-	 */
-	async getAllForProject({
-		id,
-		userId,
-		dto
-	}: {
-		id: string;
-		userId: string;
-		dto: GetProjectTaskDto;
-	}) {
-		const { organizationId } = dto;
-
-		if (!organizationId) {
-			throw new ForbiddenException('Organization ID is required.');
-		}
-
-		// Check user permissions for the given project and organization.
-		await this.checkUserPermission({ userId, projectId: id, organizationId });
-
-		return this.prisma.task.findMany({ where: { projectId: id } });
-	}
-
-	/**
-	 * Retrieves all tasks for a specific team within a project.
-	 *
-	 * @param {string} id - The team ID to fetch tasks for.
-	 * @param {string} userId - The ID of the user requesting the tasks.
-	 * @param {GetTeamTaskDto} dto - The DTO containing additional filters (like projectId, organizationId).
-	 * @returns {Promise<Task[]>} A list of tasks associated with the team.
-	 */
-	async getAllForTeam({
-		id,
-		userId,
-		dto
-	}: {
-		id: string;
-		userId: string;
-		dto: GetTeamTaskDto;
-	}) {
-		const { projectId, organizationId } = dto;
-
-		if (!id || !organizationId) {
+		if (!projectId) {
 			throw new ForbiddenException(
-				'Project ID and Organization ID are required.'
+				'You must have access to any project before proceed.'
 			);
 		}
 
-		// Check user permissions for the given team and organization.
-		await this.checkUserPermission({
-			userId,
-			projectId,
-			teamId: id,
-			organizationId
+		// Шукаємо користувача в організації
+		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
 		});
 
-		return this.prisma.task.findMany({ where: { projectId, teamId: id } });
+		// Якщо користувач не є частиною організації, кидаємо помилку
+		if (!currentUserInOrg) {
+			throw new ForbiddenException('You are not part of this organization');
+		}
+
+		// Якщо користувач заблокований в організації, кидаємо помилку
+		if (currentUserInOrg.organizationStatus === AccessStatus.BANNED) {
+			throw new ForbiddenException('Insufficient permissions');
+		}
+
+		// Перевірка, чи має користувач роль OWNER або ADMIN
+		const isPermitted = ([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
+			currentUserInOrg.role
+		);
+
+		if (!isPermitted) {
+			// Check if the user has access to the project
+			const projectUser = await this.prisma.projectUser.findUnique({
+				where: { projectId_userId: { projectId, userId } }
+			});
+			if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
+				throw new ForbiddenException('You do not have access to this project.');
+			}
+
+			if (teamId) {
+				const teamUser = await this.prisma.teamUser.findUnique({
+					where: { userId_teamId: { teamId, userId } }
+				});
+				if (!teamUser || teamUser.teamStatus !== AccessStatus.ACTIVE) {
+					throw new ForbiddenException('You do not have access to this team.');
+				}
+			}
+		}
+
+		return this.prisma.task.findMany({
+			where: {
+				projectId,
+				...(teamId && { teamId }),
+				...(available && { userId })
+			}
+		});
 	}
 
 	/**

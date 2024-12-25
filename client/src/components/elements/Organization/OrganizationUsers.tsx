@@ -1,12 +1,12 @@
 "use client";
 
 import { Button, ModalWindow } from "@/components/index";
-import { useUpdateOrgOwner } from "@/src/hooks/organization/useUpdateOrgOwner";
-import { useUpdateOrgRole } from "@/src/hooks/organization/useUpdateOrgRole";
-import { useUpdateOrgStatus } from "@/src/hooks/organization/useUpdateOrgStatus";
-import { OrgRole, OrgUserResponse } from "@/src/types/org.types";
-import { AccessStatus } from "@/src/types/root.types";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useUpdateOrgOwner } from "@/hooks/organization/useUpdateOrgOwner";
+import { useUpdateOrgRole } from "@/hooks/organization/useUpdateOrgRole";
+import { useUpdateOrgStatus } from "@/hooks/organization/useUpdateOrgStatus";
+import { OrgRole, OrgUserResponse } from "@/types/org.types";
+import { AccessStatus } from "@/types/root.types";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { Person, UserSwitch } from "@phosphor-icons/react/dist/ssr";
 import { Dispatch, SetStateAction, useState } from "react";
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { Button, Field } from "@/components/index";
-import { useCreateOrg } from "@/src/hooks/organization/useCreateOrg";
-import { OrgFormData } from "@/src/types/org.types";
+import { useCreateOrg } from "@/hooks/organization/useCreateOrg";
+import { OrgFormData } from "@/types/org.types";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 

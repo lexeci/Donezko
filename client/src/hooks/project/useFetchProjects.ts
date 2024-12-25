@@ -1,5 +1,5 @@
 import { projectService } from "@/src/services/project.service";
-import { Project } from "@/src/types/project.types";
+import { Project } from "@/types/project.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 

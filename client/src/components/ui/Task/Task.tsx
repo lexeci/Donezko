@@ -1,4 +1,4 @@
-import { TaskResponse } from "@/src/types/task.types";
+import { TaskResponse } from "@/types/task.types";
 import { CaretUp, ThumbsUp } from "@phosphor-icons/react/dist/ssr";
 import { UseMutateFunction } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";

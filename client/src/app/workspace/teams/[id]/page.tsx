@@ -1,17 +1,26 @@
 "use client";
 
 import pageStyles from "@/app/page.module.scss";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useFetchTeamById } from "@/hooks/team/useFetchTeamById";
+import { useTeamRemoval } from "@/hooks/team/useTeamRemoval";
 import {
 	Button,
+	EntityItem,
 	ModalWindow,
 	NotFoundId,
 	PageHeader,
 	PageLayout,
 	TeamUpdate,
+	TeamUsers,
+	WindowContainer,
 } from "@/src/components";
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchTeamById } from "@/src/hooks/team/useFetchTeamById";
-import { useTeamRemoval } from "@/src/hooks/team/useTeamRemoval";
+import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
+import { useFetchTeamRole } from "@/src/hooks/team/useFetchTeamRole";
+import { OrgRole } from "@/src/types/org.types";
+import { TeamRole } from "@/src/types/team.types";
+import generateKeyComp from "@/utils/generateKeyComp";
+import { Browsers } from "@phosphor-icons/react";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,174 +38,89 @@ export default function Team() {
 		teamId,
 		organizationId
 	);
+	const { organizationRole } = useFetchOrgRole(organizationId);
+	const { teamRole } = useFetchTeamRole(teamId, organizationId);
 
-	const role = fetchedData?.role;
-	const orgRole = fetchedData?.team.organization.organizationUsers?.[0].role;
+	console.log(fetchedData);
+
+	// const role = fetchedData?.role;
+	const projectsArray = fetchedData?.projectTeams;
+	const usersArray = fetchedData?.teamUsers;
+
+	console.log(projectsArray);
 
 	const { deleteTeam } = useTeamRemoval();
 
 	const hasPermission =
-		role === "LEADER" || orgRole === "OWNER" || orgRole === "ADMIN";
+		teamRole?.role === TeamRole.LEADER ||
+		organizationRole?.role === OrgRole.OWNER ||
+		organizationRole?.role === OrgRole.ADMIN;
 
 	return fetchedData ? (
 		<PageLayout>
 			<PageHeader
 				pageTitle="Team"
-				title={fetchedData.team?.title as string}
-				desc={fetchedData.team?.description as string}
+				title={fetchedData?.title as string}
+				desc={fetchedData?.description as string}
 				extraDesc={
-					fetchedData.team &&
-					`Participants: ${fetchedData.team?._count?.teamUsers} | Tasks: ${fetchedData.team?._count?.tasks}`
+					fetchedData &&
+					`Participants: ${fetchedData?._count?.teamUsers} | Tasks: ${fetchedData?._count?.tasks}`
 				}
 				extraInfo={
-					fetchedData.team.organization &&
-					`Organization: ${fetchedData.team.organization.title}`
+					fetchedData.organization &&
+					`Organization: ${fetchedData.organization.title}`
 				}
 				button={hasPermission && "Update Team"}
 				buttonAction={() => hasPermission && setOpenModalUpdate(true)}
 			/>
 			<div className={pageStyles["workspace-content-col"]}>
-				{/* <WindowContainer title="Insomnia Works" subtitle="Projects [15]">
-					{projectArray.map((item, i) => (
-						<EntityItem
-							icon={<Browsers size={84} />}
-							linkBase={`/workspace/projects/${item.id}`}
-							title={item.title}
-							firstStat={`Teams: ${item.teams}`}
-							secondaryStat={`Tasks: ${item.tasks}`}
-							key={generateKeyComp(`${item.title}__${i}`)}
-						/>
-					))}
+				<WindowContainer
+					title={fetchedData.title}
+					subtitle={`Projects [${projectsArray ? projectsArray?.length : 0}]`}
+					autoContent
+				>
+					{projectsArray ? (
+						projectsArray?.length > 0 ? (
+							projectsArray.map((item, i) => {
+								const { project } = item;
+								const { _count } = project;
+								return (
+									<EntityItem
+										icon={<Browsers size={84} />}
+										linkBase={`/workspace/projects/${project.id}`}
+										title={project.title}
+										firstStat={`Participants: ${_count?.projectUsers}`}
+										secondaryStat={`Tasks: ${_count?.tasks}`}
+										key={generateKeyComp(`${project.title}__${i}`)}
+									/>
+								);
+							})
+						) : (
+							<div className="w-full h-fit bg-background p-8">
+								<h5 className="font-bold text-base">
+									There is no project for you
+								</h5>
+							</div>
+						)
+					) : (
+						<div className="w-full h-fit bg-background p-8">
+							<h5 className="font-bold text-base">
+								There is no project for you
+							</h5>
+						</div>
+					)}
 				</WindowContainer>
-				<WindowContainer title="Insomnia Works" subtitle="Users [15]" fullPage>
-					<div className="container flex flex-col w-full h-full bg-background border border-foreground p-4">
-						<div className="title">
-							<h5>Users in current organization:</h5>
-						</div>
-						<div className="users flex flex-col w-full h-full overflow-auto pt-4 gap-y-4">
-							<div className="item flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground">
-								<Person size={48} className="border border-foreground p-0.5" />
-								<div className="about flex flex-col justify-start items-start">
-									<div className="name">
-										<p>Username: "Andriy Neaijko"</p>
-									</div>
-									<div className="email">
-										<p>Email: "andriy.neaijko@gmail.com"</p>
-									</div>
-									<div className="status">
-										<p>Status: "Active"</p>
-									</div>
-									<div className="tasks">
-										<p>Tasks: "4"</p>
-									</div>
-									<div className="projects">
-										<p>
-											Projects: {"["}"Insomnia Works", "Skoda Activision
-											Blizzard"{"]"}
-										</p>
-									</div>
-									<div className="teams">
-										<p>
-											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
-											{"]"}
-										</p>
-									</div>
-								</div>
-								<div className="actions flex flex-col gap-y-2 ml-auto">
-									<Button type="button" modal fullWidth>
-										Ban
-									</Button>
-									<Button type="button" modal fullWidth>
-										Make admin
-									</Button>
-									<Button type="button" modal fullWidth>
-										Delete
-									</Button>
-								</div>
-							</div>
-							<div className="item flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground">
-								<Person size={48} className="border border-foreground p-0.5" />
-								<div className="about flex flex-col justify-start items-start">
-									<div className="name">
-										<p>Username: "Andriy Neaijko"</p>
-									</div>
-									<div className="email">
-										<p>Email: "andriy.neaijko@gmail.com"</p>
-									</div>
-									<div className="status">
-										<p>Status: "Active"</p>
-									</div>
-									<div className="tasks">
-										<p>Tasks: "4"</p>
-									</div>
-									<div className="projects">
-										<p>
-											Projects: {"["}"Insomnia Works", "Skoda Activision
-											Blizzard"{"]"}
-										</p>
-									</div>
-									<div className="teams">
-										<p>
-											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
-											{"]"}
-										</p>
-									</div>
-								</div>
-								<div className="actions flex flex-col gap-y-2 ml-auto">
-									<Button type="button" modal fullWidth>
-										Ban
-									</Button>
-									<Button type="button" modal fullWidth>
-										Make admin
-									</Button>
-									<Button type="button" modal fullWidth>
-										Delete
-									</Button>
-								</div>
-							</div>
-							<div className="item flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground">
-								<Person size={48} className="border border-foreground p-0.5" />
-								<div className="about flex flex-col justify-start items-start">
-									<div className="name">
-										<p>Username: "Andriy Neaijko"</p>
-									</div>
-									<div className="email">
-										<p>Email: "andriy.neaijko@gmail.com"</p>
-									</div>
-									<div className="status">
-										<p>Status: "Active"</p>
-									</div>
-									<div className="tasks">
-										<p>Tasks: "4"</p>
-									</div>
-									<div className="projects">
-										<p>
-											Projects: {"["}"Insomnia Works", "Skoda Activision
-											Blizzard"{"]"}
-										</p>
-									</div>
-									<div className="teams">
-										<p>
-											Teams: {"["}"Insomnia Works", "Skoda Activision Blizzard"
-											{"]"}
-										</p>
-									</div>
-								</div>
-								<div className="actions flex flex-col gap-y-2 ml-auto">
-									<Button type="button" modal fullWidth>
-										Ban
-									</Button>
-									<Button type="button" modal fullWidth>
-										Make admin
-									</Button>
-									<Button type="button" modal fullWidth>
-										Delete
-									</Button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</WindowContainer> */}
+				<WindowContainer
+					title={fetchedData.title}
+					subtitle={"Participants"}
+					fullPage
+				>
+					<TeamUsers
+						teamId={fetchedData.id}
+						orgRole={organizationRole?.role}
+						role={teamRole?.role}
+					/>
+				</WindowContainer>
 				{hasPermission && organizationId && (
 					<Button type="button" onClick={() => setOpenModal(true)}>
 						<Trash size={22} className="mr-4" />
@@ -243,11 +167,11 @@ export default function Team() {
 					subtitle="It's time to update :()"
 					onClose={() => setOpenModalUpdate(false)}
 				>
-					{fetchedData.team && organizationId && (
+					{fetchedData && organizationId && (
 						<div className="container bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto">
 							<TeamUpdate
 								id={teamId}
-								data={fetchedData.team}
+								data={fetchedData}
 								pullCloseModal={setOpenModalUpdate}
 								pullUpdatedData={setTeam}
 							/>

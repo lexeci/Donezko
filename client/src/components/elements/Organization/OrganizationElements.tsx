@@ -3,9 +3,9 @@
 import pageStyles from "@/app/page.module.scss";
 
 import { Button, EntityItem } from "@/components/index";
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useFetchOrgs } from "@/hooks/organization/useFetchOrgs";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { Buildings } from "@phosphor-icons/react";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";

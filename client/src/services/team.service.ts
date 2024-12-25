@@ -1,10 +1,13 @@
 import { axiosWithAuth } from "@/api/interceptors";
 import type {
-	ManageTeamData,
+	ManageTeamUser,
+	Team,
 	TeamFormData,
 	TeamResponse,
+	TeamRole,
 	TeamsProjectResponse,
 	TeamsResponse,
+	TeamUsersResponse,
 	TeamWithUsersResponse,
 } from "@/types/team.types";
 import { toast } from "sonner";
@@ -26,6 +29,29 @@ class TeamService {
 			error && toast.error(error.response.data.message);
 			console.error("Error fetching user teams:", error);
 			throw new Error("Could not fetch user teams");
+		}
+	}
+
+	/**
+	 * Fetches all users where associated with the current team.
+	 * @returns A list of users from team with their data.
+	 */
+	async getAllTeamUsers({
+		organizationId,
+		id,
+	}: {
+		organizationId: string;
+		id: string;
+	}): Promise<TeamUsersResponse[]> {
+		try {
+			const response = await axiosWithAuth.get<TeamUsersResponse[]>(
+				`${this.BASE_URL}/${id}/users/?organizationId=${organizationId}`
+			);
+			return response.data;
+		} catch (error: any) {
+			error && toast.error(error.response.data.message);
+			console.error("Error fetching users from team:", error);
+			throw new Error("Could not fetch users from team");
 		}
 	}
 
@@ -80,9 +106,9 @@ class TeamService {
 	 * @param organizationId - The organization ID.
 	 * @returns A team object with its users.
 	 */
-	async getTeamById(id: string, organizationId: string): Promise<TeamResponse> {
+	async getTeamById(id: string, organizationId: string): Promise<Team> {
 		try {
-			const response = await axiosWithAuth.get<TeamResponse>(
+			const response = await axiosWithAuth.get<Team>(
 				`${this.BASE_URL}/${id}?organizationId=${organizationId}`
 			);
 			return response.data;
@@ -90,6 +116,30 @@ class TeamService {
 			error && toast.error(error.response.data.message);
 			console.error("Error fetching team by ID:", error);
 			throw new Error("Could not fetch team by ID");
+		}
+	}
+
+	/**
+	 * Fetches a team user role by its ID.
+	 * @param id - The team ID.
+	 * @param organizationId - The organization ID.
+	 * @returns A team object with its users.
+	 */
+	async getTeamRole({
+		id,
+		organizationId,
+	}: {
+		id: string;
+		organizationId: string;
+	}): Promise<{ role: TeamRole }> {
+		try {
+			const response = await axiosWithAuth.get<{ role: TeamRole }>(
+				`${this.BASE_URL}/${id}/role/?organizationId=${organizationId}`
+			);
+			return response.data;
+		} catch (error: any) {
+			console.error(`Fetching organization error:`, error);
+			throw new Error(`Fetching organization failed`);
 		}
 	}
 
@@ -122,6 +172,29 @@ class TeamService {
 		try {
 			const response = await axiosWithAuth.put<TeamResponse>(
 				`${this.BASE_URL}/${id}`,
+				data
+			);
+			return response.data;
+		} catch (error: any) {
+			error && toast.error(error.response.data.message);
+			console.error("Error updating team:", error);
+			throw new Error("Could not update team");
+		}
+	}
+
+	/**
+	 * Updates an existing team.
+	 * @param id - The team ID.
+	 * @param data - Updated team form data.
+	 * @returns The updated team.
+	 */
+	async updateTeamStatus({
+		id,
+		...data
+	}: ManageTeamUser): Promise<TeamUsersResponse> {
+		try {
+			const response = await axiosWithAuth.put<TeamUsersResponse>(
+				`${this.BASE_URL}/${id}/update-status`,
 				data
 			);
 			return response.data;
@@ -216,7 +289,7 @@ class TeamService {
 	 */
 	async addUserToTeam(
 		id: string,
-		data: ManageTeamData
+		data: ManageTeamUser
 	): Promise<TeamWithUsersResponse> {
 		try {
 			const response = await axiosWithAuth.post<TeamWithUsersResponse>(
@@ -236,9 +309,14 @@ class TeamService {
 	 * @param id - The team ID.
 	 * @param data - Data about the user to remove.
 	 */
-	async removeUserFromTeam(id: string, data: ManageTeamData): Promise<void> {
+	async removeUserFromTeam({
+		id,
+		...data
+	}: ManageTeamUser): Promise<TeamUsersResponse> {
 		try {
-			await axiosWithAuth.delete(`${this.BASE_URL}/${id}/users`, { data });
+			return await axiosWithAuth.delete(`${this.BASE_URL}/${id}/users`, {
+				data,
+			});
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error removing user from team:", error);
@@ -251,9 +329,15 @@ class TeamService {
 	 * @param id - The team ID.
 	 * @param data - Data about the new leader.
 	 */
-	async transferLeadership(id: string, data: ManageTeamData): Promise<void> {
+	async transferLeadership({
+		id,
+		...data
+	}: ManageTeamUser): Promise<TeamUsersResponse> {
 		try {
-			await axiosWithAuth.put(`${this.BASE_URL}/${id}/transfer-leader`, data);
+			return await axiosWithAuth.put(
+				`${this.BASE_URL}/${id}/transfer-leader`,
+				data
+			);
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error transferring leadership:", error);

@@ -1,9 +1,9 @@
 "use client";
 
-import { useFetchOrgUsers } from "@/src/hooks/organization/useFetchOrgUsers";
-import { useAddProjectUser } from "@/src/hooks/project/useAddProjectUser";
-import { OrgUserResponse } from "@/src/types/org.types";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useFetchOrgUsers } from "@/hooks/organization/useFetchOrgUsers";
+import { useAddProjectUser } from "@/hooks/project/useAddProjectUser";
+import { OrgUserResponse } from "@/types/org.types";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { Person } from "@phosphor-icons/react";
 import { Button } from "../../ui";
 

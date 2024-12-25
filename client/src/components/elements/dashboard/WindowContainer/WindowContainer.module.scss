@@ -34,6 +34,10 @@
 	@apply h-full grid grid-cols-3 gap-8 p-8 w-full px-4 overflow-y-scroll;
 }
 
+.content-auto {
+	@apply h-auto mb-auto;
+}
+
 .full-page {
 	.content {
 		@apply flex flex-col justify-center items-center px-4 gap-y-2;

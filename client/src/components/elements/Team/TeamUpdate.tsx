@@ -1,15 +1,15 @@
 "use client";
 
 import { Button, Field } from "@/components/index";
-import { useModifyTeam } from "@/src/hooks/team/useModifyTeam";
-import { TeamFormData, TeamResponse } from "@/src/types/team.types";
+import { useModifyTeam } from "@/hooks/team/useModifyTeam";
+import { Team, TeamFormData } from "@/types/team.types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface TeamUpdate {
 	id: string;
 	data: TeamFormData;
-	pullUpdatedData: Dispatch<SetStateAction<TeamResponse | undefined>>;
+	pullUpdatedData: Dispatch<SetStateAction<Team | undefined>>;
 	pullCloseModal: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -36,7 +36,7 @@ export default function TeamUpdate({
 
 	useEffect(() => {
 		updatedTeam?.team.id && reset(updatedTeam.team);
-		updatedTeam?.team.id && pullUpdatedData(updatedTeam);
+		updatedTeam?.team.id && pullUpdatedData(updatedTeam.team);
 
 		updatedTeam?.team.id && pullCloseModal(false);
 	}, [updatedTeam]);

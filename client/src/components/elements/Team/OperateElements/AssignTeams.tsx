@@ -1,6 +1,6 @@
 import { Button } from "@/components/index";
-import { TeamsResponse } from "@/src/types/team.types";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { TeamsResponse } from "@/types/team.types";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { UserList } from "@phosphor-icons/react/dist/ssr";
 
 export function AssignTeams({

@@ -8,12 +8,12 @@ import {
 	LackPermission,
 	ModalWindow,
 } from "@/components/index";
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
-import { useFetchProjects } from "@/src/hooks/project/useFetchProjects";
-import { OrgRole } from "@/src/types/org.types";
-import { Project } from "@/src/types/project.types";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useFetchOrgRole } from "@/hooks/organization/useFetchOrgRole";
+import { useFetchProjects } from "@/hooks/project/useFetchProjects";
+import { OrgRole } from "@/types/org.types";
+import { Project } from "@/types/project.types";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { Buildings, CoinVertical } from "@phosphor-icons/react";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";

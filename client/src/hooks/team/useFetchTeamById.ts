@@ -1,5 +1,5 @@
 import { teamService } from "@/src/services/team.service";
-import { TeamResponse } from "@/types/team.types";
+import { Team } from "@/types/team.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -10,7 +10,7 @@ export function useFetchTeamById(id: string, organizationId: string | null) {
 		enabled: !!organizationId,
 	});
 
-	const [team, setTeam] = useState<TeamResponse | undefined>(teamData);
+	const [team, setTeam] = useState<Team | undefined>(teamData);
 
 	useEffect(() => {
 		setTeam(teamData);

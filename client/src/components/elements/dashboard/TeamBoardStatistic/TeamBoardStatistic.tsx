@@ -1,7 +1,7 @@
 "use client";
 
 import { StatisticBlock, StatisticItem } from "@/components/index";
-import { useFetchUserTeams } from "@/src/hooks/team/useFetchUserTeams";
+import { useFetchUserTeams } from "@/hooks/team/useFetchUserTeams";
 import { UsersThree } from "@phosphor-icons/react/dist/ssr";
 
 import styles from "./TeamBoardStatistic.module.scss";

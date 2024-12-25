@@ -1,14 +1,14 @@
 "use client";
 
 import { Button } from "@/components/index";
-import { useFetchProjectUsers } from "@/src/hooks/project/useFetchProjectUser";
-import { useRemoveProjectUser } from "@/src/hooks/project/useRemoveProjectUser";
-import { useTransferProjectManager } from "@/src/hooks/project/useTransferProjectManager";
-import { useUpdateProjectUser } from "@/src/hooks/project/useUpdateProjectUser";
-import { OrgRole } from "@/src/types/org.types";
-import { ProjectUsers as ProjectUsersType } from "@/src/types/project.types";
-import { AccessStatus } from "@/src/types/root.types";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useFetchProjectUsers } from "@/hooks/project/useFetchProjectUser";
+import { useRemoveProjectUser } from "@/hooks/project/useRemoveProjectUser";
+import { useTransferProjectManager } from "@/hooks/project/useTransferProjectManager";
+import { useUpdateProjectUser } from "@/hooks/project/useUpdateProjectUser";
+import { OrgRole } from "@/types/org.types";
+import { ProjectUsers as ProjectUsersType } from "@/types/project.types";
+import { AccessStatus } from "@/types/root.types";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { Person } from "@phosphor-icons/react";
 
 export default function ProjectUsers({

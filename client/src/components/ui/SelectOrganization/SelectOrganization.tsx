@@ -1,7 +1,7 @@
 "use client";
 
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useFetchOrgs } from "@/hooks/organization/useFetchOrgs";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx"; // Імпортуємо clsx для умовних класів
 import { useEffect, useState } from "react";

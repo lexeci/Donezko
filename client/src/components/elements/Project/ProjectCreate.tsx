@@ -1,10 +1,10 @@
 "use client";
 
 import { Button, Field, Select } from "@/components/index";
-import { useFetchOrgUsers } from "@/src/hooks/organization/useFetchOrgUsers";
-import { useCreateProject } from "@/src/hooks/project/useCreateProject";
-import { OrgUserResponse } from "@/src/types/org.types";
-import { Project, ProjectFormData } from "@/src/types/project.types";
+import { useFetchOrgUsers } from "@/hooks/organization/useFetchOrgUsers";
+import { useCreateProject } from "@/hooks/project/useCreateProject";
+import { OrgUserResponse } from "@/types/org.types";
+import { Project, ProjectFormData } from "@/types/project.types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 

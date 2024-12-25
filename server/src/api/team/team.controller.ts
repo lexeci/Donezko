@@ -124,6 +124,51 @@ export class TeamController {
 	}
 
 	/**
+	 * Fetches all users from team by its ID.
+	 *
+	 * This endpoint retrieves all users that are related to team, identified by its ID, including the user info.
+	 * It requires the 'viewResources' permission.
+	 *
+	 * @param organizationId - The ID of the organization
+	 * @param id - The ID of the team to fetch.
+	 * @param userId - The ID of the current user making the request.
+	 * @returns A team object with its associated users.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Get(':id/users')
+	@Permission('viewResources')
+	async getAllUsers(
+		@Query('organizationId') organizationId: string,
+		@Param('id') id: string,
+		@CurrentUser('id') userId: string
+	) {
+		return await this.teamService.getAllUsers({ userId, id, organizationId });
+	}
+
+	/**
+	 * Get the role of the current user in a specific team.
+	 * @param organizationId The ID of the organization.
+	 * @param userId The ID of the current user.
+	 * @returns The role of the user in the organization.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Get(':id/role')
+	@Permission('viewResources')
+	async getTeamRole(
+		@Param('id') id: string,
+		@Param('organizationId') organizationId: string,
+		@CurrentUser('id') userId: string
+	) {
+		return this.teamService.getTeamRole({
+			id,
+			userId,
+			organizationId
+		});
+	}
+
+	/**
 	 * Creates a new team.
 	 *
 	 * This endpoint creates a new team for the project. The user must have the 'createTeam' permission.

@@ -29,6 +29,7 @@ export { default as ProjectElements } from "./Project/ProjectElements";
 export { default as ProjectUpdate } from "./Project/ProjectUpdate";
 export { default as ProjectUsers } from "./Project/ProjectUsers";
 export { default as TeamElements } from "./Team/TeamElements";
+export { default as TeamUsers} from "./Team/TeamUsers";
 export { default as TeamUpdate } from "./Team/TeamUpdate";
 
 // Dashboard Elements

@@ -7,10 +7,10 @@ import {
 	Logo,
 	ThemeSwitcher,
 } from "@/components/index";
-import { useCookieMonitor } from "@/src/hooks/useCookieMonitor";
-import { useFetchUserProfile } from "@/src/hooks/useFetchUserProfile";
-import { AuthUser } from "@/src/types/auth.types";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useCookieMonitor } from "@/hooks/useCookieMonitor";
+import { useFetchUserProfile } from "@/hooks/useFetchUserProfile";
+import { AuthUser } from "@/types/auth.types";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { useEffect, useState } from "react";
 import { SelectOrganization } from "../../ui";
 import styles from "./Header.module.scss";

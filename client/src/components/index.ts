@@ -30,6 +30,7 @@ export {
 	TeamBoardStatistic,
 	TeamElements,
 	TeamUpdate,
+	TeamUsers,
 	Timer,
 	TimerRounds,
 	Welcome,

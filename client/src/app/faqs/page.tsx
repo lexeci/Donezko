@@ -1,6 +1,6 @@
 import { INDEX_PAGE } from "@/constants/seo.constants";
 import { Accordion, PageLayout } from "@/src/components";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { Metadata } from "next";
 
 import styles from "@/app/page.module.scss";

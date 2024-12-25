@@ -1,5 +1,5 @@
 import { AnimatedLink, Logo } from "@/components/index";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import generateKeyComp from "@/utils/generateKeyComp";
 import styles from "./footer.module.scss";
 
 export default function Footer() {

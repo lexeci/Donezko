@@ -8,6 +8,7 @@ type WindowContainerProps = {
 	title: string; // Заголовок контейнера.
 	subtitle: string; // Додаткова інформація, наприклад, кількість проектів.
 	fullPage?: boolean;
+	autoContent?: boolean;
 	onClose?: () => void;
 };
 
@@ -16,6 +17,7 @@ export default function WindowContainer({
 	subtitle,
 	children,
 	fullPage = false,
+	autoContent = false,
 	onClose,
 }: PropsWithChildren<WindowContainerProps>) {
 	return (
@@ -47,7 +49,11 @@ export default function WindowContainer({
 					</div>
 				</div>
 			</div>
-			<div className={styles.content}>{children}</div>
+			<div
+				className={clsx(styles.content, autoContent && styles["content-auto"])}
+			>
+				{children}
+			</div>
 			<div className={styles.footer}>
 				<h5>© TPlanner 2024. All Rights Reserved by Andriy Neaijko.</h5>
 				<p>{"¯\\_(ツ)_/¯"}</p>

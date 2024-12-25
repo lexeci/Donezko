@@ -420,43 +420,56 @@ export class TeamService {
 	}) {
 		await this.checkAccess({ organizationId, userId });
 
-		const team = await this.prisma.teamUser.findFirst({
-			where: { teamId: id, team: { organizationId } },
-			select: {
-				id: true,
-				teamId: true,
-				role: true,
-				teamStatus: true,
-				team: {
+		const team = await this.prisma.team.findUnique({
+			where: {
+				id,
+				organizationId
+			},
+			include: {
+				organization: {
 					select: {
 						id: true,
 						title: true,
 						description: true,
-						createdAt: true,
-						updatedAt: true,
-						organization: {
+						organizationUsers: {
+							where: {
+								userId
+							},
+							select: {
+								role: true
+							}
+						}
+					}
+				},
+				teamUsers: {
+					select: {
+						id: true,
+						userId: true,
+						role: true,
+						teamStatus: true
+					}
+				},
+				projectTeams: {
+					include: {
+						project: {
 							select: {
 								id: true,
 								title: true,
 								description: true,
-								organizationUsers: {
-									where: {
-										userId
-									},
+								_count: {
 									select: {
-										role: true
+										projectUsers: true,
+										tasks: true
 									}
 								}
 							}
-						},
-						organizationId: true,
-						tasks: true,
-						_count: {
-							select: {
-								teamUsers: true,
-								tasks: true
-							}
 						}
+					}
+				},
+				_count: {
+					select: {
+						teamUsers: true,
+						tasks: true
 					}
 				}
 			}
@@ -465,6 +478,142 @@ export class TeamService {
 		if (!team) throw new NotFoundException('Team not found');
 
 		return team;
+	}
+
+	/**
+	 * Retrieves all users in team by its ID.
+	 *
+	 * This method returns all users in team by its ID. It checks if the user has access to the organization and team.
+	 *
+	 * @param id - The team ID.
+	 * @param userId - The current user ID.
+	 * @param organizationId - The current org ID
+	 * @returns The requested team with its members and tasks.
+	 * @throws NotFoundException if the team is not found.
+	 */
+	async getAllUsers({
+		userId,
+		id,
+		organizationId
+	}: {
+		userId: string;
+		id: string;
+		organizationId: string;
+	}) {
+		await this.checkAccess({ organizationId, userId });
+
+		// Отримуємо роль користувача в організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId },
+			select: {
+				role: true,
+				organizationStatus: true
+			}
+		});
+
+		if (!userInOrg) {
+			throw new ForbiddenException('You are not a member of this organization');
+		}
+
+		if (
+			userInOrg.organizationStatus === AccessStatus.BANNED ||
+			userInOrg.role === OrgRole.VIEWER
+		) {
+			throw new ForbiddenException('You cannot perform such action');
+		}
+
+		const hasPermission = (
+			[OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]
+		).includes(userInOrg.role);
+
+		const teamUsers = await this.prisma.teamUser.findMany({
+			where: {
+				teamId: id,
+				...(!hasPermission && { NOT: { teamStatus: AccessStatus.BANNED } })
+			},
+			include: {
+				user: {
+					select: {
+						id: true,
+						name: true,
+						...(hasPermission && { email: true })
+					}
+				}
+			}
+		});
+
+		if (!teamUsers) throw new NotFoundException('Team not found');
+
+		return teamUsers;
+	}
+
+	/**
+	 * Get the role of the current user in a specific team.
+	 * @param id The ID of the team.
+	 * @param userId The ID of the user.
+	 * @returns The role of the user in the organization.
+	 */
+	async getTeamRole({
+		id,
+		userId,
+		organizationId
+	}: {
+		id: string;
+		userId: string;
+		organizationId: string;
+	}) {
+		// Отримуємо роль користувача в організації
+		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId },
+			select: {
+				role: true,
+				organizationStatus: true
+			}
+		});
+
+		if (!currentUserInOrg) {
+			throw new ForbiddenException('You are not a member of this organization');
+		}
+
+		if (
+			currentUserInOrg.organizationStatus === AccessStatus.BANNED ||
+			currentUserInOrg.role === OrgRole.VIEWER
+		) {
+			throw new ForbiddenException('You cannot perform such action');
+		}
+
+		// Якщо користувач не знайдений, кидаємо помилку
+		if (
+			!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+				currentUserInOrg.role
+			)
+		) {
+			// Знаходимо користувача в організації
+			const currentUserInTeam = await this.prisma.teamUser.findFirst({
+				where: {
+					userId,
+					teamId: id
+				},
+				select: {
+					role: true,
+					teamStatus: true
+				}
+			});
+
+			if (!currentUserInTeam) {
+				throw new ForbiddenException('You do not belong to this team');
+			}
+
+			// Якщо статус користувача BANNED, кидаємо помилку
+			if (currentUserInTeam.teamStatus === AccessStatus.BANNED) {
+				throw new ForbiddenException('Insufficient permissions');
+			}
+
+			// Повертаємо роль користувача
+			return {
+				role: currentUserInTeam.role
+			};
+		}
 	}
 
 	/**
@@ -581,16 +730,16 @@ export class TeamService {
 		});
 
 		if (!(await this.isTeamLeader(id, userId))) {
-			throw new ForbiddenException('Only the team leader can update this team');
-		} else if (
-			!(
-				userInOrg &&
-				([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
-			)
-		) {
-			throw new ForbiddenException(
-				'Only the admin or owner can link the team to a project'
-			);
+			if (
+				!(
+					userInOrg &&
+					([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+				)
+			) {
+				throw new ForbiddenException(
+					'Only the admin,owner or team leader can update this team'
+				);
+			}
 		}
 
 		await this.prisma.team.update({

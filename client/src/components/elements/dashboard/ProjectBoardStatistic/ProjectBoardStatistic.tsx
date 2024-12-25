@@ -1,11 +1,11 @@
 "use client";
 
 import { StatisticBlock, StatisticItem } from "@/components/index";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { Buildings } from "@phosphor-icons/react/dist/ssr";
 
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchProjects } from "@/src/hooks/project/useFetchProjects";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useFetchProjects } from "@/hooks/project/useFetchProjects";
 import styles from "./ProjectBoardStatistic.module.scss";
 
 function NotFoundElement() {

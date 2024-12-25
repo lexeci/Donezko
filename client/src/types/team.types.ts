@@ -1,4 +1,6 @@
+import { AuthUser } from "./auth.types";
 import { Organization } from "./org.types";
+import { ProjectTeam } from "./project.types";
 import { AccessStatus, RootBase, UUID } from "./root.types";
 import { TaskResponse } from "./task.types";
 
@@ -18,6 +20,24 @@ interface teamUser {
 	};
 }
 
+export type ManageTeamUser = {
+	id: UUID;
+	userId?: UUID;
+	teamStatus?: AccessStatus;
+	role?: TeamRole;
+	organizationId?: UUID;
+	projectId?: UUID;
+	teamUserId?: UUID;
+};
+
+export interface TeamUsersResponse extends RootBase {
+	role: TeamRole;
+	teamId: string;
+	teamStatus?: AccessStatus;
+	user: AuthUser;
+	userId: string;
+}
+
 export interface Team extends RootBase {
 	title: string;
 	description: string;
@@ -35,6 +55,7 @@ export interface Team extends RootBase {
 			email: string;
 		};
 	}>;
+	projectTeams: ProjectTeam[];
 	_count?: {
 		teamUsers: number;
 		tasks: number;
@@ -66,12 +87,6 @@ export interface TeamsProjectResponse {
 
 export interface TeamWithUsersResponse extends TeamResponse {
 	teamUsers: teamUser[];
-}
-
-export interface ManageTeamData {
-	organizationId: UUID;
-	projectId: UUID;
-	teamUserId: UUID;
 }
 
 type TeamLeaderId = { teamLeaderId: string };

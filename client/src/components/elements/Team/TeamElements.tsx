@@ -8,12 +8,12 @@ import {
 	LackPermission,
 	ModalWindow,
 } from "@/components/index";
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
-import { useFetchTeams } from "@/src/hooks/team/useFetchTeams";
-import { OrgRole } from "@/src/types/org.types";
-import { TeamsProjectResponse, TeamsResponse } from "@/src/types/team.types";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useFetchOrgRole } from "@/hooks/organization/useFetchOrgRole";
+import { useFetchTeams } from "@/hooks/team/useFetchTeams";
+import { OrgRole } from "@/types/org.types";
+import { TeamsProjectResponse, TeamsResponse } from "@/types/team.types";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { CoinVertical, Plus, UserList } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";

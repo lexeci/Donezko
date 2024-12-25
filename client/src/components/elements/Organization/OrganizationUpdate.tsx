@@ -1,8 +1,8 @@
 "use client";
 
 import { Button, Field } from "@/components/index";
-import { useUpdateOrg } from "@/src/hooks/organization/useUpdateOrg";
-import { OrgFormData, OrgResponse } from "@/src/types/org.types";
+import { useUpdateOrg } from "@/hooks/organization/useUpdateOrg";
+import { OrgFormData, OrgResponse } from "@/types/org.types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 

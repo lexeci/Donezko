@@ -1,6 +1,10 @@
 "use client";
 
 import pageStyles from "@/app/page.module.scss";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useDeleteProject } from "@/hooks/project/useDeleteProject";
+import { useFetchProjectById } from "@/hooks/project/useFetchProjectById";
+import { useFetchTeamsByProject } from "@/hooks/team/useFetchTeamsByProject";
 import {
 	AddProjectUsers,
 	Button,
@@ -13,10 +17,6 @@ import {
 	TeamElements,
 	WindowContainer,
 } from "@/src/components";
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useDeleteProject } from "@/src/hooks/project/useDeleteProject";
-import { useFetchProjectById } from "@/src/hooks/project/useFetchProjectById";
-import { useFetchTeamsByProject } from "@/src/hooks/team/useFetchTeamsByProject";
 import { ProjectRole } from "@/types/project.types";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
 import { useParams, useRouter } from "next/navigation";

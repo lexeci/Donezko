@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/index";
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
-import { OrgRole } from "@/src/types/org.types";
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useFetchOrgRole } from "@/hooks/organization/useFetchOrgRole";
+import { OrgRole } from "@/types/org.types";
+import generateKeyComp from "@/utils/generateKeyComp";
 import { useEffect, useState } from "react";
 import LogoutButton from "./LogoutButton";
 import styles from "./Sidebar.module.scss";

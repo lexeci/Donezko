@@ -1,11 +1,11 @@
 "use client";
 
 import { Button, Field, Select } from "@/components/index";
-import { useFetchOrgs } from "@/src/hooks/organization/useFetchOrgs";
-import { useFetchOrgUsers } from "@/src/hooks/organization/useFetchOrgUsers";
-import { useTeamCreation } from "@/src/hooks/team/useTeamCreation";
-import { OrgResponse } from "@/src/types/org.types";
-import { TeamFormData, TeamsResponse } from "@/src/types/team.types";
+import { useFetchOrgs } from "@/hooks/organization/useFetchOrgs";
+import { useFetchOrgUsers } from "@/hooks/organization/useFetchOrgUsers";
+import { useTeamCreation } from "@/hooks/team/useTeamCreation";
+import { OrgResponse } from "@/types/org.types";
+import { TeamFormData, TeamsResponse } from "@/types/team.types";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 

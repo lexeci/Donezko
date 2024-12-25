@@ -1,4 +1,4 @@
-import generateKeyComp from "@/src/utils/generateKeyComp";
+import generateKeyComp from "@/utils/generateKeyComp";
 import clsx from "clsx";
 import Link from "next/link";
 import { PropsWithChildren } from "react";

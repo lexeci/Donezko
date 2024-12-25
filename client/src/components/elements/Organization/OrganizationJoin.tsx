@@ -1,8 +1,8 @@
 "use client";
 
 import { Button, Field } from "@/components/index";
-import { useJoinOrg } from "@/src/hooks/organization/useJoinOrg";
-import { JoinOrgType } from "@/src/types/org.types";
+import { useJoinOrg } from "@/hooks/organization/useJoinOrg";
+import { JoinOrgType } from "@/types/org.types";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -27,7 +27,9 @@ export default function OrganizationJoin() {
 				<h5>Join to your organization</h5>
 			</div>
 			<div className="text-block">
-				<p>Please write the title and join code to connect with organization.</p>
+				<p>
+					Please write the title and join code to connect with organization.
+				</p>
 			</div>
 			<div className="operate-window flex justify-center items-center h-full">
 				<form

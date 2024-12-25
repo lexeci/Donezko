@@ -1,6 +1,9 @@
 "use client";
 
 import pageStyles from "@/app/page.module.scss";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useDeleteOrg } from "@/hooks/organization/useDeleteOrg";
+import { useFetchOrgById } from "@/hooks/organization/useFetchOrgById";
 import {
 	Button,
 	LackPermission,
@@ -13,10 +16,7 @@ import {
 	TeamElements,
 	WindowContainer,
 } from "@/src/components";
-import { useOrganization } from "@/src/context/OrganizationContext";
-import { useDeleteOrg } from "@/src/hooks/organization/useDeleteOrg";
-import { useFetchOrgById } from "@/src/hooks/organization/useFetchOrgById";
-import { OrgRole, OrgUserResponse } from "@/src/types/org.types";
+import { OrgRole, OrgUserResponse } from "@/types/org.types";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

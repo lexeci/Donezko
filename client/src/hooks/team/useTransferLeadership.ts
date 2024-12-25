@@ -1,5 +1,5 @@
 import { teamService } from "@/src/services/team.service";
-import { ManageTeamData } from "@/types/team.types";
+import { ManageTeamUser } from "@/types/team.types";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -8,8 +8,8 @@ export function useTransferLeadership() {
 		useState<boolean>(false);
 
 	const { mutate: transferLeadership } = useMutation({
-		mutationFn: ({ id, data }: { id: string; data: ManageTeamData }) =>
-			teamService.transferLeadership(id, data),
+		mutationFn: (data: ManageTeamUser) =>
+			teamService.transferLeadership(data),
 		onSuccess: () => {
 			setIsLeadershipTransferred(true);
 		},

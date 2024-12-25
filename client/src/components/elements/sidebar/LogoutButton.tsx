@@ -1,6 +1,6 @@
 import { Button } from "@/components/index";
+import { useOrganization } from "@/context/OrganizationContext";
 import { authService } from "@/services/auth.service";
-import { useOrganization } from "@/src/context/OrganizationContext";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 

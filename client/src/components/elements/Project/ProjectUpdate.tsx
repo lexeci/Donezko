@@ -1,8 +1,8 @@
 "use client";
 
 import { Button, Field } from "@/components/index";
-import { useUpdateProject } from "@/src/hooks/project/useUpdateProject";
-import { ProjectFormData, ProjectResponse } from "@/src/types/project.types";
+import { useUpdateProject } from "@/hooks/project/useUpdateProject";
+import { ProjectFormData, ProjectResponse } from "@/types/project.types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 

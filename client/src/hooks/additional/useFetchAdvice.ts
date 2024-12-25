@@ -1,5 +1,5 @@
 import { additionalService } from "@/services/additional.service"; // Шлях до вашого сервісу
-import { AdviceResponse } from "@/src/types/additionalApi.types";
+import { AdviceResponse } from "@/types/additionalApi.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 

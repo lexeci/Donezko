@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/index";
-import { useLinkTeamToProject } from "@/src/hooks/team/useLinkTeamToProject";
-import { useUnlinkTeamFromProject } from "@/src/hooks/team/useUnlinkTeamFromProject";
-import { TeamsProjectResponse } from "@/src/types/team.types";
+import { useLinkTeamToProject } from "@/hooks/team/useLinkTeamToProject";
+import { useUnlinkTeamFromProject } from "@/hooks/team/useUnlinkTeamFromProject";
+import { TeamsProjectResponse } from "@/types/team.types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AssignTeams } from "./OperateElements/AssignTeams";

@@ -1,7 +1,7 @@
 "use client";
 
 import { StatisticBlock } from "@/components/index";
-import { useFetchUserProfile } from "@/src/hooks/useFetchUserProfile";
+import { useFetchUserProfile } from "@/hooks/useFetchUserProfile";
 import styles from "./TasksBoardStatistic.module.scss";
 
 export default function TasksBoardStatistic() {

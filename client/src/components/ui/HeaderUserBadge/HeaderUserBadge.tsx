@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/index";
-import { useCookieMonitor } from "@/src/hooks/useCookieMonitor";
-import { useFetchUserProfile } from "@/src/hooks/useFetchUserProfile";
+import { useCookieMonitor } from "@/hooks/useCookieMonitor";
+import { useFetchUserProfile } from "@/hooks/useFetchUserProfile";
 import { useEffect, useState } from "react";
 
 export default function HeaderUserBadge() {

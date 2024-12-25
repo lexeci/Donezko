@@ -1,5 +1,5 @@
 import { additionalService } from "@/services/additional.service";
-import { ElonNewsResponse } from "@/src/types/additionalApi.types";
+import { ElonNewsResponse } from "@/types/additionalApi.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 

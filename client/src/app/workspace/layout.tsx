@@ -1,7 +1,7 @@
 "use client";
 
+import { useOrganization } from "@/context/OrganizationContext";
 import { Sidebar } from "@/src/components";
-import { useOrganization } from "@/src/context/OrganizationContext";
 import { CoinVertical } from "@phosphor-icons/react";
 import { SmileyMeh } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";

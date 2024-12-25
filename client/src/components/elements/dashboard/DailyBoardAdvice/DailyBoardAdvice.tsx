@@ -1,9 +1,9 @@
 "use client";
 
 import { StatisticBlock, StatisticItem } from "@/components/index";
-import { useFetchAdvice } from "@/src/hooks/additional/useFetchAdvice";
-import { useFetchElonNews } from "@/src/hooks/additional/useFetchElonNews"; // Новий хук
-import { useFetchWeather } from "@/src/hooks/additional/useFetchWeather";
+import { useFetchAdvice } from "@/hooks/additional/useFetchAdvice";
+import { useFetchElonNews } from "@/hooks/additional/useFetchElonNews"; // Новий хук
+import { useFetchWeather } from "@/hooks/additional/useFetchWeather";
 import { Rss } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 

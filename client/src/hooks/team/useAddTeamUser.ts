@@ -1,5 +1,5 @@
 import { teamService } from "@/src/services/team.service";
-import { ManageTeamData, TeamWithUsersResponse } from "@/types/team.types";
+import { ManageTeamUser, TeamWithUsersResponse } from "@/types/team.types";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -9,7 +9,7 @@ export function useAddTeamUser() {
 	>(undefined);
 
 	const { mutate: addUserToTeam } = useMutation({
-		mutationFn: ({ id, data }: { id: string; data: ManageTeamData }) =>
+		mutationFn: ({ id, data }: { id: string; data: ManageTeamUser }) =>
 			teamService.addUserToTeam(id, data),
 		onSuccess: data => {
 			setUpdatedTeam(data);

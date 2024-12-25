@@ -22,7 +22,10 @@ export default function TeamCreate({
 	const [organizationId, setOrganizationId] = useState<string | undefined>();
 	const { organizationList } = useFetchOrgs(); // Отримуємо список організацій
 	const { createTeam, newTeam } = useTeamCreation();
-	const { organizationUserList } = useFetchOrgUsers({ organizationId });
+	const { organizationUserList } = useFetchOrgUsers({
+		organizationId,
+		hideFromTeam: true,
+	});
 
 	const { register, handleSubmit, reset, setValue } = useForm<TeamFormData>({
 		mode: "onChange",

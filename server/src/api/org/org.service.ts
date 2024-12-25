@@ -385,11 +385,18 @@ export class OrgService {
 							}
 						}
 					}),
+				...(hideTeam && {
+					user: {
+						teamUsers: {
+							none: {} // Виключаємо всіх, хто належить до будь-якої команди
+						}
+					}
+				}),
 				...(teamId &&
-					hideTeam !== undefined && {
+					!hideTeam && {
 						user: {
 							teamUsers: {
-								[hideTeam ? 'none' : 'some']: {
+								some: {
 									teamId
 								}
 							}
@@ -407,7 +414,7 @@ export class OrgService {
 						name: true,
 						email: true,
 						...(projectId && {
-							ProjectUser: {
+							projectUser: {
 								where: { projectId },
 								select: { projectStatus: true }
 							}

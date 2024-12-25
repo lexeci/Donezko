@@ -1280,8 +1280,21 @@ export class TeamService {
 
 		await this.checkAccess({ organizationId, userId });
 
+		// Перевірка, чи користувач є власником або адміністратором організації
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+
+		const hasPermission =
+			userInOrg &&
+			([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role);
+
 		if (!(await this.isTeamLeader(id, userId))) {
-			throw new ForbiddenException('Only the team leader can delete the team');
+			if (!hasPermission) {
+				throw new ForbiddenException(
+					'Only the admin,owner or team leader can update this team'
+				);
+			}
 		}
 
 		await this.prisma.team.delete({ where: { id } });

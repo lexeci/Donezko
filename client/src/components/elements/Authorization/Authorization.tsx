@@ -8,8 +8,8 @@ import { toast } from "sonner";
 
 import { AuthForm } from "@/types/auth.types";
 
+import { AnimatedLink, Button, Field } from "@/components/index";
 import { authService } from "@/services/auth.service";
-import { AnimatedLink, Button, Field } from "@/src/components";
 
 import { DASHBOARD_PAGES } from "@/src/config/pages-url.config";
 import { Minus, Square, X } from "@phosphor-icons/react";

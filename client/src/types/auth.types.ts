@@ -1,3 +1,5 @@
+import { UUID } from "./root.types";
+
 /**
  * Interface representing the data structure of an authentication form.
  */
@@ -11,7 +13,7 @@ export interface AuthForm {
  * Interface representing the authenticated user's details.
  */
 export interface AuthUser {
-	id: number; // Unique identifier for the user
+	id: UUID; // Unique identifier for the user
 	name: string; // Optional user's name
 	email: string; // User's email address
 

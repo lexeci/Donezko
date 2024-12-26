@@ -1,5 +1,5 @@
 import { teamService } from "@/src/services/team.service";
-import { TeamRole } from "@/src/types/team.types";
+import { TeamRole } from "@/types/team.types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 

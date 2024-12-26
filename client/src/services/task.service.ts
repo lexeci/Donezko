@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 
 import { axiosWithAuth } from "@/api/interceptors";
 import type { TaskFormData, TaskResponse } from "@/types/task.types";
+import { toast } from "sonner";
 
 class TaskService {
 	private BASE_URL = "/user/tasks";
@@ -45,6 +46,7 @@ class TaskService {
 			);
 			return response.data; // Return only the data part
 		} catch (error) {
+			toast.error(error.response.data.message);
 			console.error("Error creating task:", error);
 			throw new Error("Could not create task"); // Handle error appropriately
 		}

@@ -1,4 +1,4 @@
-import { Button } from "@/src/components/ui";
+import { Button } from "@/components/ui";
 import clsx from "clsx";
 import { ReactNode } from "react";
 import styles from "./StatisticBlock.module.scss"; // Імпорт модульного SCSS

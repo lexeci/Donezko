@@ -1,6 +1,6 @@
 import pageStyles from "@/app/page.module.scss";
+import { PageHeader, PageLayout, Timer } from "@/components/index";
 import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
-import { PageHeader, PageLayout, Timer } from "@/src/components";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

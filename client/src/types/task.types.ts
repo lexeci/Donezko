@@ -5,9 +5,16 @@ import type { RootBase } from "./root.types";
 import type { TeamResponse } from "./team.types"; // Якщо є тип для Team
 
 export enum EnumTaskPriority {
-	low = "low",
-	medium = "medium",
-	high = "high",
+	LOW = "LOW",
+	MEDIUM = "MEDIUM",
+	HIGH = "HIGH",
+}
+
+export enum EnumTaskStatus {
+	NOT_STARTED = "NOT_STARTED",
+	IN_PROGRESS = "IN_PROGRESS",
+	COMPLETED = "COMPLETED",
+	ON_HOLD = "ON_HOLD",
 }
 
 export interface TaskResponse extends RootBase {
@@ -21,7 +28,9 @@ export interface TaskResponse extends RootBase {
 	project?: Project; // Проект, до якого належить задача (якщо є)
 	teamId?: string; // Ідентифікатор команди, до якої належить задача
 	team?: TeamResponse; // Команда, до якої належить задача (якщо є)
+	taskStatus?: EnumTaskStatus;
 	comments?: CommentResponse[]; // Коментарі до задачі
+	organizationId?: string;
 }
 
 export type TaskFormData = Partial<

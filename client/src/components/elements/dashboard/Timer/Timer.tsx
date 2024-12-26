@@ -1,11 +1,11 @@
 "use client";
 
+import { Button, TimerRounds } from "@/components/index";
 import { useCreateSession } from "@/hooks/timer/useCreateSession";
 import { useDeleteSession } from "@/hooks/timer/useDeleteSession";
 import { useTimer } from "@/hooks/timer/useTimer";
 import { useTimerActions } from "@/hooks/timer/useTimerActions";
 import { useTodaySession } from "@/hooks/timer/useTodaySession";
-import { Button, TimerRounds } from "@/src/components";
 import { timeFormatter } from "@/utils/timeFormatter";
 import {
 	ArrowsCounterClockwise,

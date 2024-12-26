@@ -1,5 +1,5 @@
 import { teamService } from "@/src/services/team.service";
-import { ManageTeamUser, TeamUsersResponse } from "@/src/types/team.types";
+import { ManageTeamUser, TeamUsersResponse } from "@/types/team.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 

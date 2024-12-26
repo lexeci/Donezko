@@ -1,4 +1,4 @@
-import { Authorization, WindowContainer } from "@/src/components";
+import { Authorization, WindowContainer } from "@/components/index";
 
 export default function AuthPage() {
 	return (

@@ -1,4 +1,4 @@
-import { Button } from "@/src/components/ui";
+import { Button } from "@/components/ui";
 import { HandPointing } from "@phosphor-icons/react/dist/ssr";
 
 import styles from "./Faqs.module.scss";

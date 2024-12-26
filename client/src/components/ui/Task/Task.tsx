@@ -9,6 +9,7 @@ import AsciiElement from "../AsciiElement/AsciiElement";
 import styles from "./Task.module.scss"; // Імпортуємо SCSS модуль
 
 interface TaskElement {
+	data: TaskResponse;
 	isBannerElem?: boolean;
 	removeTask?: UseMutateFunction<
 		AxiosResponse<any, any>,
@@ -23,6 +24,7 @@ interface TaskElement {
 }
 
 export default function Task({
+	data,
 	isBannerElem = false,
 	removeTask,
 	updateTasks,

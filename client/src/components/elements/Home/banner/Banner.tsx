@@ -1,4 +1,4 @@
-import { AnimatedLink, Button, Task } from "@/src/components/ui";
+import { AnimatedLink, Button, Task } from "@/components/ui";
 import { HandPointing } from "@phosphor-icons/react/dist/ssr";
 
 import styles from "./Banner.module.scss";

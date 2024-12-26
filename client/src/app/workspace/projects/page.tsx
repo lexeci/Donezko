@@ -1,5 +1,5 @@
+import { PageHeader, PageLayout, ProjectElements } from "@/components/index";
 import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
-import { PageHeader, PageLayout, ProjectElements } from "@/src/components";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

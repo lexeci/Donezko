@@ -1,3 +1,4 @@
+import toCapitalizeText from "@/src/utils/toCapitalizeText";
 import { forwardRef } from "react";
 
 interface SelectFieldProps {
@@ -45,7 +46,7 @@ const Select = forwardRef<HTMLSelectElement, SelectFieldProps>(
 					{placeholder && <option value="">{placeholder}</option>}
 					{options.map(option => (
 						<option key={option.value} value={option.value}>
-							{option.label}
+							{toCapitalizeText(option.label)}
 						</option>
 					))}
 				</select>

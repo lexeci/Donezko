@@ -5,7 +5,7 @@ export default function NotSelected({ element }: { element: string }) {
 		<div className="h-full flex flex-col justify-center items-center gap-y-4 max-w-[40rem] mx-auto text-center">
 			<SmileyWink size={80} className="animate-gentle-shake" />
 			<div className="title text-xl font-bold">
-				<h3>Oops! Someone forgot to select a {element} yet.</h3>
+				<h3>Oops! Someone forgot to select a {element.toLowerCase()} yet.</h3>
 			</div>
 			<div className="text-block">
 				<p>

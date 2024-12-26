@@ -1,5 +1,4 @@
 import pageStyles from "@/app/page.module.scss";
-import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
 import {
 	DailyBoardAdvice,
 	PageHeader,
@@ -7,7 +6,8 @@ import {
 	ProjectBoardStatistic,
 	TasksBoardStatistic,
 	TeamBoardStatistic,
-} from "@/src/components";
+} from "@/components/index";
+import { NO_INDEX_PAGE, SITE_NAME } from "@/constants/seo.constants";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

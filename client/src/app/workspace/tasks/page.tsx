@@ -7,11 +7,11 @@ import {
 	PageLayout,
 	Select,
 	TasksWindow,
-} from "@/src/components";
+} from "@/components/index";
+import { useFetchProjects } from "@/hooks/project/useFetchProjects";
+import { useFetchTasks } from "@/hooks/tasks/useFetchTasks";
+import { useFetchTeams } from "@/hooks/team/useFetchTeams";
 import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchProjects } from "@/src/hooks/project/useFetchProjects";
-import { useFetchTasks } from "@/src/hooks/tasks/useFetchTasks";
-import { useFetchTeams } from "@/src/hooks/team/useFetchTeams";
 import { useEffect, useState } from "react";
 
 export default function Tasks() {
@@ -87,9 +87,14 @@ export default function Tasks() {
 				</div>
 			</div>
 			{!selectedProject ? (
-				<NotSelected element="Project" />
+				<NotSelected element="project" />
 			) : (
-				<TasksWindow taskList={taskList} setTaskList={setTaskList} isPage />
+				<TasksWindow
+					taskList={taskList}
+					setTaskList={setTaskList}
+					isPage
+					projectId={selectedProject}
+				/>
 			)}
 		</PageLayout>
 	);

@@ -3,9 +3,9 @@ import { useForm } from "react-hook-form";
 
 import type { TaskFormData, TaskResponse } from "@/types/task.types";
 
-import { useDebouncedTaskHandler } from "@/hooks/tasks/useDebouncedTaskHandler";
+import { Task } from "@/components/ui";
+// import { useDebouncedTaskHandler } from "@/hooks/tasks/useDebouncedTaskHandler";
 import { useTaskRemoval } from "@/hooks/tasks/useTaskRemoval";
-import { Task } from "@/src/components/ui";
 
 interface KanbanTaskCardProps {
 	item: TaskResponse;
@@ -23,12 +23,13 @@ export function KanbanTaskCard({ item, updateTasks }: KanbanTaskCardProps) {
 		},
 	});
 
-	useDebouncedTaskHandler({ watch, taskId: item.id });
+	// useDebouncedTaskHandler({ watch, taskId: item.id });
 
 	const { removeTask, isRemovalPending } = useTaskRemoval();
 
 	return (
 		<Task
+			data={item}
 			removeTask={removeTask}
 			updateTasks={updateTasks}
 			control={control}

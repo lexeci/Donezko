@@ -1,4 +1,4 @@
-import { AnimatedLink } from "@/src/components/ui";
+import { AnimatedLink } from "@/components/ui";
 import {
 	ChartPie,
 	GitBranch,

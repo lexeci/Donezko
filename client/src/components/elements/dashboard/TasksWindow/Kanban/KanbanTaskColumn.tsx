@@ -6,9 +6,9 @@ import type { TaskResponse } from "@/types/task.types";
 import { DATE_FILTERS } from "@/src/constants/tasks.constants";
 import { filterTasksByDate } from "@/utils/filterTasksByDate";
 
-import styles from "./KanbanTaskView.module.scss";
-import { KanbanTaskCard } from "./KanbanTaskCard";
 import { AddCardInput } from "./AddCardInput";
+import { KanbanTaskCard } from "./KanbanTaskCard";
+import styles from "./KanbanTaskView.module.scss";
 
 interface KanbanTaskColumnProps {
 	// Зміна назви інтерфейсу для унікальності
@@ -16,6 +16,7 @@ interface KanbanTaskColumnProps {
 	label: string;
 	items: TaskResponse[] | undefined;
 	updateTasks: Dispatch<SetStateAction<TaskResponse[] | undefined>>; // Зміна назви пропса
+	projectId: string;
 }
 
 export function KanbanTaskColumn({
@@ -23,6 +24,7 @@ export function KanbanTaskColumn({
 	items,
 	label,
 	updateTasks,
+	projectId,
 }: KanbanTaskColumnProps) {
 	return (
 		<Droppable droppableId={value}>
@@ -59,6 +61,7 @@ export function KanbanTaskColumn({
 											? DATE_FILTERS[value].format()
 											: undefined
 									}
+									projectId={projectId}
 								/>
 							)}
 						</div>

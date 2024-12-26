@@ -3,9 +3,9 @@
 import { Button } from "@/components/index";
 import { useOrganization } from "@/context/OrganizationContext";
 import { useFetchUsersTeam } from "@/hooks/team/useFetchUsersTeam";
+import { useRemoveUserFromTeam } from "@/hooks/team/useRemoveUserFromTeam";
+import { useTransferLeadership } from "@/hooks/team/useTransferLeadership";
 import { useUpdateTeamStatus } from "@/hooks/team/useUpdateTeamStatus";
-import { useRemoveUserFromTeam } from "@/src/hooks/team/useRemoveUserFromTeam";
-import { useTransferLeadership } from "@/src/hooks/team/useTransferLeadership";
 import { OrgRole } from "@/types/org.types";
 import { AccessStatus } from "@/types/root.types";
 import { TeamRole, TeamUsersResponse } from "@/types/team.types";

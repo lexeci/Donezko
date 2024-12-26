@@ -177,14 +177,13 @@ enum AccessStatus {
 }
 
 model Task {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt() @map("updated_at")
-  dueDate   DateTime? @map("due_date") // Дата виконання задачі
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
 
   title       String
   priority    Priority?   @default(LOW)
-  TaskStatus  TaskStatus? @default(NOT_STARTED) @map("task_status")
+  taskStatus  TaskStatus? @default(NOT_STARTED) @map("task_status")
   isCompleted Boolean?    @default(false) @map("is_completed")
   description String?
 

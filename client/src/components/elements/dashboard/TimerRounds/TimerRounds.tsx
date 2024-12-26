@@ -1,4 +1,4 @@
-import { Button } from "@/src/components/ui";
+import { Button } from "@/components/ui";
 import { TimerRoundResponse } from "@/types/timer.types";
 import cn from "clsx";
 

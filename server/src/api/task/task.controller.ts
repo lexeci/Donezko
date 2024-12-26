@@ -4,6 +4,7 @@ import {
 	Body,
 	Controller,
 	Delete,
+	ForbiddenException,
 	Get,
 	HttpCode,
 	Param,
@@ -73,6 +74,20 @@ export class TaskController {
 	@Permission('editResources') // Permission required
 	@HttpCode(201) // Created status code
 	async create(@Body() dto: CreateTaskDto, @CurrentUser('id') userId: string) {
+		const { organizationId, projectId, teamId } = dto;
+
+		if (!organizationId) {
+			throw new ForbiddenException('Organization was not selected');
+		}
+
+		if (!projectId) {
+			throw new ForbiddenException('Project was not selected');
+		}
+
+		if (!teamId) {
+			throw new ForbiddenException('Team was not selected');
+		}
+
 		return this.taskService.create({ dto, userId });
 	}
 

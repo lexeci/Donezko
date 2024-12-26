@@ -1,9 +1,9 @@
-import { Button } from "@/src/components/ui";
+import { Button } from "@/components/ui";
+import { useFetchOrgUsers } from "@/hooks/organization/useFetchOrgUsers";
+import { useAddTeamUser } from "@/hooks/team/useAddTeamUser";
 import { useOrganization } from "@/src/context/OrganizationContext";
-import { useFetchOrgUsers } from "@/src/hooks/organization/useFetchOrgUsers";
-import { useAddTeamUser } from "@/src/hooks/team/useAddTeamUser";
-import { OrgUserResponse } from "@/src/types/org.types";
 import generateKeyComp from "@/src/utils/generateKeyComp";
+import { OrgUserResponse } from "@/types/org.types";
 import { Person } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ModalWindow from "../../ModalWindow/ModalWindow";

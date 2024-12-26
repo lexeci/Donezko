@@ -1,5 +1,5 @@
+import { Accordion, PageLayout } from "@/components/index";
 import { INDEX_PAGE } from "@/constants/seo.constants";
-import { Accordion, PageLayout } from "@/src/components";
 import generateKeyComp from "@/utils/generateKeyComp";
 import { Metadata } from "next";
 

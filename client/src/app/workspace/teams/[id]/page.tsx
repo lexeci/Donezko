@@ -1,9 +1,6 @@
 "use client";
 
 import pageStyles from "@/app/page.module.scss";
-import { useOrganization } from "@/context/OrganizationContext";
-import { useFetchTeamById } from "@/hooks/team/useFetchTeamById";
-import { useTeamRemoval } from "@/hooks/team/useTeamRemoval";
 import {
 	Button,
 	EntityItem,
@@ -14,11 +11,14 @@ import {
 	TeamUpdate,
 	TeamUsers,
 	WindowContainer,
-} from "@/src/components";
-import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
-import { useFetchTeamRole } from "@/src/hooks/team/useFetchTeamRole";
-import { OrgRole } from "@/src/types/org.types";
-import { TeamRole } from "@/src/types/team.types";
+} from "@/components/index";
+import { useOrganization } from "@/context/OrganizationContext";
+import { useFetchOrgRole } from "@/hooks/organization/useFetchOrgRole";
+import { useFetchTeamById } from "@/hooks/team/useFetchTeamById";
+import { useFetchTeamRole } from "@/hooks/team/useFetchTeamRole";
+import { useTeamRemoval } from "@/hooks/team/useTeamRemoval";
+import { OrgRole } from "@/types/org.types";
+import { TeamRole } from "@/types/team.types";
 import generateKeyComp from "@/utils/generateKeyComp";
 import { Browsers } from "@phosphor-icons/react";
 import { Trash } from "@phosphor-icons/react/dist/ssr";

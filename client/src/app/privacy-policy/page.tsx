@@ -1,5 +1,5 @@
+import { PageLayout } from "@/components/index";
 import { INDEX_PAGE } from "@/constants/seo.constants";
-import { PageLayout } from "@/src/components";
 import { Metadata } from "next";
 
 import styles from "@/app/page.module.scss";

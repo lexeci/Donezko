@@ -3,14 +3,54 @@
 import { useEffect, useState } from "react";
 import styles from "./asciiElement.module.scss";
 
-type AsciiElementTypes = "loading" | "conga";
+type AsciiElementTypes =
+	| "loading"
+	| "progress"
+	| "completed"
+	| "notStarted"
+	| "hold"
+	| "conga";
 
 export default function AsciiElement({ types }: { types: AsciiElementTypes }) {
 	const [currentFrame, setCurrentFrame] = useState(0);
 	const [showCloud, setShowCloud] = useState(false);
 
 	const animations = {
-		loading: ["[----]", "[=---]", "[-=--]", "[--=-]", "[---=]"],
+		loading: [
+			"[>    ]",
+			"[>>   ]",
+			"[>>>  ]",
+			"[ >>> ]",
+			"[  >>>]",
+			"[   >>]",
+			"[    >]",
+		],
+		progress: [
+			"[    ]",
+			"[=   ]",
+			"[==  ]",
+			"[=== ]",
+			"[====]",
+			"[ ===]",
+			"[  ==]",
+			"[   =]",
+		],
+		completed: ["[....]", "[✓...]", "[.✓..]", "[..✓.]", "[...✓]"], // Completed — статичне заповнення
+		notStarted: [
+			"[....]",
+			"[>...]",
+			"[.>..]",
+			"[..>.]",
+			"[...>]",
+			"[....]",
+			"[...<]",
+			"[..<.]",
+			"[.<..]",
+			"[<...]",
+			"[....]",
+		],
+		hold: ["[>--<]", "[-<>-]", "[--<>]"],
+
 		conga: [
 			`
   (•_•)

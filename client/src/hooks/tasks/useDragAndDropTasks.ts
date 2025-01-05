@@ -1,44 +1,50 @@
-import { DropResult } from "@hello-pangea/dnd";
+import {DropResult} from "@hello-pangea/dnd";
 
-import { DATE_FILTERS } from "@/constants/tasks.constants";
+import {DATE_FILTERS} from "@/constants/tasks.constants";
 
-import { useModifyTask } from "./useModifyTask";
+import {useOrganization} from "@/src/context/OrganizationContext";
+import {useModifyTask} from "./useModifyTask";
 
 export function useDragAndDropTasks() {
-	// Зміна назви хуку для унікальності
-	const { modifyTask } = useModifyTask(); // Зміна назви функції, що повертається
+    const {organizationId} = useOrganization();
+    // Зміна назви хуку для унікальності
+    const {modifyTask} = useModifyTask(); // Зміна назви функції, що повертається
 
-	const handleDragEnd = (result: DropResult) => {
-		// Зміна назви функції для унікальності
-		if (!result.destination) return;
+    const handleDragEnd = (result: DropResult) => {
+        // Зміна назви функції для унікальності
+        if (!result.destination) return;
 
-		const targetColumnId = result.destination.droppableId; // Зміна назви змінної для унікальності
+        const targetColumnId = result.destination.droppableId; // Зміна назви змінної для унікальності
 
-		if (targetColumnId === result.source.droppableId) return;
+        if (targetColumnId === result.source.droppableId) return;
 
-		if (targetColumnId === "completed") {
-			modifyTask({
-				// Зміна назви функції
-				taskId: result.draggableId, // Зміна назви параметра
-				taskData: {
-					// Зміна назви параметра
-					isCompleted: true,
-				},
-			});
+        if (targetColumnId === "completed") {
+            modifyTask({
+                // Зміна назви функції
+                taskId: result.draggableId, // Зміна назви параметра
+                data: {
+                    organizationId,
+                    // Зміна назви параметра
+                    isCompleted: true,
+                },
+            });
 
-			return;
-		}
+            return;
+        }
 
-		const newCreatedAt = DATE_FILTERS[targetColumnId].format(); // Зміна назви змінної для унікальності
+        const newCreatedAt = DATE_FILTERS[targetColumnId].format(); // Зміна назви змінної для унікальності
 
-		modifyTask({
-			taskId: result.draggableId, // Зміна назви параметра
-			taskData: {
-				createdAt: newCreatedAt,
-				isCompleted: false,
-			},
-		});
-	};
+        if (organizationId) {
+            modifyTask({
+                taskId: result.draggableId, // Зміна назви параметра
+                data: {
+                    organizationId,
+                    createdAt: newCreatedAt as unknown as Date,
+                    isCompleted: false,
+                },
+            });
+        }
+    };
 
-	return { handleDragEnd }; // Зміна назви функції, що повертається
+    return {handleDragEnd}; // Зміна назви функції, що повертається
 }

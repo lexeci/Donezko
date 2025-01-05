@@ -41,13 +41,9 @@ export default function Team() {
 	const { organizationRole } = useFetchOrgRole(organizationId);
 	const { teamRole } = useFetchTeamRole(teamId, organizationId);
 
-	console.log(fetchedData);
-
 	// const role = fetchedData?.role;
 	const projectsArray = fetchedData?.projectTeams;
 	const usersArray = fetchedData?.teamUsers;
-
-	console.log(projectsArray);
 
 	const { deleteTeam } = useTeamRemoval();
 

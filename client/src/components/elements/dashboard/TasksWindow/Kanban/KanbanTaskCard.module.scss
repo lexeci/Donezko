@@ -1,0 +1,101 @@
+.task-kanban {
+  @apply w-full h-auto border-2 border-foreground relative flex flex-col cursor-pointer bg-background whitespace-break-spaces;
+
+  .topBar {
+    @apply text-xs flex flex-row justify-between items-center border-b border-b-foreground p-2;
+  }
+
+  .author {
+    @apply text-xs w-full;
+  }
+
+  .time {
+    @apply text-xs text-nowrap;
+
+    span {
+      @apply font-semibold;
+
+      animation: blinker 1s linear infinite;
+    }
+  }
+
+  .content {
+    @apply h-full p-2 gap-y-2 flex flex-col justify-center items-start;
+  }
+
+  &:not(.full-parent) {
+    .content {
+      @apply py-8 gap-y-4;
+    }
+  }
+
+  .title {
+    @apply text-lg w-full;
+
+    span {
+      @apply font-bold;
+    }
+  }
+
+  .description {
+    @apply text-base;
+  }
+
+  .priority {
+    @apply text-sm;
+  }
+
+  .title {
+    @apply text-base;
+
+    span {
+      @apply font-semibold;
+    }
+  }
+
+  .description {
+    @apply text-sm;
+  }
+
+  .priority {
+    @apply text-xs;
+  }
+
+  .actions {
+    @apply flex justify-between items-center w-full;
+
+    .comments {
+      @apply border border-foreground border-b-transparent flex justify-center items-center px-2 gap-x-1 w-1/3 ml-auto transition ease-in hover:bg-linkColor;
+
+      &:first-child {
+        @apply border-l-transparent ml-0 mr-auto;
+      }
+
+      &:last-child {
+        @apply border-r-transparent;
+      }
+    }
+  }
+
+  .bottomBar {
+    @apply text-xs flex flex-row justify-between border-t border-t-foreground p-2;
+  }
+
+  .team {
+    @apply text-xs;
+  }
+
+  .status {
+    @apply inline-flex;
+
+    p {
+      @apply font-bold;
+    }
+  }
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}

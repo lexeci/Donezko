@@ -39,7 +39,7 @@ export class UserService {
 				id
 			},
 			include: {
-				tasks: true
+				tasksAsAssignee: true
 			}
 		});
 	}
@@ -58,7 +58,7 @@ export class UserService {
 				email
 			},
 			include: {
-				tasks: true
+				tasksAsAssignee: true
 			}
 		});
 	}
@@ -78,7 +78,7 @@ export class UserService {
 	async getProfile(id: string) {
 		const profile = await this.getById(id);
 
-		const totalTask = profile.tasks.length;
+		const totalTask = profile.tasksAsAssignee.length;
 		const completedTasks = await this.prisma.task.count({
 			where: {
 				userId: id,

@@ -4,15 +4,15 @@ import { TaskFormData } from "@/types/task.types";
 
 import { taskService } from "@/src/services/task.service";
 
-export function useModifyTask(taskKey?: string) {
+export function useModifyTask() {
 	// Зміна назви функції для унікальності
 	const queryClient = useQueryClient();
 
 	const { mutate: modifyTask } = useMutation({
-		mutationKey: ["update task", taskKey], // Зміна назви ключа для унікальності
+		mutationKey: ["update task"], // Зміна назви ключа для унікальності
 		mutationFn: (
-			{ taskId, taskData }: { taskId: string; taskData: TaskFormData } // Зміна назви параметрів
-		) => taskService.updateTask(taskId, taskData),
+			{ taskId, data }: { taskId: string; data: TaskFormData } // Зміна назви параметрів
+		) => taskService.updateTask(taskId, data),
 		onSuccess() {
 			queryClient.invalidateQueries({
 				queryKey: ["tasks"], // Зміна назви ключа для унікальності

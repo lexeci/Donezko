@@ -16,73 +16,6 @@ export class TaskService {
 	constructor(private prisma: PrismaService) {}
 
 	/**
-	 * Private function to check the user's access to the organization, project, and team.
-	 * Ensures that the user has the required permissions to access the given resources.
-	 *
-	 * @param {Object} params - The parameters for permission checks.
-	 * @param {string} params.userId - The ID of the user to check.
-	 * @param {string} [params.projectId] - Optional project ID for project-level access check.
-	 * @param {string} [params.teamId] - Optional team ID for team-level access check.
-	 * @param {string} params.organizationId - The organization ID to check access against.
-	 */
-	private async checkUserPermission({
-		userId,
-		projectId,
-		teamId,
-		organizationId
-	}: {
-		userId: string;
-		projectId?: string;
-		teamId?: string;
-		organizationId: string;
-	}) {
-		if (!organizationId) {
-			throw new ForbiddenException('Organization ID is required.');
-		}
-
-		// Check if the user is a member of the organization.
-		const orgUser = await this.prisma.organizationUser.findFirst({
-			where: { userId, organizationId }
-		});
-		if (!orgUser) {
-			throw new ForbiddenException(
-				'You are not a member of this organization.'
-			);
-		}
-
-		// If the user is banned, throw an error.
-		if (orgUser.organizationStatus === AccessStatus.BANNED) {
-			throw new ForbiddenException('You are banned in this organization.');
-		}
-
-		// If the user is an admin or owner, skip the checks.
-		if (([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(orgUser.role))
-			return;
-
-		// If a project ID is provided, check if the user is part of the project.
-		if (projectId) {
-			const projectUser = await this.prisma.projectUser.findFirst({
-				where: { userId, projectId }
-			});
-			if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
-				throw new ForbiddenException('You do not have access to this project.');
-			}
-		}
-
-		// If a team ID is provided, check if the user is part of the team.
-		if (teamId) {
-			const teamUser = await this.prisma.teamUser.findFirst({
-				where: { userId, teamId }
-			});
-			if (!teamUser || teamUser.teamStatus !== AccessStatus.ACTIVE) {
-				throw new ForbiddenException('You do not have access to this team.');
-			}
-		}
-	}
-
-	/** ===================== TASK OPERATIONS ===================== */
-
-	/**
 	 * Retrieves all tasks assigned to a specific user.
 	 *
 	 * @param {string} userId - The ID of the user to retrieve tasks for.
@@ -151,9 +84,33 @@ export class TaskService {
 				projectId,
 				...(teamId && { teamId }),
 				...(available && { userId })
+			},
+			include: {
+				team: {
+					select: {
+						title: true
+					}
+				},
+				author: {
+					select: {
+						name: true
+					}
+				},
+				user: {
+					select: {
+						name: true
+					}
+				},
+				project: {
+					select: {
+						title: true
+					}
+				}
 			}
 		});
 	}
+
+	/** ===================== TASK OPERATIONS ===================== */
 
 	/**
 	 * Creates a new task.
@@ -163,7 +120,13 @@ export class TaskService {
 	 * @returns {Promise<Task>} The newly created task.
 	 */
 	async create({ dto, userId }: { dto: CreateTaskDto; userId: string }) {
-		const { projectId, teamId, organizationId, ...restDto } = dto;
+		const {
+			projectId,
+			teamId,
+			organizationId,
+			userId: assigneeId,
+			...restDto
+		} = dto;
 
 		if (!projectId || !teamId || !organizationId) {
 			throw new ForbiddenException(
@@ -182,7 +145,8 @@ export class TaskService {
 		return this.prisma.task.create({
 			data: {
 				...restDto,
-				user: { connect: { id: userId } },
+				user: { connect: { id: assigneeId } },
+				author: { connect: { id: userId } },
 				project: { connect: { id: projectId } },
 				team: { connect: { id: teamId } }
 			}
@@ -206,7 +170,8 @@ export class TaskService {
 		id: string;
 		userId: string;
 	}) {
-		const { projectId, teamId, organizationId } = dto;
+		const { projectId, teamId } = dto;
+		const { organizationId, ...data } = dto;
 
 		const task = await this.prisma.task.findUnique({ where: { id } });
 		if (!task) {
@@ -221,7 +186,7 @@ export class TaskService {
 			organizationId
 		});
 
-		return this.prisma.task.update({ where: { id }, data: dto });
+		return this.prisma.task.update({ where: { id }, data });
 	}
 
 	/**
@@ -363,8 +328,6 @@ export class TaskService {
 		});
 	}
 
-	/** ===================== COMMENT OPERATIONS ===================== */
-
 	/**
 	 * Add a comment to a task.
 	 *
@@ -405,6 +368,8 @@ export class TaskService {
 			data: { content, userId, taskId: id }
 		});
 	}
+
+	/** ===================== COMMENT OPERATIONS ===================== */
 
 	/**
 	 * Retrieve all comments for a specific task.
@@ -501,5 +466,70 @@ export class TaskService {
 		});
 
 		return this.prisma.comment.delete({ where: { id: commentId } });
+	}
+
+	/**
+	 * Private function to check the user's access to the organization, project, and team.
+	 * Ensures that the user has the required permissions to access the given resources.
+	 *
+	 * @param {Object} params - The parameters for permission checks.
+	 * @param {string} params.userId - The ID of the user to check.
+	 * @param {string} [params.projectId] - Optional project ID for project-level access check.
+	 * @param {string} [params.teamId] - Optional team ID for team-level access check.
+	 * @param {string} params.organizationId - The organization ID to check access against.
+	 */
+	private async checkUserPermission({
+		userId,
+		projectId,
+		teamId,
+		organizationId
+	}: {
+		userId: string;
+		projectId?: string;
+		teamId?: string;
+		organizationId: string;
+	}) {
+		if (!organizationId) {
+			throw new ForbiddenException('Organization ID is required.');
+		}
+
+		// Check if the user is a member of the organization.
+		const orgUser = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId }
+		});
+		if (!orgUser) {
+			throw new ForbiddenException(
+				'You are not a member of this organization.'
+			);
+		}
+
+		// If the user is banned, throw an error.
+		if (orgUser.organizationStatus === AccessStatus.BANNED) {
+			throw new ForbiddenException('You are banned in this organization.');
+		}
+
+		// If the user is an admin or owner, skip the checks.
+		if (([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(orgUser.role))
+			return;
+
+		// If a project ID is provided, check if the user is part of the project.
+		if (projectId) {
+			const projectUser = await this.prisma.projectUser.findFirst({
+				where: { userId, projectId }
+			});
+			if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
+				throw new ForbiddenException('You do not have access to this project.');
+			}
+		}
+
+		// If a team ID is provided, check if the user is part of the team.
+		if (teamId) {
+			const teamUser = await this.prisma.teamUser.findFirst({
+				where: { userId, teamId }
+			});
+			if (!teamUser || teamUser.teamStatus !== AccessStatus.ACTIVE) {
+				throw new ForbiddenException('You do not have access to this team.');
+			}
+		}
 	}
 }

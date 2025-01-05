@@ -36,10 +36,6 @@ export default function Tasks() {
 		if (selectedProject) handleRefetch();
 	}, [selectedAvailable, selectedProject, selectedTeam]);
 
-	useEffect(() => {
-		console.log(taskList);
-	}, [taskList]);
-
 	return (
 		<PageLayout>
 			<PageHeader

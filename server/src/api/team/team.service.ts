@@ -27,104 +27,6 @@ export class TeamService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	/**
-	 * Checks if the current user has access to the specified organization and project.
-	 *
-	 * Ensures the user is part of the organization with an active role and has access to the project.
-	 * Throws an exception if the user lacks the required permissions.
-	 *
-	 * @param organizationId - The organization ID.
-	 * @param projectId - The project ID.
-	 * @param currentUserId - The ID of the current user.
-	 * @throws ForbiddenException if the user lacks access.
-	 */
-	private async checkAccess({
-		organizationId,
-		projectId,
-		userId
-	}: {
-		organizationId: string;
-		projectId?: string;
-		userId: string;
-	}): Promise<void> {
-		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
-			where: { userId: userId, organizationId: organizationId }
-		});
-
-		if (!currentUserInOrg) {
-			throw new ForbiddenException('You are not part of this organization');
-		}
-
-		if (
-			([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
-				currentUserInOrg.role
-			) &&
-			currentUserInOrg.organizationStatus === AccessStatus.ACTIVE
-		) {
-			return;
-		}
-
-		if (
-			currentUserInOrg.organizationStatus === AccessStatus.BANNED ||
-			currentUserInOrg.role === OrgRole.VIEWER
-		) {
-			throw new ForbiddenException('Insufficient permissions');
-		}
-
-		if (projectId) {
-			const currentUserInProject = await this.prisma.projectUser.findFirst({
-				where: {
-					userId,
-					projectId,
-					projectStatus: AccessStatus.ACTIVE
-				}
-			});
-
-			if (!currentUserInProject) {
-				throw new ForbiddenException('No access to the specified project');
-			}
-		}
-	}
-
-	/**
-	 * Verifies if the user is part of the organization and is active.
-	 *
-	 * @param organizationId - The organization ID.
-	 * @param userId - The user ID to check.
-	 * @throws NotFoundException if the user is not part of the organization.
-	 * @throws ForbiddenException if the user is not active in the organization.
-	 */
-	private async checkUserInOrganization(
-		organizationId: string,
-		userId: string
-	): Promise<void> {
-		const userInOrg = await this.prisma.organizationUser.findFirst({
-			where: { userId, organizationId: organizationId }
-		});
-
-		if (!userInOrg) {
-			throw new NotFoundException('User is not part of this organization');
-		}
-
-		if (userInOrg.organizationStatus !== AccessStatus.ACTIVE) {
-			throw new ForbiddenException('User is not active in this organization');
-		}
-	}
-
-	/**
-	 * Checks if the current user is the leader of the team.
-	 *
-	 * @param teamId - The team ID.
-	 * @param userId - The current user ID.
-	 * @returns true if the user is the leader of the team, otherwise false.
-	 */
-	private async isTeamLeader(teamId: string, userId: string): Promise<boolean> {
-		const leader = await this.prisma.teamUser.findFirst({
-			where: { teamId, userId, role: TeamRole.LEADER }
-		});
-		return !!leader;
-	}
-
-	/**
 	 * Retrieves all teams associated with a specific user.
 	 *
 	 * This method returns a list of teams for the specified user, regardless of organization or project.
@@ -529,7 +431,8 @@ export class TeamService {
 		const teamUsers = await this.prisma.teamUser.findMany({
 			where: {
 				teamId: id,
-				...(!hasPermission && { NOT: { teamStatus: AccessStatus.BANNED } })
+				...(!hasPermission && { NOT: { teamStatus: AccessStatus.BANNED } }),
+				...(!hasPermission && { NOT: { role: TeamRole.LEADER } })
 			},
 			include: {
 				user: {
@@ -1298,5 +1201,103 @@ export class TeamService {
 		}
 
 		await this.prisma.team.delete({ where: { id } });
+	}
+
+	/**
+	 * Checks if the current user has access to the specified organization and project.
+	 *
+	 * Ensures the user is part of the organization with an active role and has access to the project.
+	 * Throws an exception if the user lacks the required permissions.
+	 *
+	 * @param organizationId - The organization ID.
+	 * @param projectId - The project ID.
+	 * @param currentUserId - The ID of the current user.
+	 * @throws ForbiddenException if the user lacks access.
+	 */
+	private async checkAccess({
+		organizationId,
+		projectId,
+		userId
+	}: {
+		organizationId: string;
+		projectId?: string;
+		userId: string;
+	}): Promise<void> {
+		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId: userId, organizationId: organizationId }
+		});
+
+		if (!currentUserInOrg) {
+			throw new ForbiddenException('You are not part of this organization');
+		}
+
+		if (
+			([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+				currentUserInOrg.role
+			) &&
+			currentUserInOrg.organizationStatus === AccessStatus.ACTIVE
+		) {
+			return;
+		}
+
+		if (
+			currentUserInOrg.organizationStatus === AccessStatus.BANNED ||
+			currentUserInOrg.role === OrgRole.VIEWER
+		) {
+			throw new ForbiddenException('Insufficient permissions');
+		}
+
+		if (projectId) {
+			const currentUserInProject = await this.prisma.projectUser.findFirst({
+				where: {
+					userId,
+					projectId,
+					projectStatus: AccessStatus.ACTIVE
+				}
+			});
+
+			if (!currentUserInProject) {
+				throw new ForbiddenException('No access to the specified project');
+			}
+		}
+	}
+
+	/**
+	 * Verifies if the user is part of the organization and is active.
+	 *
+	 * @param organizationId - The organization ID.
+	 * @param userId - The user ID to check.
+	 * @throws NotFoundException if the user is not part of the organization.
+	 * @throws ForbiddenException if the user is not active in the organization.
+	 */
+	private async checkUserInOrganization(
+		organizationId: string,
+		userId: string
+	): Promise<void> {
+		const userInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId, organizationId: organizationId }
+		});
+
+		if (!userInOrg) {
+			throw new NotFoundException('User is not part of this organization');
+		}
+
+		if (userInOrg.organizationStatus !== AccessStatus.ACTIVE) {
+			throw new ForbiddenException('User is not active in this organization');
+		}
+	}
+
+	/**
+	 * Checks if the current user is the leader of the team.
+	 *
+	 * @param teamId - The team ID.
+	 * @param userId - The current user ID.
+	 * @returns true if the user is the leader of the team, otherwise false.
+	 */
+	private async isTeamLeader(teamId: string, userId: string): Promise<boolean> {
+		const leader = await this.prisma.teamUser.findFirst({
+			where: { teamId, userId, role: TeamRole.LEADER }
+		});
+		return !!leader;
 	}
 }

@@ -107,166 +107,168 @@ export class OrgService {
 
 		// Логіка для вибору додаткових полів
 		const organizationSelect = {
-			id: true,
-			title: true,
-			description: true,
-			...(isPermitted && { joinCode: true }),
-			teams: isPermitted
-				? {
-						select: {
-							id: true,
-							title: true,
-							description: true,
-							createdAt: true,
-							updatedAt: true,
-							organization: {
-								select: {
-									title: true
-								}
-							},
-							_count: {
-								select: {
-									teamUsers: true,
-									tasks: true
-								}
-							}
-						}
-					}
-				: {
-						select: {
-							id: true,
-							title: true,
-							description: true,
-							createdAt: true,
-							updatedAt: true,
-							organization: {
-								select: {
-									title: true
-								}
-							},
-							_count: {
-								select: {
-									teamUsers: true,
-									tasks: true
-								}
-							}
-						},
-						where: {
-							teamUsers: {
-								some: {
-									userId,
-									teamStatus: AccessStatus.ACTIVE
-								}
-							}
-						}
-					},
-			projects: isPermitted
-				? {
-						select: {
-							id: true,
-							title: true,
-							description: true,
-							createdAt: true,
-							updatedAt: true,
-							_count: {
-								select: {
-									projectTeams: true,
-									tasks: true
-								}
-							}
-						}
-					}
-				: {
-						select: {
-							id: true,
-							title: true,
-							description: true,
-							createdAt: true,
-							updatedAt: true,
-							_count: {
-								select: {
-									projectTeams: true,
-									tasks: true
-								}
-							}
-						},
-						where: {
-							projectUsers: {
-								some: {
-									userId,
-									projectStatus: AccessStatus.ACTIVE
-								}
-							}
-						}
-					},
-			...(isPermitted && {
-				organizationUsers: {
-					where: {
-						role: {
-							not: OrgRole.OWNER
-						}
-					},
-					select: {
-						userId: true,
-						organizationStatus: true,
-						role: true,
-						user: {
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				...(isPermitted && { joinCode: true }),
+				teams: isPermitted
+					? {
 							select: {
-								name: true,
-								email: true,
-								ProjectUser: {
+								id: true,
+								title: true,
+								description: true,
+								createdAt: true,
+								updatedAt: true,
+								organization: {
 									select: {
-										project: {
-											select: {
-												title: true
-											}
-										}
+										title: true
 									}
 								},
 								_count: {
 									select: {
+										teamUsers: true,
 										tasks: true
 									}
 								}
 							}
 						}
-					}
-				}
-			}),
-			_count: {
-				select: {
-					organizationUsers: isPermitted
-						? true
-						: {
-								where: {
-									userId,
-									organizationStatus: AccessStatus.ACTIVE
-								}
-							},
-					teams: isPermitted
-						? true
-						: {
-								where: {
-									teamUsers: {
-										some: {
-											userId,
-											teamStatus: AccessStatus.ACTIVE
-										}
+					: {
+							select: {
+								id: true,
+								title: true,
+								description: true,
+								createdAt: true,
+								updatedAt: true,
+								organization: {
+									select: {
+										title: true
+									}
+								},
+								_count: {
+									select: {
+										teamUsers: true,
+										tasks: true
 									}
 								}
 							},
-					projects: isPermitted
-						? true
-						: {
-								where: {
-									projectUsers: {
-										some: {
-											userId,
-											projectStatus: AccessStatus.ACTIVE
+							where: {
+								teamUsers: {
+									some: {
+										userId,
+										teamStatus: AccessStatus.ACTIVE
+									}
+								}
+							}
+						},
+				projects: isPermitted
+					? {
+							select: {
+								id: true,
+								title: true,
+								description: true,
+								createdAt: true,
+								updatedAt: true,
+								_count: {
+									select: {
+										projectTeams: true,
+										tasks: true
+									}
+								}
+							}
+						}
+					: {
+							select: {
+								id: true,
+								title: true,
+								description: true,
+								createdAt: true,
+								updatedAt: true,
+								_count: {
+									select: {
+										projectTeams: true,
+										tasks: true
+									}
+								}
+							},
+							where: {
+								projectUsers: {
+									some: {
+										userId,
+										projectStatus: AccessStatus.ACTIVE
+									}
+								}
+							}
+						},
+				...(isPermitted && {
+					organizationUsers: {
+						where: {
+							role: {
+								not: OrgRole.OWNER
+							}
+						},
+						select: {
+							userId: true,
+							organizationStatus: true,
+							role: true,
+							user: {
+								select: {
+									name: true,
+									email: true,
+									ProjectUser: {
+										select: {
+											project: {
+												select: {
+													title: true
+												}
+											}
+										}
+									},
+									_count: {
+										select: {
+											tasksAsAssignee: true
 										}
 									}
 								}
 							}
+						}
+					}
+				}),
+				_count: {
+					select: {
+						organizationUsers: isPermitted
+							? true
+							: {
+									where: {
+										userId,
+										organizationStatus: AccessStatus.ACTIVE
+									}
+								},
+						teams: isPermitted
+							? true
+							: {
+									where: {
+										teamUsers: {
+											some: {
+												userId,
+												teamStatus: AccessStatus.ACTIVE
+											}
+										}
+									}
+								},
+						projects: isPermitted
+							? true
+							: {
+									where: {
+										projectUsers: {
+											some: {
+												userId,
+												projectStatus: AccessStatus.ACTIVE
+											}
+										}
+									}
+								}
+					}
 				}
 			}
 		};
@@ -275,9 +277,7 @@ export class OrgService {
 		return this.prisma.organizationUser.findFirst({
 			where: { userId, organizationId: id },
 			select: {
-				organization: {
-					select: organizationSelect
-				},
+				organization: organizationSelect,
 				role: true,
 				organizationStatus: true
 			}
@@ -518,7 +518,7 @@ export class OrgService {
 					_count: {
 						select: {
 							teamUsers: true,
-							tasks: true
+							tasksAsAssignee: true
 						}
 					}
 				}
@@ -533,7 +533,7 @@ export class OrgService {
 					_count: {
 						select: {
 							projectTeams: true,
-							tasks: true
+							tasksAsAssignee: true
 						}
 					}
 				}
@@ -563,7 +563,7 @@ export class OrgService {
 							},
 							_count: {
 								select: {
-									tasks: true
+									tasksAsAssignee: true
 								}
 							}
 						}

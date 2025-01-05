@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 export function useFetchTeamsByProject(
-	organizationId: string | null,
-	projectId: string | null
+	organizationId?: string | null,
+	projectId?: string | null
 ) {
 	const { data: teamsData } = useQuery({
 		queryKey: ["teams", organizationId, projectId],

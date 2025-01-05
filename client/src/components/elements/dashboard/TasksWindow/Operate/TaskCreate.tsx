@@ -15,7 +15,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 interface TaskCreate {
 	updateTaskList: Dispatch<SetStateAction<TaskResponse[] | undefined>>;
 	filterDate: string | undefined;
-	projectId: string;
+	projectId: string | undefined;
 }
 
 export default function TaskCreate({
@@ -80,7 +80,6 @@ export default function TaskCreate({
 	};
 
 	const onSubmit: SubmitHandler<TaskFormData> = data => {
-		console.log(data);
 		createTask(data, {
 			onSuccess(data) {
 				data && handleCreateCard(data);

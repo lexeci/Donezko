@@ -1,79 +1,83 @@
-import { AxiosResponse } from "axios";
+import {AxiosResponse} from "axios";
 
-import { axiosWithAuth } from "@/api/interceptors";
-import type { TaskFormData, TaskResponse } from "@/types/task.types";
-import { toast } from "sonner";
+import {axiosWithAuth} from "@/api/interceptors";
+import type {TaskFormData, TaskResponse} from "@/types/task.types";
+import {toast} from "sonner";
 
 class TaskService {
-	private BASE_URL = "/user/tasks";
+    private BASE_URL = "/user/tasks";
 
-	async getTasks({
-		organizationId,
-		projectId,
-		teamId,
-		available,
-	}: {
-		organizationId?: string | null;
-		projectId?: string | null;
-		teamId?: string | null;
-		available?: boolean;
-	}): Promise<TaskResponse[]> {
-		const params = new URLSearchParams();
+    async getTasks({
+                       organizationId,
+                       projectId,
+                       teamId,
+                       available,
+                   }: {
+        organizationId?: string | null;
+        projectId?: string | null;
+        teamId?: string | null;
+        available?: boolean;
+    }): Promise<TaskResponse[]> {
+        const params = new URLSearchParams();
 
-		if (organizationId) params.append("organizationId", organizationId);
-		if (projectId) params.append("projectId", projectId);
-		if (teamId) params.append("teamId", teamId);
-		if (available) params.append("available", "true");
+        if (organizationId) params.append("organizationId", organizationId);
+        if (projectId) params.append("projectId", projectId);
+        if (teamId) params.append("teamId", teamId);
+        if (available) params.append("available", "true");
 
-		const url = `${this.BASE_URL}${
-			params.toString() ? `?${params.toString()}` : ""
-		}`;
+        const url = `${this.BASE_URL}${
+            params.toString() ? `?${params.toString()}` : ""
+        }`;
 
-		try {
-			const response = await axiosWithAuth.get<TaskResponse[]>(url);
-			return response.data; // Return only the data part
-		} catch (error) {
-			console.error("Error fetching tasks:", error);
-			throw new Error("Could not fetch tasks"); // Rethrow or handle error appropriately
-		}
-	}
+        try {
+            const response = await axiosWithAuth.get<TaskResponse[]>(url);
+            return response.data; // Return only the data part
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+            throw new Error("Could not fetch tasks"); // Rethrow or handle error appropriately
+        }
+    }
 
-	async createTask(data: TaskFormData): Promise<TaskResponse> {
-		try {
-			const response = await axiosWithAuth.post<TaskResponse>(
-				this.BASE_URL,
-				data
-			);
-			return response.data; // Return only the data part
-		} catch (error) {
-			toast.error(error.response.data.message);
-			console.error("Error creating task:", error);
-			throw new Error("Could not create task"); // Handle error appropriately
-		}
-	}
+    async createTask(data: TaskFormData): Promise<TaskResponse> {
+        try {
+            const response = await axiosWithAuth.post<TaskResponse>(
+                this.BASE_URL,
+                data
+            );
+            return response.data; // Return only the data part
+        } catch (error: any) {
+            error && toast.error(error.response.data.message);
+            console.error("Error creating task:", error);
+            throw new Error("Could not create task"); // Handle error appropriately
+        }
+    }
 
-	async updateTask(id: string, data: TaskFormData): Promise<TaskResponse> {
-		try {
-			const response = await axiosWithAuth.put<TaskResponse>(
-				`${this.BASE_URL}/${id}`,
-				data
-			);
-			return response.data; // Return only the data part
-		} catch (error) {
-			console.error("Error updating task:", error);
-			throw new Error("Could not update task"); // Handle error appropriately
-		}
-	}
+    async updateTask(id: string, data: TaskFormData): Promise<TaskResponse> {
+        try {
+            const response = await axiosWithAuth.put<TaskResponse>(
+                `${this.BASE_URL}/${id}`,
+                data
+            );
+            return response.data; // Return only the data part
+        } catch (error: any) {
+            error && toast.error(error.response.data.message);
+            console.error("Error updating task:", error);
+            throw new Error("Could not update task"); // Handle error appropriately
+        }
+    }
 
-	async deleteTask(id: string): Promise<AxiosResponse> {
-		try {
-			const response = await axiosWithAuth.delete(`${this.BASE_URL}/${id}`);
-			return response; // Check if the deletion was successful
-		} catch (error) {
-			console.error("Error deleting task:", error);
-			throw new Error("Could not delete task"); // Handle error appropriately
-		}
-	}
+    async deleteTask({taskId, organizationId}: { taskId: string, organizationId: string }): Promise<AxiosResponse> {
+        try {
+            const response = await axiosWithAuth.delete(`${this.BASE_URL}/${taskId}`, {
+                data: {organizationId}
+            });
+            return response; // Check if the deletion was successful
+        } catch (error: any) {
+            error && toast.error(error.response.data.message);
+            console.error("Error deleting task:", error);
+            throw new Error("Could not delete task"); // Handle error appropriately
+        }
+    }
 }
 
 export const taskService = new TaskService();

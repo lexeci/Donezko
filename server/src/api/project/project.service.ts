@@ -18,181 +18,10 @@ import {
  */
 @Injectable()
 export class ProjectService {
+	// Return project details
+	return;
+
 	constructor(private prisma: PrismaService) {}
-
-	/**
-	 * Helper function to check the user's access rights for an organization or user.
-	 * @param userId The ID of the user requesting access.
-	 * @param orgId The ID of the organization.
-	 * @param projectId (Optional) The ID of the project.
-	 * @param roleCheck (Optional) Flag to check if the user has a required role.
-	 * @throws ForbiddenException if the user does not have sufficient permissions.
-	 * @returns Organization User, Project User or all together in one object
-	 */
-	private async checkUserInOrganization({
-		roleCheck,
-		userId,
-		orgId,
-		projectId
-	}: {
-		roleCheck?: boolean;
-		userId: string;
-		orgId: string;
-		projectId?: string;
-	}) {
-		const organizationUser = await this.prisma.organizationUser.findFirst({
-			where: {
-				userId,
-				organizationId: orgId,
-				organizationStatus: AccessStatus.ACTIVE
-			}
-		});
-
-		if (!organizationUser) {
-			throw new ForbiddenException(
-				'User is not a member of this organization.'
-			);
-		}
-
-		if (roleCheck && !projectId) {
-			if (
-				!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
-					organizationUser.role
-				)
-			) {
-				throw new ForbiddenException(
-					'Only admins, owners can perform this action.'
-				);
-			}
-		}
-
-		if (projectId) {
-			const projectUser = await this.prisma.projectUser.findUnique({
-				where: { projectId_userId: { projectId, userId } }
-			});
-
-			// Check if the user is part of the project
-			if (!projectUser) {
-				throw new ForbiddenException(
-					'User is not a participant in this project.'
-				);
-			}
-
-			if (roleCheck) {
-				if (
-					!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
-						organizationUser.role
-					)
-				) {
-					// Check for project manager role if required
-					if (
-						!([ProjectRole.MANAGER] as ProjectRole[]).includes(projectUser.role)
-					) {
-						throw new ForbiddenException(
-							'Project manager can perform this action.'
-						);
-					}
-				}
-			}
-			return { organizationUser, projectUser };
-		} else {
-			return { organizationUser };
-		}
-	}
-
-	/**
-	 * Helper function to check if required fields are provided in the DTO.
-	 * @param dto The data transfer object containing the fields to validate.
-	 * @param fields List of field names that need to be checked for presence.
-	 * @throws ForbiddenException if any of the required fields is missing or empty.
-	 */
-	private validateRequiredFields(dto: any, fields: string[]) {
-		for (const field of fields) {
-			if (!dto[field] || dto[field].trim().length === 0) {
-				throw new ForbiddenException(`Field "${field}" is required.`);
-			}
-		}
-	}
-
-	/**
-	 * Helper function to check the user's access rights for an organization, project, or user.
-	 * @param userId The ID of the user requesting access.
-	 * @param orgId The ID of the organization.
-	 * @param projectId (Optional) The ID of the project.
-	 * @param roleCheck (Optional) Flag to check if the user has a required role.
-	 * @param retrieveAccessCheck (Optional) Flag to check if the user can change the target user's access.
-	 * @param targetUserId (Optional) The ID of the user whose access is being checked.
-	 * @throws ForbiddenException if the user does not have sufficient permissions.
-	 */
-	private async checkUserAccess({
-		userId,
-		orgId,
-		projectId,
-		roleCheck = false,
-		retrieveAccessCheck = false,
-		targetUserId
-	}: {
-		userId: string;
-		orgId: string;
-		projectId: string;
-		roleCheck?: boolean;
-		retrieveAccessCheck?: boolean;
-		targetUserId?: string;
-	}) {
-		await this.checkUserInOrganization({
-			roleCheck,
-			userId,
-			orgId,
-			projectId
-		});
-
-		// Check if the target user is an admin or owner, restricting access changes
-		if (retrieveAccessCheck && targetUserId) {
-			const targetOrganizationUser =
-				await this.prisma.organizationUser.findFirst({
-					where: {
-						userId: targetUserId,
-						organizationId: orgId
-					}
-				});
-			if (
-				targetOrganizationUser &&
-				([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
-					targetOrganizationUser.role
-				)
-			) {
-				throw new ForbiddenException(
-					'Cannot change the access status of an owner or admin.'
-				);
-			}
-		}
-
-		// Check if the target user is part of the project
-		if (targetUserId) {
-			const projectUser = await this.prisma.projectUser.findUnique({
-				where: { projectId_userId: { projectId, userId: targetUserId } }
-			});
-			if (!projectUser) {
-				throw new ForbiddenException(
-					'The target user is not a participant in this project.'
-				);
-			}
-		}
-	}
-
-	/**
-	 * Helper method to check if a project exists.
-	 * @param projectId The ID of the project to check.
-	 * @returns The project if found.
-	 * @throws NotFoundException if the project does not exist.
-	 */
-	private async projectExists(projectId: string) {
-		const project = await this.prisma.project.findUnique({
-			where: { id: projectId }
-		});
-		if (!project) throw new NotFoundException('Project not found.');
-		return project;
-	}
 
 	/**
 	 * Fetch all active projects for a specific user.
@@ -311,6 +140,35 @@ export class ProjectService {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Fetch a project to get a role.
+	 * @param id The ID of the project to fetch.
+	 * @param userId The ID of the user requesting the project details.
+	 * @returns The project details.
+	 * @throws ForbiddenException if the user does not have access to the project.
+	 * @throws NotFoundException if the project does not exist.
+	 */
+	async getRole({ id, userId }: { id: string; userId: string }) {
+		// Check if the user has access to the project
+		const projectUser = await this.prisma.projectUser.findUnique({
+			where: { projectId_userId: { projectId: id, userId } }
+		});
+		if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
+			throw new ForbiddenException(
+				'User does not have access to this project.'
+			);
+		}
+
+		const data = await this.prisma.projectUser.findFirst({
+			where: { userId, projectId: id },
+			select: {
+				role: true
+			}
+		});
+
+		return data.role;
 	}
 
 	/**
@@ -820,5 +678,179 @@ export class ProjectService {
 		});
 
 		return this.prisma.project.delete({ where: { id } });
+	}
+
+	/**
+	 * Helper function to check the user's access rights for an organization or user.
+	 * @param userId The ID of the user requesting access.
+	 * @param orgId The ID of the organization.
+	 * @param projectId (Optional) The ID of the project.
+	 * @param roleCheck (Optional) Flag to check if the user has a required role.
+	 * @throws ForbiddenException if the user does not have sufficient permissions.
+	 * @returns Organization User, Project User or all together in one object
+	 */
+	private async checkUserInOrganization({
+		roleCheck,
+		userId,
+		orgId,
+		projectId
+	}: {
+		roleCheck?: boolean;
+		userId: string;
+		orgId: string;
+		projectId?: string;
+	}) {
+		const organizationUser = await this.prisma.organizationUser.findFirst({
+			where: {
+				userId,
+				organizationId: orgId,
+				organizationStatus: AccessStatus.ACTIVE
+			}
+		});
+
+		if (!organizationUser) {
+			throw new ForbiddenException(
+				'User is not a member of this organization.'
+			);
+		}
+
+		if (roleCheck && !projectId) {
+			if (
+				!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+					organizationUser.role
+				)
+			) {
+				throw new ForbiddenException(
+					'Only admins, owners can perform this action.'
+				);
+			}
+		}
+
+		if (projectId) {
+			const projectUser = await this.prisma.projectUser.findUnique({
+				where: { projectId_userId: { projectId, userId } }
+			});
+
+			// Check if the user is part of the project
+			if (!projectUser) {
+				throw new ForbiddenException(
+					'User is not a participant in this project.'
+				);
+			}
+
+			if (roleCheck) {
+				if (
+					!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+						organizationUser.role
+					)
+				) {
+					// Check for project manager role if required
+					if (
+						!([ProjectRole.MANAGER] as ProjectRole[]).includes(projectUser.role)
+					) {
+						throw new ForbiddenException(
+							'Project manager can perform this action.'
+						);
+					}
+				}
+			}
+			return { organizationUser, projectUser };
+		} else {
+			return { organizationUser };
+		}
+	}
+
+	/**
+	 * Helper function to check if required fields are provided in the DTO.
+	 * @param dto The data transfer object containing the fields to validate.
+	 * @param fields List of field names that need to be checked for presence.
+	 * @throws ForbiddenException if any of the required fields is missing or empty.
+	 */
+	private validateRequiredFields(dto: any, fields: string[]) {
+		for (const field of fields) {
+			if (!dto[field] || dto[field].trim().length === 0) {
+				throw new ForbiddenException(`Field "${field}" is required.`);
+			}
+		}
+	}
+
+	/**
+	 * Helper function to check the user's access rights for an organization, project, or user.
+	 * @param userId The ID of the user requesting access.
+	 * @param orgId The ID of the organization.
+	 * @param projectId (Optional) The ID of the project.
+	 * @param roleCheck (Optional) Flag to check if the user has a required role.
+	 * @param retrieveAccessCheck (Optional) Flag to check if the user can change the target user's access.
+	 * @param targetUserId (Optional) The ID of the user whose access is being checked.
+	 * @throws ForbiddenException if the user does not have sufficient permissions.
+	 */
+	private async checkUserAccess({
+		userId,
+		orgId,
+		projectId,
+		roleCheck = false,
+		retrieveAccessCheck = false,
+		targetUserId
+	}: {
+		userId: string;
+		orgId: string;
+		projectId: string;
+		roleCheck?: boolean;
+		retrieveAccessCheck?: boolean;
+		targetUserId?: string;
+	}) {
+		await this.checkUserInOrganization({
+			roleCheck,
+			userId,
+			orgId,
+			projectId
+		});
+
+		// Check if the target user is an admin or owner, restricting access changes
+		if (retrieveAccessCheck && targetUserId) {
+			const targetOrganizationUser =
+				await this.prisma.organizationUser.findFirst({
+					where: {
+						userId: targetUserId,
+						organizationId: orgId
+					}
+				});
+			if (
+				targetOrganizationUser &&
+				([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
+					targetOrganizationUser.role
+				)
+			) {
+				throw new ForbiddenException(
+					'Cannot change the access status of an owner or admin.'
+				);
+			}
+		}
+
+		// Check if the target user is part of the project
+		if (targetUserId) {
+			const projectUser = await this.prisma.projectUser.findUnique({
+				where: { projectId_userId: { projectId, userId: targetUserId } }
+			});
+			if (!projectUser) {
+				throw new ForbiddenException(
+					'The target user is not a participant in this project.'
+				);
+			}
+		}
+	}
+
+	/**
+	 * Helper method to check if a project exists.
+	 * @param projectId The ID of the project to check.
+	 * @returns The project if found.
+	 * @throws NotFoundException if the project does not exist.
+	 */
+	private async projectExists(projectId: string) {
+		const project = await this.prisma.project.findUnique({
+			where: { id: projectId }
+		});
+		if (!project) throw new NotFoundException('Project not found.');
+		return project;
 	}
 }

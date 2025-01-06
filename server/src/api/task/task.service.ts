@@ -145,7 +145,7 @@ export class TaskService {
 		return this.prisma.task.create({
 			data: {
 				...restDto,
-				user: { connect: { id: assigneeId } },
+				...(assigneeId && { user: { connect: { id: assigneeId } } }),
 				author: { connect: { id: userId } },
 				project: { connect: { id: projectId } },
 				team: { connect: { id: teamId } }
@@ -328,6 +328,8 @@ export class TaskService {
 		});
 	}
 
+	/** ===================== COMMENT OPERATIONS ===================== */
+
 	/**
 	 * Add a comment to a task.
 	 *
@@ -365,11 +367,12 @@ export class TaskService {
 		});
 
 		return this.prisma.comment.create({
-			data: { content, userId, taskId: id }
+			data: { content, userId, taskId: id },
+			include: {
+				user: { select: { id: true, name: true, email: true } }
+			}
 		});
 	}
-
-	/** ===================== COMMENT OPERATIONS ===================== */
 
 	/**
 	 * Retrieve all comments for a specific task.
@@ -382,14 +385,12 @@ export class TaskService {
 	async getCommentsForTask({
 		userId,
 		id,
-		dto
+		organizationId
 	}: {
 		userId: string;
 		id: string;
-		dto: GetTaskCommentDto;
+		organizationId: string;
 	}) {
-		const { organizationId } = dto;
-
 		const task = await this.prisma.task.findUnique({ where: { id } });
 		if (!task) {
 			throw new ForbiddenException('Task not found.');
@@ -424,16 +425,14 @@ export class TaskService {
 	async deleteComment({
 		id,
 		commentId,
-		dto,
+		organizationId,
 		userId
 	}: {
 		id: string;
 		commentId: string;
-		dto: GetTaskCommentDto;
+		organizationId: string;
 		userId: string;
 	}) {
-		const { organizationId } = dto;
-
 		// Find the comment to delete.
 		const comment = await this.prisma.comment.findUnique({
 			where: { id: commentId }
@@ -465,7 +464,12 @@ export class TaskService {
 			organizationId
 		});
 
-		return this.prisma.comment.delete({ where: { id: commentId } });
+		return this.prisma.comment.delete({
+			where: { id: commentId },
+			include: {
+				user: { select: { id: true, name: true, email: true } }
+			}
+		});
 	}
 
 	/**

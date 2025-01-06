@@ -1,6 +1,6 @@
 export default function TaskCreateInfo() {
     return (
-        <div className="flex flex-col justify-start items-start w-full gap-y-4">
+        <div className="flex flex-col justify-start items-start w-full gap-y-4 p-4">
             <div className="header w-full border-b border-b-foreground pb-4">
                 <div className="title text-lg font-bold mb-4">
                     <h5>How to Create a Task</h5>

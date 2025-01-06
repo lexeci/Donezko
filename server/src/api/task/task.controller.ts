@@ -20,7 +20,6 @@ import {
 	ChangeTaskAssigneeDto,
 	ChangeTaskTeamDto,
 	CreateTaskDto,
-	GetTaskCommentDto,
 	ManageTaskDto,
 	TaskCommentDto,
 	UpdateTaskDto
@@ -199,7 +198,7 @@ export class TaskController {
 	 * Get all comments for a task.
 	 *
 	 * @param id The ID of the task.
-	 * @param dto Additional data (e.g., organization).
+	 * @param organizationId Additional data (e.g., organization).
 	 * @param userId The ID of the authenticated user.
 	 * @returns A list of comments for the specified task.
 	 */
@@ -209,10 +208,10 @@ export class TaskController {
 	@HttpCode(200)
 	async getComments(
 		@Param('id') id: string,
-		@Body() dto: GetTaskCommentDto,
+		@Query('organizationId') organizationId: string,
 		@CurrentUser('id') userId: string
 	) {
-		return this.taskService.getCommentsForTask({ id, dto, userId });
+		return this.taskService.getCommentsForTask({ id, organizationId, userId });
 	}
 
 	/**
@@ -220,7 +219,7 @@ export class TaskController {
 	 *
 	 * @param id The ID of the task.
 	 * @param commentId The ID of the comment to delete.
-	 * @param dto Additional data (e.g., organization).
+	 * @param organizationId Additional data (e.g., organization).
 	 * @param userId The ID of the authenticated user.
 	 * @returns Confirmation of the comment deletion.
 	 */
@@ -231,9 +230,14 @@ export class TaskController {
 	async deleteComment(
 		@Param('id') id: string,
 		@Param('commentId') commentId: string,
-		@Body() dto: GetTaskCommentDto,
+		@Query('organizationId') organizationId: string,
 		@CurrentUser('id') userId: string
 	) {
-		await this.taskService.deleteComment({ id, commentId, dto, userId });
+		await this.taskService.deleteComment({
+			id,
+			commentId,
+			organizationId,
+			userId
+		});
 	}
 }

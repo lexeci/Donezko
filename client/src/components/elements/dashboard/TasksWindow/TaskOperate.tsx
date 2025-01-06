@@ -1,6 +1,6 @@
 import {TaskResponse} from "@/types/task.types";
 import {Dispatch, SetStateAction} from "react";
-import {ModalWindow} from "@/components/index";
+import {Comments, ModalWindow} from "@/components/index";
 import TaskCreate from "./Operate/TaskCreate";
 import TaskUpdate from "./Operate/TaskUpdate";
 import TaskCreateInfo from "./Info/TaskCreateInfo";
@@ -75,7 +75,7 @@ export default function TaskOperate({
                 );
 
             case "operate":
-                return <></>;
+                return <Comments taskId={taskId}/>;
 
             default:
                 return <p>Seems lonely there...</p>;
@@ -93,7 +93,7 @@ export default function TaskOperate({
                 <div className="task-info p-4 border border-foreground overflow-y-auto h-full">
                     {returnLeftElement()}
                 </div>
-                <div className="add-info p-4 border border-foreground overflow-y-auto  h-full">
+                <div className="add-info border border-foreground overflow-y-auto h-full">
                     {returnRightElement()}
                 </div>
             </div>

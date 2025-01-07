@@ -4,6 +4,8 @@ export {default as PageHeader} from "./PageHeader/PageHeader";
 export {default as PageLayout} from "./PageLayout/PageLayout";
 export {default as Sidebar} from "./Sidebar/Sidebar";
 
+export {default as NoConnection} from "./NoConnection/NoConnection";
+
 //Homepage Elements
 
 export {default as Banner} from "./Home/banner/Banner";
@@ -32,6 +34,7 @@ export {default as ProjectUsers} from "./Project/ProjectUsers";
 export {default as TeamElements} from "./Team/TeamElements";
 export {default as TeamUpdate} from "./Team/TeamUpdate";
 export {default as TeamUsers} from "./Team/TeamUsers";
+export {default as Settings} from "./Settings/Settings";
 
 // Comments
 export {default as Comments} from "./Comments/Comment"

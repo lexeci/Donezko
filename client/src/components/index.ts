@@ -37,6 +37,8 @@ export {
     Welcome,
     WindowContainer,
     Comments,
+    Settings,
+    NoConnection
 } from "./elements/";
 
 // UI

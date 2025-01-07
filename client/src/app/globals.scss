@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-	--background: #faf6f0;
-	--foreground: #1a120b;
-	--hover-fill: #f8ede1;
-	--inactive: #f4eae0;
-	--link: #d39d63;
+  --background: #faf6f0;
+  --foreground: #1a120b;
+  --hover-fill: #f8ede1;
+  --inactive: #f4eae0;
+  --link: #d39d63;
 }
 
 // @media (prefers-color-scheme: dark) {
@@ -18,93 +18,94 @@
 // }
 
 body {
-	color: var(--foreground);
-	background: var(--background);
-	font-size: 14px;
+  color: var(--foreground);
+  background: var(--background);
+  font-size: 14px;
 }
 
 a.underline-anim {
-	position: relative;
-	text-decoration: none;
+  position: relative;
+  text-decoration: none;
 
-	&:not(.button)::before {
-		content: "";
-		position: absolute;
-		display: block;
-		width: 100%;
-		height: 1px;
-		bottom: -2px;
-		left: 0;
-		background-color: var(--foreground);
-		transform: scaleX(0);
-		transition: transform 0.3s ease;
-	}
+  &:not(.button)::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--foreground);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
 
-	&:not(.button).dark::before {
-		background-color: var(--background);
-	}
+  &:not(.button).dark::before {
+    background-color: var(--background);
+  }
 
-	&:not(.button):hover::before {
-		transform: scaleX(1);
-	}
+  &:not(.button):hover::before {
+    transform: scaleX(1);
+  }
 }
 
 @keyframes spin {
-	to {
-		transform: rotate(360deg);
-	}
+  to {
+    transform: rotate(360deg);
+  }
 }
+
 .animate-spin {
-	animation: spin 15s linear infinite;
+  animation: spin 15s linear infinite;
 }
 
 @layer utilities {
-	.bg-radial-grid {
-		background: var(--background);
-		background-image: radial-gradient(var(--foreground) 1px, transparent 0);
-		background-size: 25px 25px;
-		background-position: -17px -17px;
-	}
+  .bg-radial-grid {
+    background: var(--background);
+    background-image: radial-gradient(var(--foreground) 1px, transparent 0);
+    background-size: 25px 25px;
+    background-position: -17px -17px;
+  }
 
-	.bg-radial-grid-small {
-		background: var(--background);
-		background-image: radial-gradient(var(--foreground) 1px, transparent 0);
-		background-size: 7px 7px;
-		background-position: -5px -5px;
-	}
+  .bg-radial-grid-small {
+    background: var(--background);
+    background-image: radial-gradient(var(--foreground) 1px, transparent 0);
+    background-size: 7px 7px;
+    background-position: -5px -5px;
+  }
 
-	.bg-radial-grid-mini {
-		background: var(--background);
-		background-image: radial-gradient(var(--foreground) 1px, transparent 0);
-		background-size: 3px 3px;
-		background-position: -5px -5px;
-		transition: all 700ms ease-in-out;
+  .bg-radial-grid-mini {
+    background: var(--background);
+    background-image: radial-gradient(var(--foreground) 1px, transparent 0);
+    background-size: 3px 3px;
+    background-position: -5px -5px;
+    transition: all 700ms ease-in-out;
 
-		&:hover {
-			background-size: 100px 100px;
-			background-position: -100000px -10000px;
-		}
-	}
+    &:hover {
+      background-size: 100px 100px;
+      background-position: -100000px -10000px;
+    }
+  }
 
-	.animate-gentle-shake {
-		animation: tilt-n-move-shaking 0.25s infinite;
+  .animate-gentle-shake {
+    animation: tilt-n-move-shaking 0.25s infinite;
 
-		@keyframes tilt-n-move-shaking {
-			0% {
-				transform: translate(0, 0) rotate(0deg);
-			}
-			25% {
-				transform: translate(5px, 5px) rotate(5deg);
-			}
-			50% {
-				transform: translate(0, 0) rotate(0eg);
-			}
-			75% {
-				transform: translate(-5px, 5px) rotate(-5deg);
-			}
-			100% {
-				transform: translate(0, 0) rotate(0deg);
-			}
-		}
-	}
+    @keyframes tilt-n-move-shaking {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      25% {
+        transform: translate(5px, 5px) rotate(5deg);
+      }
+      50% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      75% {
+        transform: translate(-5px, 5px) rotate(-5deg);
+      }
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+    }
+  }
 }

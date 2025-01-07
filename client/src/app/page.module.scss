@@ -1,127 +1,127 @@
 .main {
-	@apply flex flex-col gap-8 row-start-2 items-center justify-start min-h-screen pt-[82px];
+  @apply flex flex-col gap-8 row-start-2 items-center justify-start min-h-screen pt-[82px];
 }
 
 .page-section {
-	@apply py-8 flex flex-col justify-start items-start gap-y-4 w-full border-b-2 border-b-foreground px-8;
+  @apply py-8 flex flex-col justify-start items-start gap-y-4 w-full border-b-2 border-b-foreground px-8;
 }
 
 .section-title {
-	@apply font-bold text-lg;
+  @apply font-bold text-lg;
 }
 
 .main-title {
-	@apply font-extrabold text-2xl;
+  @apply font-extrabold text-2xl;
 }
 
 .intro-text {
-	@apply max-w-lg;
+  @apply max-w-lg;
 }
 
 .content-block {
-	@apply p-8 max-w-screen-lg border-2 border-foreground my-8;
+  @apply p-8 max-w-screen-lg border-2 border-foreground my-8;
 }
 
 .content-block-conga {
-	@apply p-8 max-w-screen-lg border-2 border-foreground my-8 w-full flex flex-col justify-center items-center gap-8;
+  @apply p-8 max-w-screen-lg border-2 border-foreground my-8 w-full flex flex-col justify-center items-center gap-8;
 
-	&__ascii-art {
-		@apply text-4xl;
-	}
+  &__ascii-art {
+    @apply text-4xl;
+  }
 
-	&__content {
-		h3 {
-			@apply text-xl font-bold mb-4 text-center;
-		}
+  &__content {
+    h3 {
+      @apply text-xl font-bold mb-4 text-center;
+    }
 
-		p {
-			@apply border border-foreground py-8 px-4 text-center;
-		}
-	}
+    p {
+      @apply border border-foreground py-8 px-4 text-center;
+    }
+  }
 }
 
 .section-header {
-	@apply text-2xl font-bold mb-4;
+  @apply text-2xl font-bold mb-4;
 }
 
 .intro-paragraph {
-	@apply mb-8;
+  @apply mb-8;
 }
 
 .content-paragraph-ul {
-	@apply mb-4;
+  @apply mb-4;
 }
 
 .content-block-ul {
-	@apply border border-foreground py-8 px-4 mb-8;
+  @apply border border-foreground py-8 px-4 mb-8;
 
-	ul {
-		@apply mb-0;
-	}
+  ul {
+    @apply mb-0;
+  }
 }
 
 .content-ul {
-	@apply list-disc pl-8 mb-8;
+  @apply list-disc pl-8 mb-8;
 }
 
 .content-paragraph {
-	@apply mb-8 border border-foreground py-8 px-4;
+  @apply mb-8 border border-foreground py-8 px-4;
 }
 
 .content-paragraph-clear {
-	@apply mb-4;
+  @apply mb-4;
 }
 
 .footer-text {
-	@apply text-sm;
+  @apply text-sm;
 }
 
 .footer-text-block {
-	@apply mt-6;
+  @apply mt-6;
 }
 
 .section-title {
-	@apply text-xl font-semibold mb-4;
+  @apply text-xl font-semibold mb-4;
 }
 
 .team-members {
-	@apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-4;
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-4;
 }
 
 .team-section {
-	@apply flex flex-col;
+  @apply flex flex-col;
 }
 
 .member-card {
-	@apply border border-foreground p-4;
+  @apply border border-foreground p-4;
 
-	h4 {
-		@apply text-lg font-bold mb-2;
-	}
+  h4 {
+    @apply text-lg font-bold mb-2;
+  }
 }
 
 // Workspace
 
 .workspace-content {
-	@apply grid grid-cols-2 gap-8 p-8 w-full h-auto;
+  @apply grid grid-cols-2 gap-8 p-8 w-full h-auto;
 }
 
 .workspace-content-grid-2 {
-	@apply grid grid-cols-2 gap-8 p-8 w-full h-auto;
+  @apply grid grid-cols-2 gap-8 p-8 w-full h-auto;
 }
 
 .workspace-content-grid-3 {
-	@apply grid grid-cols-3 gap-8 p-8 w-full h-auto;
+  @apply grid grid-cols-3 gap-8 p-8 w-full h-auto;
 }
 
 .workspace-content-col {
-	@apply flex flex-col items-start justify-center gap-y-8 p-8 w-full;
+  @apply flex flex-col items-start justify-center gap-y-8 p-8 w-full;
 }
 
 .workspace-content-row {
-	@apply flex flex-row items-center justify-between gap-y-8 p-8 w-full;
+  @apply flex flex-row items-center justify-between gap-y-8 p-8 w-full;
 }
 
 .workspace-content-center {
-	@apply flex flex-col items-center justify-center gap-y-8 p-8 w-full;
+  @apply flex flex-col items-center justify-center gap-y-8 p-8 w-full h-full;
 }

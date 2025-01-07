@@ -4,7 +4,13 @@ import {
 	Injectable,
 	NotFoundException
 } from '@nestjs/common';
-import { AccessStatus, OrgRole, Team, TeamRole } from '@prisma/client';
+import {
+	AccessStatus,
+	OrgRole,
+	ProjectRole,
+	Team,
+	TeamRole
+} from '@prisma/client';
 import {
 	CreateTeamDto,
 	DeleteTeamDto,
@@ -229,6 +235,16 @@ export class TeamService {
 		// Перевірка доступу користувача до організації
 		await this.checkAccess({ organizationId, userId });
 
+		const projectUser = await this.prisma.projectUser.findUnique({
+			where: { projectId_userId: { projectId, userId } }
+		});
+
+		if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
+			throw new ForbiddenException(
+				'User does not have access to this project.'
+			);
+		}
+
 		// Отримуємо роль користувача в організації
 		const userInOrg = await this.prisma.organizationUser.findFirst({
 			where: { userId, organizationId },
@@ -249,19 +265,26 @@ export class TeamService {
 			throw new ForbiddenException('You cannot perform such action');
 		}
 
+		// Перевірка, чи має користувач роль OWNER або ADMIN
+		const isPermitted =
+			([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(userInOrg.role) ||
+			projectUser.role === ProjectRole.MANAGER;
+
 		const regularSelect = {
 			id: true,
 			title: true,
 			description: true,
-			teamUsers: {
-				where: {
-					userId
-				},
-				select: {
-					role: true,
-					teamStatus: true
-				}
-			},
+			teamUsers: isPermitted
+				? true
+				: {
+						where: {
+							userId
+						},
+						select: {
+							role: true,
+							teamStatus: true
+						}
+					},
 			_count: {
 				select: {
 					teamUsers: true,
@@ -275,7 +298,16 @@ export class TeamService {
 				organizationId,
 				projectTeams: {
 					some: {
-						projectId
+						projectId,
+						...(!isPermitted && {
+							team: {
+								teamUsers: {
+									some: {
+										userId
+									}
+								}
+							}
+						})
 					}
 				}
 			},

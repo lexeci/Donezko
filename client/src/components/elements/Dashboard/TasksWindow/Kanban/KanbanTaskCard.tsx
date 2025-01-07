@@ -8,6 +8,12 @@ import toCapitalizeText from "@/src/utils/toCapitalizeText";
 import {CaretUp, ThumbsUp} from "@phosphor-icons/react/dist/ssr";
 import styles from "./KanbanTaskCard.module.scss";
 import TaskOperate from "@/components/elements/Dashboard/TasksWindow/TaskOperate";
+import {useOrganization} from "@/context/OrganizationContext";
+import {useFetchOrgRole} from "@/hooks/organization/useFetchOrgRole";
+import {useFetchProjectRole} from "@/hooks/project/useFetchProjectRole";
+import {useFetchTeamRole} from "@/hooks/team/useFetchTeamRole";
+import {OrgRole} from "@/types/org.types";
+import {ProjectRole} from "@/types/project.types";
 
 interface KanbanTaskCardProps {
     projectId: string;
@@ -20,6 +26,13 @@ export function KanbanTaskCard({data, updateTasks, projectId, setDisableDnD}: Ka
     const [DndDisabled, setDndDisabled] = useState<boolean>(false);
     const [showCardInfo, setShowCardInfo] = useState<boolean>(false);
     const [windowType, setWindowType] = useState<"create" | "operate" | "edit">("operate");
+
+    const {organizationId} = useOrganization();
+    const {organizationRole} = useFetchOrgRole(organizationId);
+    const {projectRole} = useFetchProjectRole(data?.projectId);
+    const {teamRole} = useFetchTeamRole(data?.teamId, organizationId);
+
+    const hasAccess = teamRole ? true : (organizationRole?.role === OrgRole.ADMIN || organizationRole?.role === OrgRole.OWNER) || projectRole === ProjectRole.MANAGER
 
     const showModalWindow = () => {
         setShowCardInfo(!showCardInfo);
@@ -48,7 +61,8 @@ export function KanbanTaskCard({data, updateTasks, projectId, setDisableDnD}: Ka
 
     return (
         <>
-            <div className={styles["task-kanban"]} onClick={() => showModalWindow()}>
+            <div className={styles["task-kanban"]}
+                 onClick={() => hasAccess && showModalWindow()}>
                 <div className={styles.topBar}>
                     <div className={styles.author}>
                         <p>
@@ -85,19 +99,21 @@ export function KanbanTaskCard({data, updateTasks, projectId, setDisableDnD}: Ka
                         </p>
                     </div>
                 </div>
-                <div className={styles.actions}>
-                    <div className={styles.comments}>
-                        <p>Complete</p>
-                        <ThumbsUp/>
+                {hasAccess &&
+                    <div className={styles.actions}>
+                        <div className={styles.comments}>
+                            <p>Complete</p>
+                            <ThumbsUp/>
+                        </div>
+                        <div className={`${styles.comments} ${styles.lastComment}`}>
+                            <p>
+                                Comments:
+                                {data._count.comments ? data._count.comments : 0}
+                            </p>
+                            <CaretUp/>
+                        </div>
                     </div>
-                    <div className={`${styles.comments} ${styles.lastComment}`}>
-                        <p>
-                            Comments:
-                            {data.comments ? data.comments.length : 0}
-                        </p>
-                        <CaretUp/>
-                    </div>
-                </div>
+                }
                 <div className={styles.bottomBar}>
                     <div className={styles.team}>
                         <p>

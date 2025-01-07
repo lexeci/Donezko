@@ -11,6 +11,8 @@ import {useFetchProjectRole} from "@/hooks/project/useFetchProjectRole";
 import {ProjectRole} from "@/types/project.types";
 import {useModifyTask} from "@/hooks/tasks/useModifyTask";
 import {useTaskRemoval} from "@/hooks/tasks/useTaskRemoval";
+import {useFetchTeamRole} from "@/hooks/team/useFetchTeamRole";
+import {TeamRole} from "@/types/team.types";
 
 interface TaskInfo {
     data?: TaskResponse;
@@ -23,6 +25,7 @@ export default function TaskInfo({data, switchType, updateTaskList, onClose}: Ta
     const {organizationId} = useOrganization();
     const {organizationRole} = useFetchOrgRole(organizationId);
     const {projectRole} = useFetchProjectRole(data?.projectId);
+    const {teamRole} = useFetchTeamRole(data?.teamId, organizationId);
 
     const hasAccess = (organizationRole?.role === OrgRole.ADMIN || organizationRole?.role === OrgRole.OWNER) || projectRole === ProjectRole.MANAGER
 
@@ -75,17 +78,30 @@ export default function TaskInfo({data, switchType, updateTaskList, onClose}: Ta
         )
     }
 
+    const isMember = teamRole?.role === TeamRole.MEMBER || teamRole?.role === TeamRole.LEADER
+
     return (data ?
             <div className="task-info flex flex-col justify-start items-start w-full gap-y-2 h-full">
                 <div
                     className="actions flex flex-row justify-between items-center w-full border-b border-foreground pb-2 cursor-pointer">
-                    <div
-                        className="flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300"
-                        onClick={() => handleCompleteTask()}
-                    >
-                        <p>{!data.isCompleted ? "Complete" : "Not complete"}</p>
-                        {!data.isCompleted ? <ThumbsUp size={16}/> : <ThumbsDown size={16}/>}
-                    </div>
+                    {hasAccess ? (
+                        <div
+                            className="flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300"
+                            onClick={() => handleCompleteTask()}
+                        >
+                            <p>{!data.isCompleted ? "Complete" : "Not complete"}</p>
+                            {!data.isCompleted ? <ThumbsUp size={16}/> : <ThumbsDown size={16}/>}
+                        </div>
+                    ) : isMember && (
+                        <div
+                            className="flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300"
+                            onClick={() => handleCompleteTask()}
+                        >
+                            <p>{!data.isCompleted ? "Complete" : "Not complete"}</p>
+                            {!data.isCompleted ? <ThumbsUp size={16}/> : <ThumbsDown size={16}/>}
+                        </div>
+                    )
+                    }
                     {hasAccess &&
                         <p className="flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300"
                            onClick={() => switchType && switchType("edit")}>Edit this</p>

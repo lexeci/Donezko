@@ -39,7 +39,7 @@ export default function Message({id, message, time, author, setComments, taskId,
         <>
             <div className={"empty-space p-2"}></div>
             <div
-                className={clsx("item mr-auto flex flex-col bg-background max-w-[45%] min-w-[20vh] w-auto p-2 border border-black/20 gap-y-2.5", profileData?.user.id === author.id && "mr-0 ml-auto")}>
+                className={clsx("item flex flex-col bg-background max-w-[45%] min-w-[20vh] w-auto p-2 border border-black/20 gap-y-2.5", profileData?.user.id === author.id ? "ml-auto" : "mr-auto")}>
                 <div
                     className="head flex justify-between items-center w-full gap-x-4 text-xs">
                     <p className="author">{author.name}</p>

@@ -36,7 +36,7 @@ export default function TaskUpdate({
     const status = Object.values(EnumTaskStatus);
 
     const {modifyTask} = useModifyTask();
-    const {register, handleSubmit, setValue, watch, reset} = useForm<TaskFormData>({
+    const {register, handleSubmit, setValue, reset} = useForm<TaskFormData>({
         mode: "onChange",
     });
 
@@ -134,7 +134,6 @@ export default function TaskUpdate({
                     label="Title:"
                     placeholder="Enter title:"
                     type="text"
-                    value={watch("title") || ""} // Попередньо вибране значення
                     {...register("title", {
                         required: "Title is required!",
                     })}
@@ -145,7 +144,6 @@ export default function TaskUpdate({
                     label="Description:"
                     placeholder="Enter description"
                     type="text"
-                    value={watch("description") || ""} // Попередньо вибране значення
                     {...register("description", {
                         maxLength: {value: 500, message: "Description is too long"}, // Валідація на довжину
                     })}
@@ -158,7 +156,6 @@ export default function TaskUpdate({
                         value: item,
                         label: item,
                     }))}
-                    value={watch("taskStatus") || ""} // Попередньо вибране значення
                     onChange={data =>
                         handleStatusSelect(data.target.value as EnumTaskStatus)
                     }
@@ -172,7 +169,6 @@ export default function TaskUpdate({
                         value: item,
                         label: item,
                     }))}
-                    value={watch("priority") || ""} // Попередньо вибране значення
                     onChange={data =>
                         handlePrioritySelect(data.target.value as EnumTaskPriority)
                     }
@@ -187,7 +183,6 @@ export default function TaskUpdate({
                             value: item.id,
                             label: item.title,
                         }))}
-                        value={watch("teamId") || ""} // Попередньо вибране значення
                         onChange={data => handleTeamSelect(data.target.value)}
                         extra="flex flex-col max-w-80 w-full"
                     />
@@ -201,7 +196,6 @@ export default function TaskUpdate({
                             value: item.user.id,
                             label: item.user.name,
                         }))}
-                        value={watch("userId") || ""} // Попередньо вибране значення
                         onChange={data => handleUserSelect(data.target.value)}
                         extra="flex flex-col max-w-80 w-full"
                     />

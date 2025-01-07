@@ -1,6 +1,6 @@
 There is an example data of users in TPlanner
 use this as handbook for fake data
-
+5VL1IXKWXDU
 -------------------------------------
 |  User 1:
 |  --- Email: volodkaspas@gmail.com
@@ -13,28 +13,28 @@ use this as handbook for fake data
 |  --- Email: igorenkapalenka@netropol.com
 |  --- Name: Igorenka Palenka
 |  --- Password: palen66228kovska@
-|  --- Role: Admin of organization Ramshanksa
+|  --- Role: Admin of organization Ramshanksa, Creator of team Cheshki, Klasiki, Creator of project Lapushanksa
 |  --- Project: Oldmaneynko
 |
 |  User 3:
 |  --- Email: pashenka2000@yahoo.com
 |  --- Name: Pashenka Oldskulshnik
 |  --- Password: pashpass@wordenka111
-|  --- Role: Usual member, Creator and leader of team Klasiki
+|  --- Role: Usual member, Manager of Lapushanksa, Member of team Klasiki 
 |  --- Project: Oldmaneynko
 |
 |  User 4:
 |  --- Email: dmitriykulbabka@yomayo.com
 |  --- Name: Dmitry Kulbabka
 |  --- Password: ptichkilubabki@124
-|  --- Role: Usual member, Member of team Klasiki
+|  --- Role: Usual member, leader of team Klasiki
 |  --- Project: Oldmaneynko
 |
 |  User 5:
 |  --- Email: stepanapetrovna@ogorod.ua
 |  --- Name: Stepana Petrovna
 |  --- Password: ogorod@228nevskopat
-|  --- Role: Usual member, Creator of team Cheshki
+|  --- Role: Usual member, leader of team Cheshki, member of Klasiki
 |  --- Project: Mustardes
 |
 |  User 6:

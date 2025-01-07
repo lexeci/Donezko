@@ -18,9 +18,6 @@ import {
  */
 @Injectable()
 export class ProjectService {
-	// Return project details
-	return;
-
 	constructor(private prisma: PrismaService) {}
 
 	/**
@@ -116,7 +113,8 @@ export class ProjectService {
 												userId
 											},
 											select: {
-												role: true
+												role: true,
+												teamStatus: true
 											}
 										},
 										_count: {

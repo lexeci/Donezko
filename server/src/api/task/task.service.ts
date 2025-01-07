@@ -1,6 +1,6 @@
 import { PrismaService } from '@/src/prisma.service';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { AccessStatus, OrgRole } from '@prisma/client';
+import { AccessStatus, OrgRole, ProjectRole } from '@prisma/client';
 import {
 	ChangeTaskAssigneeDto,
 	ChangeTaskTeamDto,
@@ -69,14 +69,18 @@ export class TaskService {
 				throw new ForbiddenException('You do not have access to this project.');
 			}
 
-			if (teamId) {
-				const teamUser = await this.prisma.teamUser.findUnique({
-					where: { userId_teamId: { teamId, userId } }
-				});
-				if (!teamUser || teamUser.teamStatus !== AccessStatus.ACTIVE) {
-					throw new ForbiddenException('You do not have access to this team.');
-				}
-			}
+			// if (teamId) {
+			// 	const teamUser = await this.prisma.teamUser.findUnique({
+			// 		where: { userId_teamId: { teamId, userId } }
+			// 	});
+			// 	if (projectUser.role !== ProjectRole.MANAGER) {
+			// 		if (!teamUser || teamUser.teamStatus !== AccessStatus.ACTIVE) {
+			// 			throw new ForbiddenException(
+			// 				'You do not have access to this team.'
+			// 			);
+			// 		}
+			// 	}
+			// }
 		}
 
 		return this.prisma.task.findMany({
@@ -104,6 +108,11 @@ export class TaskService {
 				project: {
 					select: {
 						title: true
+					}
+				},
+				_count: {
+					select: {
+						comments: true
 					}
 				}
 			}
@@ -531,8 +540,22 @@ export class TaskService {
 			const teamUser = await this.prisma.teamUser.findFirst({
 				where: { userId, teamId }
 			});
-			if (!teamUser || teamUser.teamStatus !== AccessStatus.ACTIVE) {
-				throw new ForbiddenException('You do not have access to this team.');
+			if (projectId) {
+				const projectUser = await this.prisma.projectUser.findFirst({
+					where: { userId, projectId }
+				});
+
+				if (projectUser.role !== ProjectRole.MANAGER) {
+					if (!teamUser || teamUser.teamStatus !== AccessStatus.ACTIVE) {
+						throw new ForbiddenException(
+							'You do not have access to this team.'
+						);
+					}
+				}
+			} else {
+				if (!teamUser || teamUser.teamStatus !== AccessStatus.ACTIVE) {
+					throw new ForbiddenException('You do not have access to this team.');
+				}
 			}
 		}
 	}

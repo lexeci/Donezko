@@ -32,6 +32,9 @@ export interface TaskResponse extends RootBase {
     taskStatus?: EnumTaskStatus;
     comments?: CommentResponse[]; // Коментарі до задачі
     organizationId?: string | null;
+    _count: {
+        comments: number;
+    }
 }
 
 export type TaskFormData = Partial<

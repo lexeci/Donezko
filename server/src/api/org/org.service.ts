@@ -13,42 +13,6 @@ export class OrgService {
 	constructor(private prisma: PrismaService) {}
 
 	/**
-	 * Private method to check if the user is the owner of the organization.
-	 * Throws a ForbiddenException if the user is not the owner.
-	 * @param organizationId The ID of the organization.
-	 * @param userId The ID of the user.
-	 * @returns The organization ownership record.
-	 * @throws ForbiddenException If the user is not the owner.
-	 */
-	private async getOwner(organizationId: string, userId: string) {
-		const organizationOwner = await this.prisma.organizationUser.findFirst({
-			where: { organizationId, userId, role: OrgRole.OWNER }
-		});
-		if (!organizationOwner) {
-			throw new ForbiddenException(
-				'Only the organization owner can perform this action.'
-			);
-		}
-		return organizationOwner;
-	}
-
-	/**
-	 * Private method to check if the user is the owner of the organization.
-	 * Throws a ForbiddenException if the user is not the owner.
-	 * @param organizationId The ID of the organization.
-	 * @param userId The ID of the user.
-	 * @returns The organization ownership record.
-	 * @throws ForbiddenException If the user is not the owner.
-	 */
-	private async getAdmin(organizationId: string, userId: string) {
-		const organizationAdmin = await this.prisma.organizationUser.findFirst({
-			where: { organizationId, userId, role: OrgRole.ADMIN }
-		});
-
-		return organizationAdmin;
-	}
-
-	/**
 	 * Get all active organizations the user is part of.
 	 * @param userId The ID of the user.
 	 * @returns List of active organizations and their roles.
@@ -125,6 +89,7 @@ export class OrgService {
 										title: true
 									}
 								},
+								teamUsers: true,
 								_count: {
 									select: {
 										teamUsers: true,
@@ -143,6 +108,15 @@ export class OrgService {
 								organization: {
 									select: {
 										title: true
+									}
+								},
+								teamUsers: {
+									where: {
+										userId
+									},
+									select: {
+										role: true,
+										teamStatus: true
 									}
 								},
 								_count: {
@@ -371,14 +345,12 @@ export class OrgService {
 		return this.prisma.organizationUser.findMany({
 			where: {
 				organizationId: id,
-				// Виключаємо користувачів зі статусом 'BANNED'
 				organizationStatus: { not: AccessStatus.BANNED },
-				// Виключаємо ролі OWNER та ADMIN
 				role: { notIn: [OrgRole.OWNER, OrgRole.ADMIN] },
 				...(projectId &&
 					hideProject !== undefined && {
 						user: {
-							projectUser: {
+							ProjectUser: {
 								[hideProject ? 'none' : 'some']: {
 									projectId
 								}
@@ -388,7 +360,7 @@ export class OrgService {
 				...(hideTeam && {
 					user: {
 						teamUsers: {
-							none: {} // Виключаємо всіх, хто належить до будь-якої команди
+							none: {} // Exclude users assigned to any team
 						}
 					}
 				}),
@@ -414,7 +386,7 @@ export class OrgService {
 						name: true,
 						email: true,
 						...(projectId && {
-							projectUser: {
+							ProjectUser: {
 								where: { projectId },
 								select: { projectStatus: true }
 							}
@@ -855,5 +827,41 @@ export class OrgService {
 		return this.prisma.organization.delete({
 			where: { id }
 		});
+	}
+
+	/**
+	 * Private method to check if the user is the owner of the organization.
+	 * Throws a ForbiddenException if the user is not the owner.
+	 * @param organizationId The ID of the organization.
+	 * @param userId The ID of the user.
+	 * @returns The organization ownership record.
+	 * @throws ForbiddenException If the user is not the owner.
+	 */
+	private async getOwner(organizationId: string, userId: string) {
+		const organizationOwner = await this.prisma.organizationUser.findFirst({
+			where: { organizationId, userId, role: OrgRole.OWNER }
+		});
+		if (!organizationOwner) {
+			throw new ForbiddenException(
+				'Only the organization owner can perform this action.'
+			);
+		}
+		return organizationOwner;
+	}
+
+	/**
+	 * Private method to check if the user is the owner of the organization.
+	 * Throws a ForbiddenException if the user is not the owner.
+	 * @param organizationId The ID of the organization.
+	 * @param userId The ID of the user.
+	 * @returns The organization ownership record.
+	 * @throws ForbiddenException If the user is not the owner.
+	 */
+	private async getAdmin(organizationId: string, userId: string) {
+		const organizationAdmin = await this.prisma.organizationUser.findFirst({
+			where: { organizationId, userId, role: OrgRole.ADMIN }
+		});
+
+		return organizationAdmin;
 	}
 }

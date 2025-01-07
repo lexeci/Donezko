@@ -1,10 +1,16 @@
 {
-	"scripts": {
-		"server": "npm run start:dev --prefix server",
-		"client": "npm run dev --prefix client",
-		"dev": "concurrently -n \"Server,Client\" -c \"green.inverse.bold,blue.inverse.bold\" -p \"[{name}]\" \"npm run server\" \"npm run client\""
-	},
-	"dependencies": {
-		"concurrently": "^9.0.1"
-	}
+  "scripts": {
+    "server": "npm run start:dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "server:build": "npm run build --prefix server",
+    "client:build": "npm run build --prefix client",
+    "server:start": "npm run start --prefix server",
+    "client:start": "npm run start --prefix client",
+    "dev": "concurrently -n \"Server,Client\" -c \"green.inverse.bold,blue.inverse.bold\" -p \"[{name}]\" \"npm run server\" \"npm run client\"",
+    "build": "concurrently -n \"Server,Client\" -c \"green.inverse.bold,blue.inverse.bold\" -p \"[{name}]\" \"npm run server:build\" \"npm run client:build\"",
+    "start": "concurrently -n \"Server [Production],Client [Production]\" -c \"green.inverse.bold,blue.inverse.bold\" -p \"[{name}]\" \"npm run server:start\" \"npm run client:start\""
+  },
+  "dependencies": {
+    "concurrently": "^9.0.1"
+  }
 }

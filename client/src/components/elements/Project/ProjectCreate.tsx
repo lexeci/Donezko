@@ -1,21 +1,24 @@
 "use client";
 
+import pageStyles from "@/app/page.module.scss";
 import { Button, Field, Select } from "@/components/index";
 import { useFetchOrgUsers } from "@/hooks/organization/useFetchOrgUsers";
 import { useCreateProject } from "@/hooks/project/useCreateProject";
 import { OrgUserResponse } from "@/types/org.types";
-import { Project, ProjectFormData } from "@/types/project.types";
+import { ProjectFormData } from "@/types/project.types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function ProjectCreate({
 	organizationId,
 	organizationTitle,
-	setProjects,
+	handleRefetch,
+	setOpen,
 }: {
 	organizationId?: string | null;
 	organizationTitle?: string;
-	setProjects?: Dispatch<SetStateAction<Project[]>>;
+	handleRefetch: () => void;
+	setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
 	const { organizationUserList } = useFetchOrgUsers({ organizationId });
 	const [organizationUsers, setOrganizationUsersList] =
@@ -44,26 +47,29 @@ export default function ProjectCreate({
 	useEffect(() => {
 		if (createdProject?.id) {
 			reset();
-			setProjects && setProjects(prevState => [...prevState, createdProject]);
+			setOpen(false);
+			handleRefetch();
 		}
 	}, [createdProject]);
 
 	return (
-		<div className="container bg-background w-full h-full border border-foreground p-4 py-8">
-			<div className="title text-lg font-bold">
+		<div className={pageStyles["workspace-basic-content-window"]}>
+			<div className={pageStyles["workspace-basic-content-window__title"]}>
 				<h5>Create your own project in {organizationTitle}</h5>
 			</div>
-			<div className="text-block">
+			<div className={pageStyles["workspace-basic-content-window__text-block"]}>
 				<p>Please write the title and description for your project.</p>
 			</div>
-			<div className="operate-window flex justify-center items-center h-full">
-				{organizationUsers && (
+			<div
+				className={pageStyles["workspace-basic-content-window__operate-window"]}
+			>
+				{organizationUsers && organizationUsers?.length > 0 ? (
 					<form
-						className="w-full relative flex flex-col items-center flex-wrap md:justify-between gap-y-3 px-6 py-8"
+						className={pageStyles["workspace-basic-content-window__form"]}
 						onSubmit={handleSubmit(onSubmit)}
 					>
 						<Field
-							extra="flex flex-col max-w-80 w-full"
+							extra={pageStyles["workspace-basic-content-window__form__fields"]}
 							id="title"
 							label="Title:"
 							placeholder="Enter title:"
@@ -73,7 +79,7 @@ export default function ProjectCreate({
 							})}
 						/>
 						<Field
-							extra="flex flex-col max-w-80 w-full"
+							extra={pageStyles["workspace-basic-content-window__form__fields"]}
 							id="description"
 							label="Description:"
 							placeholder="Enter description"
@@ -83,6 +89,7 @@ export default function ProjectCreate({
 							})}
 						/>
 						<Select
+							extra={pageStyles["workspace-basic-content-window__form__fields"]}
 							id="manager-select"
 							label="Select Manager:"
 							placeholder="Choose an manager"
@@ -93,15 +100,24 @@ export default function ProjectCreate({
 							{...register("projectManagerId", {
 								required: "Manager is required!",
 							})}
-							extra="flex flex-col max-w-80 w-full"
 						/>
 
-						<div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
+						<div
+							className={
+								pageStyles["workspace-basic-content-window__form__actions"]
+							}
+						>
 							<Button type="button" block>
 								Create Project
 							</Button>
 						</div>
 					</form>
+				) : (
+					<div
+						className={pageStyles["workspace-basic-content-window__text-block"]}
+					>
+						<p>You cannot create a project due lack of members</p>
+					</div>
 				)}
 			</div>
 		</div>

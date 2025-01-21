@@ -1,31 +1,41 @@
-import {projectService} from "@/src/services/project.service";
-import {ProjectRole} from "@/types/project.types";
-import {useQuery} from "@tanstack/react-query";
-import {useEffect, useState} from "react";
+import { projectService } from "@/src/services/project.service";
+import { ProjectRole } from "@/types/project.types";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
-export function useFetchProjectRole(projectId: string | undefined) {
-    const {data: projectRoleData, refetch} = useQuery<
-        ProjectRole | undefined
-    >({
-        queryKey: ["project users", projectId],
-        queryFn: () => projectService.getProjectRole(projectId as string),
-        enabled: !!projectId,
-    });
+export function useFetchProjectRole(
+	projectId: string | undefined,
+	organizationId?: string | null
+) {
+	const [projectRole, setProjectRole] = useState<ProjectRole | undefined>(
+		undefined
+	);
 
-    const [projectRole, setProjectRole] = useState<ProjectRole | undefined>(
-        projectRoleData
-    );
+	const {
+		data: projectRoleData,
+		refetch,
+		isFetching,
+		isFetched,
+	} = useQuery<ProjectRole | undefined>({
+		queryKey: ["project user role", projectId],
+		queryFn: () =>
+			projectService.getProjectRole(
+				projectId as string,
+				organizationId as string
+			),
+		enabled: !!projectId && !!organizationId,
+	});
 
-    useEffect(() => {
-        if (projectRoleData) {
-            setProjectRole(projectRoleData);
-        }
-    }, [projectRoleData]);
+	useEffect(() => {
+		if (projectRoleData) {
+			setProjectRole(projectRoleData);
+		}
+	}, [projectRoleData]);
 
-    // Функція для рефетчінгу
-    const handleRefetch = () => {
-        refetch(); // Викликає повторний запит
-    };
+	// Функція для рефетчінгу
+	const handleRefetch = () => {
+		refetch(); // Викликає повторний запит
+	};
 
-    return {projectRole, setProjectRole, handleRefetch};
+	return { projectRole, setProjectRole, handleRefetch, isFetching, isFetched };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	ActionBlock,
 	Checkbox,
 	NotSelected,
 	PageHeader,
@@ -12,7 +13,9 @@ import { useFetchProjects } from "@/hooks/project/useFetchProjects";
 import { useFetchTasks } from "@/hooks/tasks/useFetchTasks";
 import { useFetchTeams } from "@/hooks/team/useFetchTeams";
 import { useOrganization } from "@/src/context/OrganizationContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import styles from "./page.module.scss";
 
 export default function Tasks() {
 	const [selectedAvailable, setSelectedAvailable] = useState<boolean>(false);
@@ -32,10 +35,6 @@ export default function Tasks() {
 		available: selectedAvailable,
 	});
 
-	useEffect(() => {
-		if (selectedProject) handleRefetch();
-	}, [selectedAvailable, selectedProject, selectedTeam]);
-
 	return (
 		<PageLayout>
 			<PageHeader
@@ -43,44 +42,39 @@ export default function Tasks() {
 				title="Manage your tasks"
 				desc="This page is dedicated for managing tasks which are available for you."
 			/>
-			<div className="additional-blocks px-4 py-4 w-full">
-				<div className="action-block flex flex-col gap-y-0.5 w-full border-4 border-foreground">
-					<div className="title text-base font-semibold w-full border-b border-foreground px-2 py-2">
-						<h4>Available actions:</h4>
-					</div>
-					<form className="container border-t border-foreground flex flex-row justify-start items-center w-full p-2 gap-x-4">
-						{projects && (
-							<Select
-								id="project-select"
-								placeholder="Filter by Project"
-								options={projects.map(item => ({
-									value: item.id,
-									label: item.title,
-								}))}
-								onChange={data => setSelectedProject(data.target.value)}
-								extra="flex flex-col max-w-52 w-full"
-							/>
-						)}
-						{teamList && (
-							<Select
-								id="team-select"
-								placeholder="Filter by Team"
-								options={teamList.map(item => ({
-									value: item.id,
-									label: item.title,
-								}))}
-								onChange={data => setSelectedTeam(data.target.value)}
-								extra="flex flex-col max-w-52 w-full"
-							/>
-						)}
-						<Checkbox
-							id="team-select"
-							label="Assigned to you"
-							checked={selectedAvailable}
-							onChange={() => setSelectedAvailable(!selectedAvailable)}
+			<div className={styles["additional-blocks"]}>
+				<ActionBlock>
+					{projects && (
+						<Select
+							id="project-select"
+							placeholder="Filter by Project"
+							options={projects.map(item => ({
+								value: item.id,
+								label: item.title,
+							}))}
+							onChange={data => setSelectedProject(data.target.value)}
+							extra={styles.fields}
 						/>
-					</form>
-				</div>
+					)}
+					{teamList && (
+						<Select
+							id="team-select"
+							placeholder="Filter by Team"
+							options={teamList.map(item => ({
+								value: item.id,
+								label: item.title,
+							}))}
+							onChange={data => setSelectedTeam(data.target.value)}
+							extra={styles.fields}
+						/>
+					)}
+					<Checkbox
+						id="team-select"
+						label="Assigned to you"
+						checked={selectedAvailable}
+						onChange={() => setSelectedAvailable(!selectedAvailable)}
+					/>
+				</ActionBlock>
 			</div>
 			{!selectedProject ? (
 				<NotSelected element="project" />
@@ -90,6 +84,7 @@ export default function Tasks() {
 					setTaskList={setTaskList}
 					isPage
 					projectId={selectedProject}
+					handleRefetch={handleRefetch}
 				/>
 			)}
 		</PageLayout>

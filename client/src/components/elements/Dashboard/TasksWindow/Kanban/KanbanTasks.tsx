@@ -2,8 +2,8 @@
 
 import { DragDropContext } from "@hello-pangea/dnd";
 
+import { TASK_COLUMNS } from "@/constants/tasks.constants";
 import { useDragAndDropTasks } from "@/hooks/tasks/useDragAndDropTasks"; // Зміна назви хуку для унікальності
-import { TASK_COLUMNS } from "@/src/constants/tasks.constants";
 
 import { TaskResponse } from "@/types/task.types";
 import { Dispatch, SetStateAction } from "react";
@@ -14,12 +14,14 @@ export function KanbanTaskView({
 	taskList,
 	setTaskList,
 	projectId,
+	handleRefetch,
 }: {
 	taskList?: TaskResponse[];
 	setTaskList: Dispatch<SetStateAction<TaskResponse[] | undefined>>;
 	projectId: string;
+	handleRefetch: () => void;
 }) {
-	const { handleDragEnd } = useDragAndDropTasks(); // Зміна назви пропса
+	const { handleDragEnd } = useDragAndDropTasks(handleRefetch); // Зміна назви пропса
 
 	return (
 		<DragDropContext onDragEnd={handleDragEnd}>
@@ -33,6 +35,7 @@ export function KanbanTaskView({
 						items={taskList}
 						projectId={projectId}
 						updateTasks={setTaskList} // Зміна назви пропса
+						handleRefetch={handleRefetch}
 					/>
 				))}
 			</div>

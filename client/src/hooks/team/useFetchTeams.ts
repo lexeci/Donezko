@@ -1,26 +1,33 @@
-import { teamService } from "@/src/services/team.service";
-import { TeamsResponse } from "@/types/team.types";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import {teamService} from "@/src/services/team.service";
+import {TeamsResponse} from "@/types/team.types";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useEffect, useState} from "react";
 
 export function useFetchTeams(
-	organizationId: string | null,
-	projectId?: string | null
+    organizationId: string | null,
+    projectId?: string | null
 ) {
-	const { data: teamsData } = useQuery({
-		queryKey: ["teams", organizationId, projectId],
-		queryFn: () =>
-			teamService.getAllTeams(organizationId as string, projectId),
-		enabled: !!organizationId,
-	});
+    const [teamList, setTeamList] = useState<TeamsResponse[] | undefined>(
+        undefined
+    );
 
-	const [teamList, setTeamList] = useState<TeamsResponse[] | undefined>(
-		teamsData
-	);
+    const {data: teamsData, refetch, isFetching, isFetched} = useQuery({
+        queryKey: ["teams", organizationId, projectId],
+        queryFn: () =>
+            teamService.getAllTeams(organizationId as string, projectId),
+        enabled: !!organizationId,
+    });
 
-	useEffect(() => {
-		setTeamList(teamsData);
-	}, [teamsData]);
+    useEffect(() => {
+        if (teamsData) {
+            setTeamList(teamsData);
+        }
+    }, [teamsData]);
 
-	return { teamList, setTeamList };
+    // Функція для рефетчінгу
+    const handleRefetch = () => {
+        refetch(); // Викликає повторний запит
+    };
+
+    return {teamList, setTeamList, handleRefetch, isFetching, isFetched};
 }

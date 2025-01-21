@@ -1,18 +1,22 @@
-import { teamService } from "@/src/services/team.service";
-import { ManageTeamUser } from "@/types/team.types";
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import {teamService} from "@/src/services/team.service";
+import {ManageTeamUser} from "@/types/team.types";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useState} from "react";
+import {toast} from "sonner";
 
 export function useRemoveUserFromTeam() {
-	const [isUserRemoved, setIsUserRemoved] = useState<boolean>(false);
+    const queryClient = useQueryClient()
+    const [isUserRemoved, setIsUserRemoved] = useState<boolean>(false);
 
-	const { mutate: removeUser } = useMutation({
-		mutationFn: (data: ManageTeamUser) =>
-			teamService.removeUserFromTeam(data),
-		onSuccess: () => {
-			setIsUserRemoved(true);
-		},
-	});
+    const {mutate: removeUser, isPending} = useMutation({
+        mutationKey: ['Remove user from team'],
+        mutationFn: (data: ManageTeamUser) =>
+            teamService.removeUserFromTeam(data),
+        onSuccess: () => {
+            toast.success('Successfully removed user from team!');
+            setIsUserRemoved(true);
+        },
+    });
 
-	return { removeUser, isUserRemoved };
+    return {removeUser, isUserRemoved, isPending};
 }

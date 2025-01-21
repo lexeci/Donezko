@@ -1,81 +1,99 @@
 import {
-	getOrganizationFromCookies,
-	removeOrganizationFromCookies,
-	saveOrganizationToCookies,
-} from "@/utils/cookies"; // Функції для роботи з cookies
-import { usePathname, useRouter } from "next/navigation";
+    getOrganizationFromCookies,
+    removeOrganizationFromCookies,
+    saveOrganizationToCookies,
+} from "@/utils/cookies"; // Functions to interact with cookies
+import {usePathname, useRouter} from "next/navigation";
 import {
-	createContext,
-	PropsWithChildren,
-	useContext,
-	useEffect,
-	useState,
+    createContext,
+    PropsWithChildren,
+    useContext,
+    useEffect,
+    useState,
 } from "react";
-import { toast } from "sonner";
+import {toast} from "sonner";
 
-// Тип для значення контексту
+// Type for the context value
 interface OrganizationContextType {
-	organizationId: string | null;
-	saveOrganization: (orgId: string | null) => void;
+    organizationId: string | null; // The current organization ID
+    saveOrganization: (orgId: string | null) => void; // Function to save the organization ID
 }
 
-// Створюємо контекст з типом
+// Create the context with the type
 const OrganizationContext = createContext<OrganizationContextType | null>(null);
 
+/**
+ * Custom hook to use the OrganizationContext.
+ * Throws an error if the hook is used outside the OrganizationProvider.
+ *
+ * @returns {OrganizationContextType} The current organization data and the save function.
+ */
 export const useOrganization = (): OrganizationContextType => {
-	const context = useContext(OrganizationContext);
-	if (!context) {
-		const errorText =
-			"useOrganization must be used within an OrganizationProvider";
-		toast.error("Something went wrong :(");
-		console.error(errorText);
-		throw new Error(errorText);
-	}
-	return context;
+    const context = useContext(OrganizationContext);
+    if (!context) {
+        const errorText = "useOrganization must be used within an OrganizationProvider";
+        toast.error("Something went wrong :(");
+        console.error(errorText);
+        throw new Error(errorText);
+    }
+    return context;
 };
 
-export const OrganizationProvider = ({ children }: PropsWithChildren<{}>) => {
-	const [organizationId, setOrganizationId] = useState<string | null>(null);
-	const router = useRouter();
-	const pathname = usePathname();
+/**
+ * Provider component that manages the organization context.
+ * This provider will ensure that the organization ID is consistent and available across the app.
+ *
+ * @param {PropsWithChildren} children - The child components wrapped by this provider.
+ * @returns {JSX.Element} The provider component with its children.
+ */
+export const OrganizationProvider = ({children}: PropsWithChildren<{}>) => {
+    const [organizationId, setOrganizationId] = useState<string | null>(null);
+    const router = useRouter();
+    const pathname = usePathname();
 
-	useEffect(() => {
-		const savedOrganizationId = getOrganizationFromCookies();
-		const isWorkspacePath = pathname.startsWith("/workspace");
+    // Effect to load organization from cookies and handle redirection
+    useEffect(() => {
+        const savedOrganizationId = getOrganizationFromCookies();
+        const isWorkspacePath = pathname.startsWith("/workspace");
 
-		if (savedOrganizationId) {
-			setOrganizationId(savedOrganizationId);
+        if (savedOrganizationId) {
+            setOrganizationId(savedOrganizationId);
 
-			// Якщо ми у workspace, але не на сторінці вибору організації, перенаправляємо на основний workspace
-			if (isWorkspacePath && pathname === "/workspace/organizations") {
-				router.push("/workspace");
-			}
-		} else {
-			// Якщо організація не вибрана і ми у workspace
-			if (
-				isWorkspacePath &&
-				pathname !== "/workspace" &&
-				pathname !== "/workspace/organizations"
-			) {
-				router.push("/workspace");
-			}
-		}
-	}, [router, pathname]);
+            // Redirect to the main workspace if in workspace and not on the organizations page
+            if (isWorkspacePath && pathname === "/workspace/organizations") {
+                router.push("/workspace");
+            }
+        } else {
+            // Redirect to the workspace if no organization is selected and in workspace
+            if (
+                isWorkspacePath &&
+                pathname !== "/workspace" &&
+                pathname !== "/workspace/organizations"
+            ) {
+                router.push("/workspace");
+            }
+        }
+    }, [router, pathname]);
 
-	// Функція для збереження організації
-	const saveOrganization = (orgId: string | null) => {
-		if (orgId) {
-			saveOrganizationToCookies(orgId);
-			setOrganizationId(orgId);
-		} else {
-			removeOrganizationFromCookies(); // Видаляємо організацію з куків
-			setOrganizationId(null);
-		}
-	};
+    /**
+     * Saves or removes the organization from both state and cookies.
+     *
+     * @param {string | null} orgId - The organization ID to save, or null to remove it.
+     */
+    const saveOrganization = (orgId: string | null) => {
+        if (orgId) {
+            saveOrganizationToCookies(orgId); // Save the organization ID to cookies
+            setOrganizationId(orgId); // Set it in the state
+        } else {
+            removeOrganizationFromCookies(); // Remove organization from cookies
+            setOrganizationId(null); // Clear organization ID from the state
+        }
+    };
 
-	return (
-		<OrganizationContext.Provider value={{ organizationId, saveOrganization }}>
-			{children}
-		</OrganizationContext.Provider>
-	);
+    // Return the provider with the context value
+    return (
+        <OrganizationContext.Provider value={{organizationId, saveOrganization}}>
+            {children}
+        </OrganizationContext.Provider>
+    );
 };

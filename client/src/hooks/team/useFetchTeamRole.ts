@@ -1,13 +1,17 @@
 import {teamService} from "@/src/services/team.service";
 import {TeamRole} from "@/types/team.types";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
 
 export function useFetchTeamRole(
     teamId?: string | null,
     organizationId?: string | null
 ) {
-    const {data: teamData} = useQuery({
+    const [teamRole, setTeamRole] = useState<{ role: TeamRole } | undefined>(
+        undefined
+    );
+
+    const {data: teamData, refetch, isFetching, isFetched} = useQuery({
         queryKey: ["team role", teamId],
         queryFn: () =>
             teamService.getTeamRole({
@@ -17,13 +21,16 @@ export function useFetchTeamRole(
         enabled: !!teamId || !!organizationId,
     });
 
-    const [teamRole, setTeamRole] = useState<{ role: TeamRole } | undefined>(
-        teamData
-    );
-
     useEffect(() => {
-        setTeamRole(teamData);
+        if (teamData) {
+            setTeamRole(teamData);
+        }
     }, [teamData]);
 
-    return {teamRole, setTeamRole};
+    // Функція для рефетчінгу
+    const handleRefetch = () => {
+        refetch(); // Викликає повторний запит
+    };
+
+    return {teamRole, setTeamRole, handleRefetch, isFetching, isFetched};
 }

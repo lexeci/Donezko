@@ -18,26 +18,22 @@ export default function TimerRounds({
 	prevRoundHandler,
 	activeRound,
 }: TimerRounds) {
-	const isCanPrevRound = rounds
-		? rounds.some(round => round.isCompleted)
-		: false;
-	const isCanNextRound = rounds
-		? !rounds[rounds.length - 1].isCompleted
-		: false;
+	const isCanPrevRound = !!rounds && rounds.some(round => round.isCompleted);
+	const isCanNextRound = !!rounds && rounds.some(round => !round.isCompleted);
 
 	return (
 		<div className={styles.container}>
 			<Button
 				type="button"
 				disabled={!isCanPrevRound}
-				onClick={isCanPrevRound ? prevRoundHandler : undefined}
+				onClick={prevRoundHandler}
 				modal
 			>
 				<CaretLeft size={16} />
 			</Button>
 			{/* Rounds Indicator */}
 			<div className={styles["rounds-container"]}>
-				{rounds &&
+				{rounds && rounds.length > 0 ? (
 					rounds.map((round, index) => (
 						<div
 							key={index}
@@ -47,12 +43,15 @@ export default function TimerRounds({
 									round.id === activeRound?.id && !round.isCompleted,
 							})}
 						/>
-					))}
+					))
+				) : (
+					<p>No rounds available</p>
+				)}
 			</div>
 			<Button
 				type="button"
 				disabled={!isCanNextRound}
-				onClick={isCanNextRound ? nextRoundHandler : undefined}
+				onClick={nextRoundHandler}
 				modal
 			>
 				<CaretRight size={16} />

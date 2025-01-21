@@ -73,9 +73,6 @@ export function useTimerActions({
 				onSuccess: () => {
 					// Встановлюємо його активним після оновлення
 					setActiveRound(lastCompletedRound);
-
-					// Лог для дебагу
-					console.log("Active round set to:", lastCompletedRound);
 				},
 			}
 		);

@@ -1,7 +1,9 @@
 "use client";
 
+import pageStyles from "@/app/page.module.scss";
 import { Button, Field } from "@/components/index";
-import { useModifyTeam } from "@/hooks/team/useModifyTeam";
+import { useUpdateTeam } from "@/hooks/team/useUpdateTeam";
+import { useOrganization } from "@/src/context/OrganizationContext";
 import { Team, TeamFormData } from "@/types/team.types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -19,7 +21,8 @@ export default function TeamUpdate({
 	pullUpdatedData,
 	pullCloseModal,
 }: TeamUpdate) {
-	const { updateTeam, updatedTeam } = useModifyTeam();
+	const { organizationId } = useOrganization();
+	const { updateTeam, updatedTeam } = useUpdateTeam();
 
 	const { register, handleSubmit, setValue, reset } = useForm<TeamFormData>({
 		mode: "onChange",
@@ -31,7 +34,7 @@ export default function TeamUpdate({
 	}, []);
 
 	const onSubmit: SubmitHandler<TeamFormData> = data => {
-		updateTeam({ id, data });
+		organizationId && updateTeam({ id, data, organizationId });
 	};
 
 	useEffect(() => {
@@ -42,20 +45,22 @@ export default function TeamUpdate({
 	}, [updatedTeam]);
 
 	return (
-		<div className="container bg-background w-full h-full border border-foreground p-4 py-8">
-			<div className="title text-lg font-bold">
+		<div className={pageStyles["workspace-basic-content-window"]}>
+			<div className={pageStyles["workspace-basic-content-window__title"]}>
 				<h5>Update your team</h5>
 			</div>
-			<div className="text-block">
+			<div className={pageStyles["workspace-basic-content-window__text-block"]}>
 				<p>Please write the title and description for your team.</p>
 			</div>
-			<div className="operate-window flex justify-center items-center h-full">
+			<div
+				className={pageStyles["workspace-basic-content-window__operate-window"]}
+			>
 				<form
-					className="w-full relative flex flex-col items-center flex-wrap md:justify-between gap-y-3 px-6 py-8"
+					className={pageStyles["workspace-basic-content-window__form"]}
 					onSubmit={handleSubmit(onSubmit)}
 				>
 					<Field
-						extra="flex flex-col max-w-80 w-full"
+						extra={pageStyles["workspace-basic-content-window__form__fields"]}
 						id="title"
 						label="Title:"
 						placeholder="Enter title:"
@@ -65,7 +70,7 @@ export default function TeamUpdate({
 						})}
 					/>
 					<Field
-						extra="flex flex-col max-w-80 w-full"
+						extra={pageStyles["workspace-basic-content-window__form__fields"]}
 						id="description"
 						label="Description:"
 						placeholder="Enter description"
@@ -74,7 +79,11 @@ export default function TeamUpdate({
 							maxLength: { value: 500, message: "Description is too long" }, // Валідація на довжину
 						})}
 					/>
-					<div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
+					<div
+						className={
+							pageStyles["workspace-basic-content-window__form__actions"]
+						}
+					>
 						<Button type="button" block>
 							Update Team
 						</Button>

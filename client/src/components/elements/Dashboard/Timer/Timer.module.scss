@@ -1,0 +1,51 @@
+.timer {
+  @apply relative h-[50vh] w-3/6 text-center flex flex-col justify-center items-center gap-3;
+}
+
+.container {
+  @apply w-full h-full border-4 border-r-8 border-b-8 border-l-4 border-foreground gap-y-8 flex flex-col;
+}
+
+.header {
+  @apply flex flex-row justify-between items-center w-full border-b-2 border-b-foreground;
+}
+
+.title {
+  @apply pl-2;
+}
+
+.actions {
+  @apply flex flex-row;
+}
+
+.item-1 {
+  @apply p-1 border-x border-x-foreground;
+}
+
+.item-2 {
+  @apply p-1 border-r border-foreground;
+}
+
+.item-3 {
+  @apply p-1;
+}
+
+.content {
+  @apply h-full py-4 flex flex-col justify-between items-center gap-y-4;
+}
+
+.timer-counter {
+  @apply text-6xl font-bold my-auto;
+}
+
+.timer-actions {
+  @apply flex-col justify-center items-center gap-x-4 w-full px-4;
+
+  &__item {
+    @apply w-full flex flex-row justify-between items-center border border-foreground p-2;
+  }
+
+  &__title {
+    @apply text-base;
+  }
+}

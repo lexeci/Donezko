@@ -94,6 +94,10 @@
   }
 }
 
+.add-button {
+  @apply italic text-xs border-b border-foreground opacity-70;
+}
+
 @keyframes blinker {
   50% {
     opacity: 0;

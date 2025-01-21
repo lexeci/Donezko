@@ -48,6 +48,10 @@ export class TimerController {
 	 *
 	 * @route GET /user/timer/today
 	 * @auth Requires authentication.
+	 *
+	 * @example
+	 * GET /user/timer/today
+	 * // Returns today's timer session or creates a new one if none exists
 	 */
 	@Get('today')
 	@Auth() // Ensures the user is authenticated
@@ -65,6 +69,10 @@ export class TimerController {
 	 *
 	 * @route POST /user/timer
 	 * @auth Requires authentication.
+	 *
+	 * @example
+	 * POST /user/timer
+	 * // Creates a new timer session for the authenticated user
 	 */
 	@HttpCode(200)
 	@Post()
@@ -85,6 +93,10 @@ export class TimerController {
 	 * @route PUT /user/timer/round/:id
 	 * @auth Requires authentication.
 	 * @validation Ensures that the input data is valid.
+	 *
+	 * @example
+	 * PUT /user/timer/round/123
+	 * // Updates the specified round with new data
 	 */
 	@UsePipes(new ValidationPipe()) // Ensures input validation
 	@HttpCode(200)
@@ -107,6 +119,10 @@ export class TimerController {
 	 * @route PUT /user/timer/:id
 	 * @auth Requires authentication.
 	 * @validation Ensures that the input data is valid.
+	 *
+	 * @example
+	 * PUT /user/timer/456
+	 * // Updates the specified timer session with new details
 	 */
 	@UsePipes(new ValidationPipe()) // Ensures input validation
 	@HttpCode(200)
@@ -132,6 +148,10 @@ export class TimerController {
 	 *
 	 * @route DELETE /user/timer/:id
 	 * @auth Requires authentication.
+	 *
+	 * @example
+	 * DELETE /user/timer/789
+	 * // Deletes the specified timer session for the authenticated user
 	 */
 	@HttpCode(200)
 	@Delete(':id')

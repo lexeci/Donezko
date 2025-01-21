@@ -1,15 +1,29 @@
-import {Authorization, WindowContainer} from "@/components/index";
+"use client"
+
+import {Authorization, NoConnection, WindowContainer} from "@/components/index";
+import {useNetworkStatus} from "@/hooks/useNetworkStatus";
+
+import styles from "@/app/page.module.scss";
+import clsx from "clsx";
 
 export default function AuthPage() {
-    return (
-        <div className="authorization w-[110vh] mx-auto">
-            <WindowContainer
-                title={"TPlanner Authorization"}
-                subtitle={"Login.exe"}
-                fullPage
-            >
-                <Authorization/>
-            </WindowContainer>
+    const isOnline = useNetworkStatus();
+
+    return isOnline ? (
+        <div
+            className={clsx(styles.authorization, 'bg-radial-grid')}>
+            <div>
+                <WindowContainer
+                    title={"TPlanner Authorization"}
+                    subtitle={"Login.exe"}
+                    fullPage
+
+                >
+                    <Authorization/>
+                </WindowContainer>
+            </div>
         </div>
+    ) : (
+        <NoConnection/>
     );
 }

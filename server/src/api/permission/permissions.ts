@@ -1,7 +1,7 @@
 import { OrgRole } from '@prisma/client'; // Importing the OrgRole enumeration from Prisma
-import { PermissionType } from '../types/permissions.types'; // Importing the PermissionType type
+import { PermissionType } from './permissions.types'; // Importing the PermissionType type
 
-// A mapping of organization roles to their respective permissions
+// A mapping of organization roles to their respective permission
 export const RolePermissions: Record<OrgRole, PermissionType[]> = {
 	// Permissions for the OrgRole.OWNER role
 	[OrgRole.OWNER]: [

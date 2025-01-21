@@ -15,53 +15,60 @@ import { UserService } from './user.service';
 /**
  * UserController - A controller responsible for managing user profile-related operations.
  *
- * This controller exposes endpoints for getting and updating the user's profile.
- * It uses the `UserService` to handle the business logic related to the user's profile.
- * The `Auth` decorator ensures that the user is authenticated, while the `CurrentUser` decorator
- * is used to access the current user's ID from the authentication context.
+ * This controller provides endpoints to retrieve and update the profile of the authenticated user.
+ * It relies on `UserService` for the underlying business logic and uses decorators like `Auth`
+ * for authentication and `CurrentUser` to access user-specific data from the authentication context.
  *
  * @module UserController
  */
 @Controller('user/profile')
 export class UserController {
 	/**
-	 * Creates an instance of UserController.
+	 * Constructs a new instance of UserController.
 	 *
-	 * @param userService The service that handles the user-related operations.
+	 * @param userService The service responsible for user-related business logic.
 	 */
 	constructor(private readonly userService: UserService) {}
 
 	/**
-	 * Endpoint to get the profile of the currently authenticated user.
+	 * Retrieves the profile of the currently authenticated user.
 	 *
-	 * This route is protected by the `Auth` decorator to ensure the user is authenticated. It retrieves
-	 * the profile of the user based on the user's ID from the authentication context.
+	 * This endpoint is protected by the `Auth` decorator to ensure only authenticated users can access it.
+	 * It retrieves the user's profile, including details such as total tasks and completed tasks, based
+	 * on the user's ID from the authentication context.
 	 *
-	 * @param id The ID of the currently authenticated user, retrieved using the `CurrentUser` decorator.
-	 * @returns The profile of the user, including statistics like total tasks and completed tasks.
+	 * @param id The unique identifier of the authenticated user, retrieved via the `CurrentUser` decorator.
+	 * @returns A promise resolving to the user's profile data.
+	 *
+	 * @example
+	 * getProfile('userId');
+	 * // Returns the profile data of the user with the specified ID.
 	 */
 	@Get()
 	@Auth()
-	async profile(@CurrentUser('id') id: string) {
+	async getProfile(@CurrentUser('id') id: string) {
 		return this.userService.getProfile(id);
 	}
 
 	/**
-	 * Endpoint to update the profile of the currently authenticated user.
+	 * Updates the profile of the currently authenticated user.
 	 *
-	 * This route is protected by the `Auth` decorator to ensure the user is authenticated. The user can
-	 * update their profile using the provided `UserDto`, which contains the new user data.
-	 * The `ValidationPipe` ensures that the input data is valid according to the rules defined in the DTO.
+	 * This endpoint is protected by the `Auth` decorator to ensure only authenticated users can update their profiles.
+	 * It accepts a `UserDto` object containing the new profile data and uses `ValidationPipe` to validate the input.
 	 *
-	 * @param id The ID of the currently authenticated user, retrieved using the `CurrentUser` decorator.
-	 * @param dto The updated user data, including fields like name, email, and password.
-	 * @returns The updated user data after it has been saved to the database.
+	 * @param id The unique identifier of the authenticated user, retrieved via the `CurrentUser` decorator.
+	 * @param dto The data transfer object containing the updated user data, including fields like name, email, and password.
+	 * @returns A promise resolving to the updated user profile data after saving it in the database.
+	 *
+	 * @example
+	 * updateProfile('userId', { name: 'Updated Name', email: 'newemail@example.com' });
+	 * // Returns the updated profile of the user with the new data.
 	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
 	@Put()
 	@Auth()
 	async updateProfile(@CurrentUser('id') id: string, @Body() dto: UserDto) {
-		return this.userService.update(id, dto);
+		return this.userService.update({id, dto});
 	}
 }

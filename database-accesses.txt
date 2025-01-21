@@ -1,6 +1,6 @@
 There is an example data of users in TPlanner
 use this as handbook for fake data
-5VL1IXKWXDU
+
 -------------------------------------
 |  User 1:
 |  --- Email: volodkaspas@gmail.com

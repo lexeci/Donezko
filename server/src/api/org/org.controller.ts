@@ -26,16 +26,23 @@ import { OrgService } from './org.service';
 
 /**
  * Controller for managing organizations and user roles within organizations.
+ * This controller handles the creation, updating, deletion, and management of organizations and their users.
  */
 @Controller('user/organizations')
 export class OrgController {
 	constructor(private readonly orgService: OrgService) {}
 
 	/**
-	 * Get all organizations the current user is part of.
+	 * Retrieves all organizations the current user is part of.
 	 * @param userId The ID of the current user.
-	 * @param id The ID of the organization to be displayed.
-	 * @returns List of organizations.
+	 * @param organizationId The ID of the specific organization to be displayed.
+	 * @returns List of organizations the user belongs to or the specified organization.
+	 * @example
+	 * // Example of retrieving all organizations
+	 * const organizations = await orgController.getAll({ userId: 'user123' });
+	 *
+	 * // Example of retrieving a specific organization by ID
+	 * const organization = await orgController.getAll({ organizationId: 'org123', userId: 'user123' });
 	 */
 	@Get()
 	@Auth()
@@ -49,12 +56,17 @@ export class OrgController {
 	}
 
 	/**
-	 * Getting users from organization.
-	 * @param id The ID of the organization to be fetched.
-	 * @param projectId The projectId will show all users who already in this project.
-	 * @param hide The hide will ignore all users who already in this project.
-	 * @param userId The ID of the current user who is making the request.
-	 * @returns Organization users list.
+	 * Retrieves users from a specific organization.
+	 * @param id The ID of the organization to fetch users from.
+	 * @param userId The ID of the current user making the request.
+	 * @param projectId The project ID to filter users already involved in the project.
+	 * @param hideProject Flag to exclude users already part of the project.
+	 * @param teamId The team ID to filter users involved in a specific team.
+	 * @param hideTeam Flag to exclude users already part of the team.
+	 * @returns List of users in the organization, filtered by the provided parameters.
+	 * @example
+	 * // Example of retrieving users from an organization
+	 * const users = await orgController.getUsers({ id: 'org123', userId: 'user123' });
 	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
@@ -79,28 +91,34 @@ export class OrgController {
 	}
 
 	/**
-	 * Get the role of the current user in a specific organization.
-	 * @param organizationId The ID of the organization.
+	 * Retrieves the role of the current user within a specific organization.
+	 * @param id The ID of the organization.
 	 * @param userId The ID of the current user.
-	 * @returns The role of the user in the organization.
+	 * @returns The role of the current user within the specified organization.
+	 * @example
+	 * // Example of retrieving the user's role in an organization
+	 * const role = await orgController.getOrganizationRole({ id: 'org123', userId: 'user123' });
 	 */
 	@Get(':id/role')
 	@Auth()
 	async getOrganizationRole(
-		@Param('id') organizationId: string,
+		@Param('id') id: string,
 		@CurrentUser('id') userId: string
 	) {
 		return this.orgService.getOrganizationRole({
-			organizationId,
+			id,
 			userId
 		});
 	}
 
 	/**
-	 * Create a new organization.
-	 * @param dto The details of the organization to be created.
-	 * @param userId The ID of the current user who is creating the organization.
-	 * @returns Created organization details.
+	 * Creates a new organization.
+	 * @param dto Contains the details required to create the organization.
+	 * @param userId The ID of the current user creating the organization.
+	 * @returns The created organization's details.
+	 * @example
+	 * // Example of creating a new organization
+	 * const newOrganization = await orgController.create({ dto: { name: 'New Organization' }, userId: 'user123' });
 	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
@@ -111,11 +129,14 @@ export class OrgController {
 	}
 
 	/**
-	 * Update an existing organization.
+	 * Updates an existing organization.
 	 * @param id The ID of the organization to be updated.
-	 * @param dto The updated details of the organization.
-	 * @param userId The ID of the current user who is making the update.
-	 * @returns Updated organization details.
+	 * @param dto Contains the updated details of the organization.
+	 * @param userId The ID of the current user making the update.
+	 * @returns The updated organization's details.
+	 * @example
+	 * // Example of updating an existing organization
+	 * const updatedOrganization = await orgController.update({ id: 'org123', dto: { name: 'Updated Organization' }, userId: 'user123' });
 	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
@@ -130,10 +151,13 @@ export class OrgController {
 	}
 
 	/**
-	 * Join an organization using a join code.
-	 * @param dto Contains the title and join code of the organization to join.
+	 * Allows a user to join an organization using a join code.
+	 * @param dto Contains the title and join code of the organization.
 	 * @param userId The ID of the current user.
-	 * @returns Success message or the joined organization details.
+	 * @returns A success message or the joined organization details.
+	 * @example
+	 * // Example of joining an organization
+	 * const joinedOrganization = await orgController.join({ dto: { joinCode: 'ABC123' }, userId: 'user123' });
 	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
@@ -144,12 +168,15 @@ export class OrgController {
 	}
 
 	/**
-	 * Update the role of a user in the organization.
+	 * Updates the role of a user within the organization.
 	 * @param id The ID of the organization.
 	 * @param dto Contains the user ID and the new role to assign.
 	 * @param userId The ID of the current user making the role change.
-	 * @throws ForbiddenException if the role is not allowed.
-	 * @returns Updated role details.
+	 * @throws ForbiddenException If the role is not allowed to be assigned.
+	 * @returns The updated role details.
+	 * @example
+	 * // Example of updating a user's role
+	 * const updatedRole = await orgController.updateRole({ id: 'org123', dto: { userId: 'user456', role: 'ADMIN' }, userId: 'user123' });
 	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
@@ -160,14 +187,12 @@ export class OrgController {
 		@Body() dto: ManageOrgUserDto,
 		@CurrentUser('id') userId: string
 	) {
-		// Allowed roles for the organization
 		const allowedRoles: OrgRole[] = [
 			OrgRole.ADMIN,
 			OrgRole.VIEWER,
 			OrgRole.MEMBER
 		];
 
-		// If the requested role is not allowed, throw an exception
 		if (!allowedRoles.includes(dto.role)) {
 			throw new ForbiddenException(
 				`Role ${dto.role} is not allowed to be assigned.`
@@ -178,12 +203,15 @@ export class OrgController {
 	}
 
 	/**
-	 * Update the status of a user within the organization.
+	 * Updates the status of a user within the organization.
 	 * @param id The ID of the organization.
 	 * @param dto Contains the user ID and the new status to assign.
 	 * @param userId The ID of the current user making the status change.
-	 * @throws ForbiddenException if the status is not allowed.
-	 * @returns Updated status details.
+	 * @throws ForbiddenException If the status is not allowed to be assigned.
+	 * @returns The updated status details.
+	 * @example
+	 * // Example of updating a user's status
+	 * const updatedStatus = await orgController.updateStatus({ id: 'org123', dto: { userId: 'user456', organizationStatus: 'ACTIVE' }, userId: 'user123' });
 	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
@@ -194,13 +222,11 @@ export class OrgController {
 		@Body() dto: ManageOrgUserDto,
 		@CurrentUser('id') userId: string
 	) {
-		// Allowed statuses for the organization
 		const allowedStatus: AccessStatus[] = [
 			AccessStatus.ACTIVE,
 			AccessStatus.BANNED
 		];
 
-		// If the requested status is not allowed, throw an exception
 		if (!allowedStatus.includes(dto.organizationStatus)) {
 			throw new ForbiddenException(
 				`Status ${dto.organizationStatus} is not allowed to be assigned.`
@@ -211,11 +237,14 @@ export class OrgController {
 	}
 
 	/**
-	 * Transfer the ownership of the organization to another user.
+	 * Transfers the ownership of the organization to another user.
 	 * @param id The ID of the organization.
 	 * @param dto Contains the user ID of the new owner.
 	 * @param userId The ID of the current user transferring ownership.
-	 * @returns Updated organization owner details.
+	 * @returns The updated organization owner details.
+	 * @example
+	 * // Example of transferring ownership
+	 * const updatedOwner = await orgController.updateOwner({ id: 'org123', dto: { userId: 'user789' }, userId: 'user123' });
 	 */
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
@@ -230,10 +259,13 @@ export class OrgController {
 	}
 
 	/**
-	 * Exit an organization.
+	 * Allows a user to exit an organization.
 	 * @param id The ID of the organization the user is exiting.
 	 * @param userId The ID of the current user exiting the organization.
-	 * @returns Success message or the updated organization details.
+	 * @returns A success message or the updated organization details.
+	 * @example
+	 * // Example of exiting an organization
+	 * const result = await orgController.exit({ id: 'org123', userId: 'user123' });
 	 */
 	@HttpCode(200)
 	@Delete(':id/exit')
@@ -243,10 +275,13 @@ export class OrgController {
 	}
 
 	/**
-	 * Delete an organization.
+	 * Deletes an organization.
 	 * @param id The ID of the organization to be deleted.
 	 * @param userId The ID of the current user deleting the organization.
-	 * @returns Success message or the deleted organization details.
+	 * @returns A success message or the deleted organization details.
+	 * @example
+	 * // Example of deleting an organization
+	 * const result = await orgController.delete({ id: 'org123', userId: 'user123' });
 	 */
 	@HttpCode(200)
 	@Delete(':id')

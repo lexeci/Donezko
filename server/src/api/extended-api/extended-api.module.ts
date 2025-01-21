@@ -1,15 +1,15 @@
 import { HttpModule } from '@nestjs/axios'; // Importing HttpModule to make HTTP requests
 import { Module } from '@nestjs/common'; // Importing the Module decorator from NestJS
 import { ConfigModule } from '@nestjs/config'; // Importing ConfigModule to manage environment configurations
-import { extendedApiController } from './extended-api.controller'; // Importing the extendedApiController to handle HTTP requests
-import { extendedApiService } from './extended-api.service'; // Importing the extendedApiService to handle business logic
+import { ExtendedApiController } from './extended-api.controller'; // Importing the extendedApiController to handle HTTP requests
+import { ExtendedApiService } from './extended-api.service'; // Importing the extendedApiService to handle business logic
 
 /**
- * extendedApiModule - A module for interacting with external APIs (weather and advice services).
+ * ExtendedApiModule - A module for interacting with external APIs (weather and advice services).
  *
  * This module includes:
- * - extendedApiController: A controller responsible for handling HTTP requests related to external APIs.
- * - extendedApiService: A service that contains the business logic for interacting with external APIs such as weather and advice.
+ * - ExtendedApiController: A controller responsible for handling HTTP requests related to external APIs.
+ * - ExtendedApiService: A service that contains the business logic for interacting with external APIs such as weather and advice.
  * - HttpModule: A NestJS module for making HTTP requests.
  * - ConfigModule: A NestJS module for accessing configuration values like API keys.
  *
@@ -23,7 +23,7 @@ import { extendedApiService } from './extended-api.service'; // Importing the ex
 	 *
 	 * @property {Array} controllers - List of controller classes that handle HTTP requests.
 	 */
-	controllers: [extendedApiController],
+	controllers: [ExtendedApiController],
 
 	/**
 	 * The providers array defines the services that handle business logic within this module.
@@ -31,7 +31,7 @@ import { extendedApiService } from './extended-api.service'; // Importing the ex
 	 *
 	 * @property {Array} providers - List of services used in this module.
 	 */
-	providers: [extendedApiService],
+	providers: [ExtendedApiService],
 
 	/**
 	 * The exports array specifies which services should be made available for use in other modules.
@@ -39,7 +39,7 @@ import { extendedApiService } from './extended-api.service'; // Importing the ex
 	 *
 	 * @property {Array} exports - List of services that are made available to other modules.
 	 */
-	exports: [extendedApiService],
+	exports: [ExtendedApiService],
 
 	/**
 	 * The imports array defines which external modules are required by this module.
@@ -49,4 +49,4 @@ import { extendedApiService } from './extended-api.service'; // Importing the ex
 	 */
 	imports: [HttpModule, ConfigModule]
 })
-export class extendedApiModule {}
+export class ExtendedApiModule {}

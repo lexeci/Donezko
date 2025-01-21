@@ -1,14 +1,14 @@
 import { Controller, Get, HttpCode, Query } from '@nestjs/common'; // Importing necessary decorators and classes from NestJS
-import { extendedApiService } from './extended-api.service'; // Importing the service for the extended API functionality
+import { ExtendedApiService } from './extended-api.service'; // Importing the service for the extended API functionality
 
 /**
  * The controller for handling requests related to extended API operations.
  * This controller defines endpoints for fetching weather information and advice.
  */
 @Controller('extended-api')
-export class extendedApiController {
+export class ExtendedApiController {
 	// Injecting the extendedApiService into the controller to handle business logic
-	constructor(private readonly extendedApiService: extendedApiService) {}
+	constructor(private readonly extendedApiService: ExtendedApiService) {}
 
 	/**
 	 * Endpoint to get weather information based on the user's city.
@@ -23,9 +23,9 @@ export class extendedApiController {
 	 */
 	@HttpCode(200) // Setting HTTP status code to 200 for successful responses
 	@Get('weather') // HTTP GET request for the 'weather' route
-	async getByCity(@Query('city') userCityAddress: string) {
+	async weather(@Query('city') userCityAddress: string) {
 		// Calling the service method to get weather data by the provided city
-		return await this.extendedApiService.getByCity(userCityAddress);
+		return await this.extendedApiService.getWeather(userCityAddress);
 	}
 
 	/**
@@ -40,7 +40,7 @@ export class extendedApiController {
 	 */
 	@HttpCode(200) // Setting HTTP status code to 200 for successful responses
 	@Get('advice') // HTTP GET request for the 'advice' route
-	async getAdvice() {
+	async advice() {
 		// Calling the service method to get advice
 		return await this.extendedApiService.getAdvice();
 	}
@@ -48,16 +48,17 @@ export class extendedApiController {
 	/**
 	 * Endpoint to fetch advice from the external Elon Musk news service.
 	 * This endpoint doesn't require any query parameters and simply fetches news.
+	 * Returns random news about Elon Musk from the elonmu.sh service
 	 *
 	 * @returns The fetched Elon Musk news.
 	 *
 	 * @example
 	 * GET /extended-api/elonnews
-	 * // Returns a random news about Elon Musk from the elonmu.sh service
+	 * // Returns random news about Elon Musk from the elonmu.sh service
 	 */
 	@HttpCode(200) // Setting HTTP status code to 200 for successful responses
 	@Get('elonnews') // HTTP GET request for the 'elonnews' route
-	async getElonNews() {
+	async elonNews() {
 		// Calling the service method to get news
 		return await this.extendedApiService.getElonNews();
 	}

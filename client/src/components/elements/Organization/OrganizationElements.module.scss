@@ -1,0 +1,11 @@
+.title {
+  @apply text-base;
+}
+
+.modal-switcher {
+  @apply flex flex-row justify-between items-center w-full border border-foreground bg-background p-4 ml-auto;
+
+  .title {
+    @apply text-lg font-bold;
+  }
+}

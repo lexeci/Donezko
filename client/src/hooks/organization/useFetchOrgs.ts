@@ -1,21 +1,28 @@
-import { orgService } from "@/src/services/org.service";
-import { OrgResponse } from "@/types/org.types";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import {orgService} from "@/src/services/org.service";
+import {OrgResponse} from "@/types/org.types";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useEffect, useState} from "react";
 
 export function useFetchOrgs() {
-	const { data: orgData } = useQuery({
-		queryKey: ["organizations"],
-		queryFn: () => orgService.getOrganizations(),
-	});
+    const [organizationList, setOrganizationList] = useState<
+        OrgResponse[] | undefined
+    >(undefined);
 
-	const [organizationList, setOrganizationList] = useState<
-		OrgResponse[] | undefined
-	>(orgData);
+    const {data: orgData, refetch, isFetching, isFetched} = useQuery({
+        queryKey: ["organizations"],
+        queryFn: () => orgService.getOrganizations(),
+    });
 
-	useEffect(() => {
-		setOrganizationList(orgData);
-	}, [orgData]);
+    useEffect(() => {
+        if (orgData) {
+            setOrganizationList(orgData);
+        }
+    }, [orgData]);
 
-	return { organizationList, setOrganizationList };
+    // Функція для рефетчінгу
+    const handleRefetch = () => {
+        refetch(); // Викликає повторний запит
+    };
+
+    return {organizationList, setOrganizationList, handleRefetch, isFetching, isFetched};
 }

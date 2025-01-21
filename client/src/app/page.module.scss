@@ -22,6 +22,10 @@
   @apply p-8 max-w-screen-lg border-2 border-foreground my-8;
 }
 
+.content-base {
+  @apply max-h-[calc(100vh-82px)] h-[calc(100vh-82px)] w-[calc(100%-20rem)] overflow-auto;
+}
+
 .content-block-conga {
   @apply p-8 max-w-screen-lg border-2 border-foreground my-8 w-full flex flex-col justify-center items-center gap-8;
 
@@ -102,6 +106,102 @@
 
 // Workspace
 
+.workspace-not-loaded-coin {
+  @apply h-full flex justify-center items-center;
+
+  & > * {
+    @apply m-auto animate-spin
+  }
+}
+
+.workspace-basic-content-window {
+  @apply bg-background w-full h-full border border-foreground p-4 py-8;
+
+  &__title {
+    @apply text-lg font-bold;
+  }
+
+  &__text-block {
+    @apply text-base
+  }
+
+  &__operate-window {
+    @apply flex justify-center items-center h-full;
+  }
+
+  &__form {
+    @apply w-full relative flex flex-col items-center flex-wrap md:justify-between gap-y-3 px-6 py-8;
+
+    &__container {
+      @apply flex flex-row justify-center items-end gap-x-2 max-w-80;
+    }
+
+    &__join {
+      @apply flex flex-col w-full;
+    }
+
+    &__generate {
+      @apply w-28 text-xs;
+    }
+
+    &__fields {
+      @apply flex flex-col max-w-80 w-full;
+    }
+
+    &__actions {
+      @apply flex items-center mt-4 gap-3 justify-center max-w-80 w-full;
+    }
+  }
+}
+
+.workspace-user-list {
+  @apply container flex flex-col w-full h-full bg-background border border-foreground p-4;
+
+  &__header {
+    @apply flex flex-row justify-between items-center w-full;
+
+    &__buttom {
+      @apply w-48;
+    }
+  }
+
+  &__title {
+    @apply text-inherit
+  }
+
+  &__not-found {
+    @apply flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground bg-hoverFill;
+  }
+
+  &__users {
+    @apply flex flex-col w-full h-full overflow-auto pt-4 gap-y-4;
+
+    &__item {
+      @apply flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground;
+
+      &__ico {
+        @apply border border-foreground p-0.5;
+      }
+
+      &__about {
+        @apply flex flex-col justify-start items-start
+      }
+
+      &__name, &__email, &__status, &__role, &__tasks, &__participants, &__desc {
+        @apply text-inherit
+      }
+
+      &__actions {
+        @apply flex flex-col gap-y-2 ml-auto;
+      }
+    }
+  }
+}
+
+.workspace-base {
+  @apply relative overflow-hidden max-h-[calc(100vh-82px)] w-full flex flex-row justify-between items-start;
+}
+
 .workspace-content {
   @apply grid grid-cols-2 gap-8 p-8 w-full h-auto;
 }
@@ -124,4 +224,84 @@
 
 .workspace-content-center {
   @apply flex flex-col items-center justify-center gap-y-8 p-8 w-full h-full;
+}
+
+.workspace-not-found {
+  @apply w-full h-fit bg-background p-8;
+
+  h5 {
+    @apply font-bold text-base;
+  }
+}
+
+.workspace-modal-container {
+  @apply bg-background flex flex-col justify-center items-center p-4 gap-y-8 w-auto h-auto;
+
+  &__desc {
+    @apply max-w-80 flex flex-col justify-center items-center text-center gap-y-2;
+
+    h1 {
+      @apply font-bold text-lg;
+    }
+  }
+
+  &__btn-container {
+    @apply w-full h-full flex justify-center items-center;
+  }
+
+  &__ico {
+    @apply mr-4;
+  }
+}
+
+.workspace-basic-counter {
+  @apply w-full flex flex-row justify-between items-center;
+}
+
+.workspace-basic-content {
+  @apply flex flex-col justify-start items-start w-full gap-y-4
+}
+
+.workspace-not-found-block {
+  @apply h-full flex flex-col justify-center items-center gap-y-4 max-w-[40rem] mx-auto text-center;
+
+  & > *:not(div) {
+    @apply text-foreground animate-spin;
+  }
+
+  &__title {
+    @apply text-xl font-bold;
+
+    span {
+      @apply capitalize;
+    }
+  }
+
+  &__text-block {
+    @apply text-center;
+
+    span {
+      @apply lowercase;
+    }
+  }
+}
+
+.workspace-actions {
+  @apply flex flex-row items-center w-full gap-x-4;
+}
+
+// Authorization
+
+.authorization {
+  @apply w-full h-[calc(100vh-82px)] mx-auto flex flex-row justify-center items-center;
+
+  & > div {
+    @apply w-[110vh]
+  }
+}
+
+// fields
+
+.fields-default {
+  @apply flex flex-col max-w-80 w-full;
 }

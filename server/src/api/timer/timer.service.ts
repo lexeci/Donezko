@@ -8,6 +8,8 @@ import { TimerRoundDto, TimerSessionDto } from './dto/timer.dto';
  * This service provides methods to create, update, delete, and fetch timer sessions and rounds.
  * It ensures that the user's session is properly managed and includes the ability to work with multiple rounds within a session.
  * It interfaces with the Prisma ORM to persist data in the database.
+ *
+ * @service TimerService
  */
 @Injectable()
 export class TimerService {
@@ -21,6 +23,10 @@ export class TimerService {
 	 *
 	 * @param {string} userId - The ID of the user for whom the session is fetched.
 	 * @returns {Promise<TimerSessionDto | null>} - The user's timer session for today, or null if not found.
+	 *
+	 * @example
+	 * const session = await timerService.getTodaySession('userId');
+	 * // Returns the user's timer session for today or null if not found
 	 */
 	async getTodaySession(userId: string) {
 		const today = new Date().toISOString().split('T')[0];
@@ -51,6 +57,10 @@ export class TimerService {
 	 * @param {string} userId - The ID of the user for whom the session is created.
 	 * @returns {Promise<TimerSessionDto>} - The created timer session.
 	 * @throws {NotFoundException} - Throws an exception if the user is not found in the database.
+	 *
+	 * @example
+	 * const session = await timerService.create('userId');
+	 * // Creates a new timer session for the user
 	 */
 	async create(userId: string) {
 		const todaySession = await this.getTodaySession(userId);
@@ -99,6 +109,10 @@ export class TimerService {
 	 * @param {string} timerId - The ID of the timer session to be updated.
 	 * @param {string} userId - The ID of the user associated with the timer session.
 	 * @returns {Promise<TimerSessionDto>} - The updated timer session.
+	 *
+	 * @example
+	 * const updatedSession = await timerService.updateSession(dto, 'timerId', 'userId');
+	 * // Updates the timer session with the given data
 	 */
 	async updateSession(
 		dto: Partial<TimerSessionDto>,
@@ -123,6 +137,10 @@ export class TimerService {
 	 * @param {Partial<TimerRoundDto>} dto - The data to update the round with.
 	 * @param {string} roundId - The ID of the round to be updated.
 	 * @returns {Promise<TimerRoundDto>} - The updated round.
+	 *
+	 * @example
+	 * const updatedRound = await timerService.updateRound(dto, 'roundId');
+	 * // Updates the specified round with the given data
 	 */
 	async updateRound(dto: Partial<TimerRoundDto>, roundId: string) {
 		return this.prisma.timerRound.update({
@@ -142,6 +160,10 @@ export class TimerService {
 	 * @param {string} sessionId - The ID of the timer session to be deleted.
 	 * @param {string} userId - The ID of the user associated with the session.
 	 * @returns {Promise<TimerSessionDto>} - The deleted timer session.
+	 *
+	 * @example
+	 * const deletedSession = await timerService.deleteSession('sessionId', 'userId');
+	 * // Deletes the timer session for the specified user
 	 */
 	async deleteSession(sessionId: string, userId: string) {
 		return this.prisma.timerSession.delete({

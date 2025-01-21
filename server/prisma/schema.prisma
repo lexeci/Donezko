@@ -14,19 +14,19 @@ model User {
   email     String   @unique
   name      String
   password  String
+  city      String
 
   workInterval   Int? @default(50) @map("work_interval")
   breakInterval  Int? @default(10) @map("break_interval")
   intervalsCount Int? @default(7) @map("intervals_count")
 
   organizationUsers OrganizationUser[]
-  timeBlocks        TimeBlock[]
   timerSessions     TimerSession[]
   teamUsers         TeamUser[]
   comments          Comment[]
-  ChatParticipant   ChatParticipant[]
-  Message           Message[]
-  ProjectUser       ProjectUser[]
+  chatParticipant   ChatParticipant[]
+  message           Message[]
+  projectUser       ProjectUser[]
   tasksAsAssignee   Task[]             @relation("TaskAssignee") // Виконавець задачі
   tasksAsAuthor     Task[]             @relation("TaskAuthor") // Автор задачі
 
@@ -85,7 +85,7 @@ model Project {
   tasks        Task[]
   projectTeams ProjectTeam[] // зв’язок з командами
   projectUsers ProjectUser[] // Доданий зв'язок з ProjectUser
-  Team         Team[]
+  team         Team[]
 
   @@map("project")
 }
@@ -144,7 +144,7 @@ model Team {
   projectTeams ProjectTeam[] // Багато-до-багатьох зв’язок із проєктами через ProjectTeam
 
   tasks     Task[] // Завдання, які виконує команда
-  Project   Project? @relation(fields: [projectId], references: [id])
+  project   Project? @relation(fields: [projectId], references: [id])
   projectId String?
 
   @@map("team")
@@ -231,22 +231,6 @@ model Comment {
   task   Task   @relation(fields: [taskId], references: [id])
 
   @@map("comment")
-}
-
-model TimeBlock {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt() @map("updated_at")
-
-  title    String
-  color    String?
-  duration Int
-  order    Int     @default(1)
-
-  userId String? @map("user_id")
-  user   User?   @relation(fields: [userId], references: [id])
-
-  @@map("time_block")
 }
 
 model TimerSession {

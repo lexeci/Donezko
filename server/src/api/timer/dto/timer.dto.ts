@@ -16,6 +16,10 @@ export class TimerSessionDto {
 	 *
 	 * @type {boolean}
 	 * @optional
+	 *
+	 * @example
+	 * { "isCompleted": true }
+	 * // Represents a completed session
 	 */
 	@IsOptional()
 	@IsBoolean()
@@ -38,6 +42,10 @@ export class TimerRoundDto {
 	 *
 	 * @type {number}
 	 * @required
+	 *
+	 * @example
+	 * { "totalSeconds": 120 }
+	 * // Represents 120 seconds (2 minutes) elapsed during the round
 	 */
 	@IsNumber()
 	totalSeconds: number;
@@ -49,6 +57,10 @@ export class TimerRoundDto {
 	 *
 	 * @type {boolean}
 	 * @optional
+	 *
+	 * @example
+	 * { "isCompleted": false }
+	 * // Represents an incomplete round
 	 */
 	@IsOptional()
 	@IsBoolean()

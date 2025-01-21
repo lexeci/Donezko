@@ -1,4 +1,5 @@
 import {forwardRef} from "react";
+import styles from "@/components/ui/Field/Field.module.scss";
 
 interface InputFieldProps {
     id: string;
@@ -50,9 +51,9 @@ const Field = forwardRef<HTMLInputElement, InputFieldProps>(
         };
 
         return (
-            <div className={`${extra}`}>
+            <div className={extra}>
                 {label &&
-                    <label htmlFor={id} className={`text-sm text-foreground font-mono`}>
+                    <label htmlFor={id} className={styles.label}>
                         {label}
                     </label>
                 }
@@ -62,7 +63,7 @@ const Field = forwardRef<HTMLInputElement, InputFieldProps>(
                     type={type}
                     id={id}
                     placeholder={placeholder}
-                    className={`w-full border border-foreground border-b-2 border-r-4 border-t-2 px-4 py-2 text-sm transition-all ease-in-out duration-200 outline-none placeholder:text-grey-300 placeholder:font-mono placeholder:font-normal focus:opacity-100 dark:text-background ${
+                    className={`${styles.field} ${
                         disabled
                             ? "border-gray-300"
                             : state === "error"

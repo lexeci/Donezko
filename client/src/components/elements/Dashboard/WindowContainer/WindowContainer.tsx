@@ -12,14 +12,18 @@ type WindowContainerProps = {
     onClose?: () => void;
 };
 
-export default function WindowContainer({
-                                            title,
-                                            subtitle,
-                                            children,
-                                            fullPage = false,
-                                            autoContent = false,
-                                            onClose,
-                                        }: PropsWithChildren<WindowContainerProps>) {
+export default function WindowContainer(
+    {
+        title,
+        subtitle,
+        children,
+        fullPage = false,
+        autoContent = false,
+        onClose,
+    }: PropsWithChildren<WindowContainerProps>) {
+    const currentYear = new Date().getFullYear();
+    const credentials = `© TPlanner ${currentYear}. All Rights Reserved by Andriy Neaijko.`
+
     return (
         <div
             className={clsx(
@@ -42,7 +46,7 @@ export default function WindowContainer({
                         <Square size={16}/>
                     </div>
                     <div
-                        className={clsx(styles.item, onClose && "cursor-pointer hover:bg-background")}
+                        className={clsx(styles.item, onClose && styles.closure)}
                         onClick={onClose}
                     >
                         <X size={16}/>
@@ -55,8 +59,8 @@ export default function WindowContainer({
                 {children}
             </div>
             <div className={styles.footer}>
-                <h5>© TPlanner 2024. All Rights Reserved by Andriy Neaijko.</h5>
-                <p>{"¯\\_(ツ)_/¯"}</p>
+                <h5>{credentials}</h5>
+                <p>{"\t(⊙＿⊙')"}</p>
             </div>
         </div>
     );

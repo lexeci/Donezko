@@ -1,47 +1,51 @@
-import {useQuery} from "@tanstack/react-query";
-import {useEffect, useState} from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
-import {TaskResponse} from "@/types/task.types";
+import { TaskResponse } from "@/types/task.types";
 
-import {taskService} from "@/src/services/task.service";
+import { taskService } from "@/src/services/task.service";
 
 export function useFetchTasks({
-                                  organizationId,
-                                  projectId,
-                                  teamId,
-                                  available = false,
-                              }: {
-    organizationId?: string | null;
-    projectId?: string | null;
-    teamId?: string | null;
-    available?: boolean;
+	organizationId,
+	projectId,
+	teamId,
+	available = false,
+}: {
+	organizationId?: string | null;
+	projectId?: string | null;
+	teamId?: string | null;
+	available?: boolean;
 }) {
-    const {data: tasksData, refetch} = useQuery({
-        queryKey: ["tasks", projectId, teamId, available],
-        queryFn: () => {
-            // Перевірка параметрів перед виконанням функції
-            return taskService.getTasks({
-                organizationId,
-                projectId: projectId,
-                teamId: teamId,
-                available: available,
-            });
-        },
-        enabled: !!organizationId && !!projectId, // Запит виконується лише якщо projectId визначений
-        refetchInterval: 3000, // Оновлення кожні 3 секунд
-    });
+	const [taskList, setTaskList] = useState<TaskResponse[] | undefined>(
+		undefined
+	);
 
-    const [taskList, setTaskList] = useState<TaskResponse[] | undefined>(
-        tasksData
-    );
+	const {
+		data: tasksData,
+		refetch,
+		isFetching,
+		isFetched,
+	} = useQuery({
+		queryKey: ["tasks", projectId, teamId, available],
+		queryFn: () => {
+			// Перевірка параметрів перед виконанням функції
+			return taskService.getTasks({
+				organizationId,
+				projectId: projectId,
+				teamId: teamId,
+				available: available,
+			});
+		},
+		enabled: !!organizationId && !!projectId, // Запит виконується лише якщо projectId визначений
+	});
 
-    useEffect(() => {
-        setTaskList(tasksData); // Оновлюємо стан, коли tasksData змінюється
-    }, [tasksData]);
+	useEffect(() => {
+		setTaskList(tasksData); // Оновлюємо стан, коли tasksData змінюється
+	}, [tasksData]);
 
-    const handleRefetch = () => {
-        refetch(); // Виклик повторного запиту
-    };
+	const handleRefetch = () => {
+		refetch(); // Виклик повторного запиту
+	};
 
-    return {taskList, setTaskList, handleRefetch};
+	return { taskList, setTaskList, handleRefetch, isFetching, isFetched };
 }

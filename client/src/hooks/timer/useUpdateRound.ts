@@ -1,19 +1,24 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { TypeTimerRoundState } from '@/types/timer.types'
-import { timerService } from '@/services/timer.service'
+import { timerService } from "@/services/timer.service";
+import { TypeTimerRoundState } from "@/types/timer.types";
+import { useState } from "react";
 
 export function useUpdateRound() {
-	const queryClient = useQueryClient()
+	const [updatedRound, setUpdatedRound] = useState<boolean | undefined>(
+		undefined
+	);
+	const queryClient = useQueryClient();
 
 	const { mutate: updateRound, isPending: isUpdateRoundPending } = useMutation({
-		mutationKey: ['update round'],
+		mutationKey: ["update round"],
 		mutationFn: ({ id, data }: { id: string; data: TypeTimerRoundState }) =>
 			timerService.updateRound(id, data),
-		onSuccess() {
-			queryClient.invalidateQueries({ queryKey: ['get today session'] })
-		}
-	})
+		onSuccess(data) {
+			queryClient.invalidateQueries({ queryKey: ["get today session"] });
+			setUpdatedRound(data);
+		},
+	});
 
-	return { updateRound, isUpdateRoundPending }
+	return { updateRound, updatedRound, isUpdateRoundPending };
 }

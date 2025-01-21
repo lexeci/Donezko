@@ -1,0 +1,23 @@
+.not-found {
+  @apply w-full h-full bg-background p-8;
+
+  h5 {
+    @apply font-bold text-base;
+  }
+}
+
+.window-element {
+  @apply h-full w-full max-w-full !p-0 !justify-start;
+}
+
+.window-element-team {
+  @apply py-2 px-4 bg-background border border-foreground;
+}
+
+.team-operate {
+  @apply bg-background w-full h-full border border-foreground p-4 py-4 flex flex-col justify-start items-center gap-y-4;
+}
+
+.tabs-container {
+  @apply w-full border border-foreground p-4 overflow-y-auto;
+}

@@ -20,20 +20,24 @@ import { startOfDay, subDays } from 'date-fns';
 @Injectable()
 export class UserService {
 	/**
-	 * @constructor
+	 * Constructs an instance of UserService.
+	 *
 	 * @param {PrismaService} prisma - The PrismaService instance for interacting with the database.
 	 */
 	constructor(private prisma: PrismaService) {}
 
 	/**
-	 * Get a user by their unique ID.
+	 * Retrieve a user by their unique ID.
 	 *
-	 * Retrieves user details along with associated tasks from the database.
+	 * Fetches user details along with tasks assigned to them from the database.
 	 *
 	 * @param {string} id - The unique identifier of the user.
-	 * @returns {Promise<Object>} The user object along with associated tasks.
+	 * @returns {Promise<Object>} The user object with associated tasks.
+	 *
+	 * @example
+	 * getById('user-id'); // Returns user data along with tasks assigned to the user.
 	 */
-	getById(id: string) {
+	async getById(id: string) {
 		return this.prisma.user.findUnique({
 			where: {
 				id
@@ -45,14 +49,17 @@ export class UserService {
 	}
 
 	/**
-	 * Get a user by their email address.
+	 * Retrieve a user by their email address.
 	 *
-	 * Retrieves user details along with associated tasks from the database based on the email.
+	 * Fetches user details along with tasks assigned to them based on the provided email address.
 	 *
 	 * @param {string} email - The email address of the user.
-	 * @returns {Promise<Object>} The user object along with associated tasks.
+	 * @returns {Promise<Object>} The user object with associated tasks.
+	 *
+	 * @example
+	 * getByEmail('user@example.com'); // Returns user data along with tasks assigned to the user.
 	 */
-	getByEmail(email: string) {
+	async getByEmail(email: string) {
 		return this.prisma.user.findUnique({
 			where: {
 				email
@@ -64,16 +71,19 @@ export class UserService {
 	}
 
 	/**
-	 * Get a user's profile with task statistics.
+	 * Retrieve a user's profile with task statistics.
 	 *
-	 * Retrieves the user's profile details and calculates task statistics, including:
-	 * - Total number of tasks
-	 * - Completed tasks count
-	 * - Tasks created today
-	 * - Tasks created in the past week
+	 * Calculates task-related statistics, such as:
+	 * - Total number of tasks.
+	 * - Number of completed tasks.
+	 * - Tasks created today.
+	 * - Tasks created this week.
 	 *
 	 * @param {string} id - The unique identifier of the user.
-	 * @returns {Promise<Object>} The user's profile details along with statistics.
+	 * @returns {Promise<Object>} The user's profile and associated statistics.
+	 *
+	 * @example
+	 * getProfile('user-id'); // Returns user's profile data and statistics (tasks, completed, etc.).
 	 */
 	async getProfile(id: string) {
 		const profile = await this.getById(id);
@@ -107,7 +117,7 @@ export class UserService {
 			}
 		});
 
-		// Removing password field before returning the profile data
+		// Remove sensitive data like the password from the profile object before returning it
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { password, ...rest } = profile;
 
@@ -123,17 +133,23 @@ export class UserService {
 	}
 
 	/**
-	 * Create a new user in the system.
+	 * Create a new user.
 	 *
-	 * Hashes the provided password and stores the new user in the database.
+	 * Hashes the provided password and stores the user data in the database.
 	 *
 	 * @param {AuthDto} dto - The data transfer object containing user email and password.
-	 * @returns {Promise<Object>} The created user object.
+	 * @returns {Promise<Object>} The newly created user object.
+	 *
+	 * @example
+	 * create({ email: 'user@example.com', name: 'John Doe', password: 'password123' }); // Returns newly created user with hashed password.
 	 */
 	async create(dto: AuthDto) {
 		const user = {
 			email: dto.email,
 			name: dto.name,
+			...(dto.city && {
+				city: dto.city
+			}),
 			password: await hash(dto.password) // Hash the password before storing
 		};
 
@@ -143,15 +159,19 @@ export class UserService {
 	}
 
 	/**
-	 * Update a user's information.
+	 * Update user information.
 	 *
-	 * Updates the user's details, including password (if provided). The password will be hashed before being saved.
+	 * Updates user data such as name, email, and password. If a password is provided, it will be hashed
+	 * before being stored in the database.
 	 *
 	 * @param {string} id - The unique identifier of the user to update.
-	 * @param {UserDto} dto - The data transfer object containing the user's updated information.
+	 * @param {UserDto} dto - The data transfer object containing updated user data.
 	 * @returns {Promise<Object>} The updated user object.
+	 *
+	 * @example
+	 * update({ id: 'user-id', dto: { name: 'John Updated', email: 'new-email@example.com' } }); // Returns updated user object with the new name and email.
 	 */
-	async update(id: string, dto: UserDto) {
+	async update({ id, dto }: { id: string; dto: UserDto }) {
 		let data = dto;
 
 		// If the password is provided, hash it before updating

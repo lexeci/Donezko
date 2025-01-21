@@ -1,21 +1,22 @@
-import { projectService } from "@/src/services/project.service";
-import { ProjectFormData } from "@/types/project.types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import {projectService} from "@/src/services/project.service";
+import {ProjectFormData, ProjectResponse} from "@/types/project.types";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useState} from "react";
+import {toast} from "sonner";
 
 export function useCreateProject() {
-	const queryClient = useQueryClient();
-	const [createdProject, setCreatedProject] = useState<any | undefined>(
-		undefined
-	);
+    const [createdProject, setCreatedProject] = useState<ProjectResponse | undefined>(
+        undefined
+    );
 
-	const { mutate: createProject } = useMutation({
-		mutationFn: (data: ProjectFormData) => projectService.createProject(data),
-		onSuccess: data => {
-			setCreatedProject(data);
-			queryClient.invalidateQueries({ queryKey: ["projects"] }); // Інвалідуємо список проектів
-		},
-	});
+    const {mutate: createProject, isPending} = useMutation({
+        mutationKey: ['Create project'],
+        mutationFn: (data: ProjectFormData) => projectService.createProject(data),
+        onSuccess: data => {
+            toast.success('Successfully created project!');
+            setCreatedProject(data);
+        },
+    });
 
-	return { createProject, createdProject };
+    return {createProject, createdProject, isPending};
 }

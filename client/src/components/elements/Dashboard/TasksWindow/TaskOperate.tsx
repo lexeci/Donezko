@@ -5,7 +5,9 @@ import TaskCreate from "./Operate/TaskCreate";
 import TaskUpdate from "./Operate/TaskUpdate";
 import TaskCreateInfo from "./Info/TaskCreateInfo";
 import TaskUpdateInfo from "./Info/TaskUpdateInfo";
-import TaskInfo from "@/components/elements/Dashboard/TasksWindow/Info/TaskInfo";
+import TaskInfo from "./Info/TaskInfo";
+
+import styles from "./TaskWindow.module.scss";
 
 interface TaskOperate {
     updateTaskList: Dispatch<SetStateAction<TaskResponse[] | undefined>>;
@@ -16,18 +18,21 @@ interface TaskOperate {
     projectId?: string;
     taskId?: string
     data?: TaskResponse;
+    handleRefetch: () => void;
 }
 
-export default function TaskOperate({
-                                        type,
-                                        filterDate,
-                                        onClose,
-                                        updateTaskList,
-                                        projectId,
-                                        taskId,
-                                        data,
-                                        switchType
-                                    }: TaskOperate) {
+export default function TaskOperate(
+    {
+        type,
+        filterDate,
+        onClose,
+        updateTaskList,
+        projectId,
+        taskId,
+        data,
+        switchType,
+        handleRefetch
+    }: TaskOperate) {
     const returnLeftElement = () => {
         switch (type) {
             case "create":
@@ -47,6 +52,7 @@ export default function TaskOperate({
                         projectId={projectId}
                         switchType={switchType}
                         data={data}
+                        handleRefetch={handleRefetch}
                     />
                 );
 
@@ -89,11 +95,11 @@ export default function TaskOperate({
             onClose={onClose}
         >
             <div
-                className="container bg-background grid grid-cols-2 grid-rows-1 p-0.5 gap-x-0.5 w-full h-full border border-foreground whitespace-break-spaces">
-                <div className="task-info p-4 border border-foreground overflow-y-auto h-full">
+                className={styles["task-operate-container"]}>
+                <div className={styles["task-operate-container__task-info"]}>
                     {returnLeftElement()}
                 </div>
-                <div className="add-info border border-foreground overflow-y-auto h-full">
+                <div className={styles["task-operate-container__add-info"]}>
                     {returnRightElement()}
                 </div>
             </div>

@@ -1,9 +1,10 @@
-import { PropsWithChildren } from "react";
+import {PropsWithChildren} from "react";
+import styles from "./PageLayout.module.scss";
 
-export default function PageLayout({ children }: PropsWithChildren) {
-	return (
-		<div className="page w-full h-full flex flex-col justify-start items-center">
-			{children}
-		</div>
-	);
+export default function PageLayout({children}: PropsWithChildren) {
+    return (
+        <div className={styles.page}>
+            {children}
+        </div>
+    );
 }

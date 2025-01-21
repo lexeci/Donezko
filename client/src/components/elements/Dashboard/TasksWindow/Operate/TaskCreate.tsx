@@ -1,11 +1,13 @@
 import {Button, Field, Select} from "@/components/index";
 import {useOrganization} from "@/context/OrganizationContext";
 import {useCreateTask} from "@/hooks/tasks/useCreateTask";
-import {useFetchTeamsByProject} from "@/src/hooks/team/useFetchTeamsByProject";
-import {useFetchUsersTeam} from "@/src/hooks/team/useFetchUsersTeam";
+import {useFetchTeamsByProject} from "@/hooks/team/useFetchTeamsByProject";
+import {useFetchUsersTeam} from "@/hooks/team/useFetchUsersTeam";
 import {EnumTaskPriority, EnumTaskStatus, TaskFormData, TaskResponse,} from "@/types/task.types";
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {SubmitHandler, useForm} from "react-hook-form";
+
+import styles from "./TaskOperate.module.scss";
 
 interface TaskCreate {
     updateTaskList: Dispatch<SetStateAction<TaskResponse[] | undefined>>;
@@ -13,11 +15,12 @@ interface TaskCreate {
     projectId: string | undefined;
 }
 
-export default function TaskCreate({
-                                       updateTaskList,
-                                       filterDate,
-                                       projectId,
-                                   }: TaskCreate) {
+export default function TaskCreate(
+    {
+        updateTaskList,
+        filterDate,
+        projectId,
+    }: TaskCreate) {
     const [teamsSelected, setTeamSelected] = useState<string>();
     const {organizationId} = useOrganization();
     const {teamList} = useFetchTeamsByProject(organizationId, projectId);
@@ -84,23 +87,23 @@ export default function TaskCreate({
     };
 
     return (
-        <div className="task-create-window flex flex-col justify-start items-center w-full">
-            <div className="info py-4 border-b border-foreground">
-                <div className="title text-lg font-semibold">
+        <div className={styles["task-operate-window"]}>
+            <div className={styles.info}>
+                <div className={styles.title}>
                     <h4>Creating a task</h4>
                 </div>
-                <div className="text-block whitespace-break-spaces">
+                <div className={styles["text-block"]}>
                     <p>
                         This window allow you to create a new task within project and teams.
                     </p>
                 </div>
             </div>
             <form
-                className="w-full relative flex flex-col items-center flex-wrap md:justify-between gap-y-3 px-6 py-8"
+                className={styles.form}
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <Field
-                    extra="flex flex-col max-w-80 w-full"
+                    extra={styles["form__fields"]}
                     id="title"
                     label="Title:"
                     placeholder="Enter title:"
@@ -110,7 +113,7 @@ export default function TaskCreate({
                     })}
                 />
                 <Field
-                    extra="flex flex-col max-w-80 w-full"
+                    extra={styles["form__fields"]}
                     id="description"
                     label="Description:"
                     placeholder="Enter description"
@@ -130,7 +133,7 @@ export default function TaskCreate({
                     onChange={data =>
                         handleStatusSelect(data.target.value as EnumTaskStatus)
                     }
-                    extra="flex flex-col max-w-80 w-full"
+                    extra={styles["form__fields"]}
                 />
                 <Select
                     id="priority-select"
@@ -143,7 +146,7 @@ export default function TaskCreate({
                     onChange={data =>
                         handlePrioritySelect(data.target.value as EnumTaskPriority)
                     }
-                    extra="flex flex-col max-w-80 w-full"
+                    extra={styles["form__fields"]}
                 />
                 {teamList && (
                     <Select
@@ -155,7 +158,7 @@ export default function TaskCreate({
                             label: item.title,
                         }))}
                         onChange={data => handleTeamSelect(data.target.value)}
-                        extra="flex flex-col max-w-80 w-full"
+                        extra={styles["form__fields"]}
                     />
                 )}
                 {teamsSelected && teamUsers && (
@@ -168,10 +171,10 @@ export default function TaskCreate({
                             label: item.user.name,
                         }))}
                         onChange={data => handleUserSelect(data.target.value)}
-                        extra="flex flex-col max-w-80 w-full"
+                        extra={styles["form__fields"]}
                     />
                 )}
-                <div className="flex items-center mt-4 gap-3 justify-center max-w-80 w-full">
+                <div className={styles.actions}>
                     <Button type="button" block>
                         Create Task
                     </Button>

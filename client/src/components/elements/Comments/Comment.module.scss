@@ -1,0 +1,67 @@
+.comments {
+  @apply w-full h-full flex flex-col justify-start items-start;
+
+  &__header {
+    @apply flex justify-between items-center w-full border-b border-b-foreground py-2 px-4 bg-background;
+
+    & > h5 {
+      @apply font-semibold;
+    }
+  }
+
+  &__container {
+    @apply flex justify-end items-end flex-col h-full w-full px-2 py-4 overflow-y-auto;
+  }
+
+  &__not-found {
+    @apply bg-background flex flex-col justify-center items-center h-full w-full p-4 text-center;
+
+    &__title {
+      @apply text-lg font-bold mb-2.5;
+    }
+
+    &__text-block {
+      @apply max-w-72;
+    }
+  }
+}
+
+.actions {
+  @apply flex justify-between items-center w-full border-t border-t-foreground py-2 px-4 bg-background gap-x-4;
+
+  &__fields {
+    @apply block w-full max-w-full;
+  }
+}
+
+.empty-space {
+  @apply p-2;
+}
+
+.message {
+  @apply flex flex-col bg-background max-w-[45%] min-w-[20vh] w-auto p-2 border border-black/20 gap-y-2.5;
+
+  &__head {
+    @apply flex justify-between items-center w-full gap-x-4 text-xs;
+  }
+
+  &__author {
+    @apply text-inherit;
+  }
+
+  &__ico {
+    @apply cursor-pointer transition-all duration-300 opacity-25 hover:opacity-45;
+  }
+
+  &__content {
+    @apply text-xs;
+  }
+
+  &__footer {
+    @apply w-full flex justify-end items-center text-xs opacity-45;
+  }
+
+  &__time {
+    @apply text-inherit
+  }
+}

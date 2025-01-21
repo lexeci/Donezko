@@ -14,15 +14,16 @@ interface EntityItem {
     hideLink?: boolean
 }
 
-export default function EntityItem({
-                                       title,
-                                       firstStat,
-                                       secondaryStat,
-                                       icon,
-                                       linkBase,
-                                       onClick,
-                                       hideLink = false,
-                                   }: EntityItem) {
+export default function EntityItem(
+    {
+        title,
+        firstStat,
+        secondaryStat,
+        icon,
+        linkBase,
+        onClick,
+        hideLink = false,
+    }: EntityItem) {
     return (
         <div className={styles.item} onClick={onClick}>
             <div className={styles.header}>

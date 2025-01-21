@@ -1,5 +1,5 @@
-import {formatTimestampToAmPm} from "@/src/utils/timeFormatter";
-import toCapitalizeText from "@/src/utils/toCapitalizeText";
+import {formatTimestampToAmPm} from "@/utils/timeFormatter";
+import toCapitalizeText from "@/utils/toCapitalizeText";
 import {TaskResponse} from "@/types/task.types";
 import {CaretUp, ThumbsUp} from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";

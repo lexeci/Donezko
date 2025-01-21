@@ -11,20 +11,23 @@ import {
 /**
  * TimerSettingsDto - Data Transfer Object for timer settings.
  *
- * This class defines the structure for setting and managing intervals related to a timer system.
- * It is used for validating and transferring timer-related data such as work intervals, break intervals,
- * and the number of intervals in a session.
+ * This class defines the structure for managing and transferring timer-related data.
+ * It includes work interval, break interval, and the total number of intervals in a session.
+ * These properties are used to configure a timer system.
  */
 export class TimerSettingsDto {
 	/**
-	 * The interval (in minutes) for the work phase.
+	 * The interval for the work phase, specified in minutes.
 	 *
-	 * This is an optional property that defines the duration of a work interval. It must be a number and
-	 * cannot be less than 1 minute.
+	 * This property is optional and represents the duration of a single work interval.
+	 * It must be a number greater than or equal to 1.
 	 *
 	 * @type {number}
 	 * @optional
-	 * @min 1
+	 *
+	 * @example
+	 * { "workInterval": 25 }
+	 * // Represents a work interval of 25 minutes
 	 */
 	@IsOptional()
 	@IsNumber()
@@ -32,14 +35,17 @@ export class TimerSettingsDto {
 	workInterval?: number;
 
 	/**
-	 * The interval (in minutes) for the break phase.
+	 * The interval for the break phase, specified in minutes.
 	 *
-	 * This is an optional property that defines the duration of a break interval. It must be a number and
-	 * cannot be less than 1 minute.
+	 * This property is optional and represents the duration of a single break interval.
+	 * It must be a number greater than or equal to 1.
 	 *
 	 * @type {number}
 	 * @optional
-	 * @min 1
+	 *
+	 * @example
+	 * { "breakInterval": 5 }
+	 * // Represents a break interval of 5 minutes
 	 */
 	@IsOptional()
 	@IsNumber()
@@ -47,15 +53,17 @@ export class TimerSettingsDto {
 	breakInterval?: number;
 
 	/**
-	 * The number of work and break intervals in a session.
+	 * The total number of work and break intervals in a session.
 	 *
-	 * This optional property defines how many work-break cycles there should be in a session. It must be
-	 * a number between 1 and 10.
+	 * This property is optional and defines the number of cycles for work and break intervals.
+	 * It must be a number between 1 and 10.
 	 *
 	 * @type {number}
 	 * @optional
-	 * @min 1
-	 * @max 10
+	 *
+	 * @example
+	 * { "intervalsCount": 4 }
+	 * // Represents a session with 4 work and break intervals
 	 */
 	@IsOptional()
 	@IsNumber()
@@ -67,19 +75,22 @@ export class TimerSettingsDto {
 /**
  * UserDto - Data Transfer Object for user data, extending TimerSettingsDto.
  *
- * This class defines the structure for user-related data. It includes email, password, and optional
- * timer settings such as work intervals and break intervals.
- * The `UserDto` extends `TimerSettingsDto`, meaning it inherits timer settings properties.
+ * This class defines the structure for user-related data. It includes email, password, and name,
+ * as well as optional timer settings such as work intervals and break intervals.
+ * The UserDto extends TimerSettingsDto, meaning it inherits timer settings properties.
  */
 export class UserDto extends TimerSettingsDto {
 	/**
 	 * The user's email address.
 	 *
-	 * This is an optional property that must be a valid email address if provided.
+	 * This property is optional and must be a valid email address if provided.
 	 *
 	 * @type {string}
 	 * @optional
-	 * @isEmail
+	 *
+	 * @example
+	 * { "email": "user@example.com" }
+	 * // Represents a valid email address for the user
 	 */
 	@IsEmail()
 	@IsOptional()
@@ -88,18 +99,60 @@ export class UserDto extends TimerSettingsDto {
 	/**
 	 * The user's password.
 	 *
-	 * This is an optional property that must be a string and at least 6 characters long. If provided,
-	 * the password must meet the minimum length requirement.
+	 * This property is optional and represents the user's password. If provided, it must be at least
+	 * 6 characters long. The password is required for authentication purposes.
 	 *
 	 * @type {string}
 	 * @optional
-	 * @minLength 6
+	 *
+	 * @example
+	 * { "password": "securePassword123" }
+	 * // Represents the user's password
 	 */
 	@IsOptional()
 	@MinLength(6, {
 		message: 'Password must have more than 6 characters'
 	})
 	@IsString()
-	@IsOptional()
 	password: string;
+
+	/**
+	 * The user's name.
+	 *
+	 * This property is optional and represents the name of the user. If provided, it must be at least
+	 * 3 characters long. It is used for display purposes.
+	 *
+	 * @type {string}
+	 * @optional
+	 *
+	 * @example
+	 * { "name": "John Doe" }
+	 * // Represents the user's full name
+	 */
+	@IsString()
+	@IsOptional()
+	@MinLength(3, {
+		message: 'Name must have more than 3 characters'
+	})
+	name: string;
+
+	/**
+	 * The user's city.
+	 *
+	 * This property is optional and represents the city of the user. If provided, it must be at least
+	 * 3 characters long. It is used for display purposes.
+	 *
+	 * @type {string}
+	 * @optional
+	 *
+	 * @example
+	 * { "city": "New York" }
+	 * // Represents the user's city
+	 */
+	@IsString()
+	@IsOptional()
+	@MinLength(3, {
+		message: 'City must have more than 3 characters'
+	})
+	city: string;
 }

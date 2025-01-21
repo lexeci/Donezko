@@ -1,12 +1,12 @@
 /**
- * PermissionType - Defines the types of permissions available for roles in the system.
+ * PermissionType - Defines the types of permission available for roles in the system.
  *
- * Each role (e.g., OWNER, ADMIN, MEMBER, VIEWER) is granted specific permissions
+ * Each role (e.g., OWNER, ADMIN, MEMBER, VIEWER) is granted specific permission
  * that determine what actions a user can perform in the system.
  *
  * This type is used to restrict or allow access to various system features based on the user's role.
  *
- * The available permissions are:
+ * The available permission are:
  * - **createOrganization**: Allows the user to create a new organization.
  * - **updateOrganization**: Allows the user to update an existing organization.
  * - **deleteOrganization**: Allows the user to delete an organization.
@@ -23,7 +23,7 @@
  * - **deleteTeam**: Allows the user to delete a team.
  * - **manageTeamUsers**: Allows the user to manage users within a team.
  *
- * This type is useful for checking and enforcing permissions within the application logic.
+ * This type is useful for checking and enforcing permission within the application logic.
  */
 export type PermissionType =
 	| 'createOrganization'

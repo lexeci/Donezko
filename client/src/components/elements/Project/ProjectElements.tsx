@@ -1,7 +1,6 @@
 "use client";
 
 import pageStyles from "@/app/page.module.scss";
-
 import {
 	Button,
 	EntityItem,
@@ -19,6 +18,7 @@ import { Plus } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import ProjectCreate from "./ProjectCreate";
+import styles from "./ProjectElements.module.scss";
 
 interface ProjectElementsProps {
 	isWindowElement?: boolean;
@@ -29,7 +29,7 @@ interface ProjectElementsProps {
 }
 
 const ProjectElementsItem = ({ projects }: { projects: Project[] }) => {
-	return projects.length > 0 ? (
+	return projects?.length > 0 ? (
 		projects.map((project, i) => {
 			const { _count } = project;
 			return (
@@ -44,30 +44,25 @@ const ProjectElementsItem = ({ projects }: { projects: Project[] }) => {
 			);
 		})
 	) : (
-		<div className="w-full h-full bg-background p-8">
-			<h5 className="font-bold text-base">There is no project for you</h5>
+		<div className={pageStyles["workspace-not-found"]}>
+			<h5>There is no project for you</h5>
 		</div>
 	);
 };
 
 export default function ProjectElements({
 	isWindowElement,
-	organizationId: localId,
 	organizationTitle,
-	projects,
 	isAdministrate,
 }: ProjectElementsProps) {
 	const [open, setOpen] = useState<boolean>(false);
-	const [projectCount, setProjectCount] = useState<number>(
-		projects?.length || 0
-	);
+	const [projectCount, setProjectCount] = useState<number>(0);
 
 	// Якщо `organizationId` передано, використовуємо його, інакше виконуємо запит
 	const { organizationId } = useOrganization();
-	const effectiveOrganizationId = localId || organizationId;
 
 	// Якщо `isAdministrate` передано, використовуємо його, інакше перевіряємо роль
-	const { organizationRole } = useFetchOrgRole(effectiveOrganizationId);
+	const { organizationRole } = useFetchOrgRole(organizationId);
 
 	// Визначаємо, чи може користувач адміністративно діяти
 	const canAdministrate =
@@ -78,12 +73,11 @@ export default function ProjectElements({
 					organizationRole.role === "ADMIN");
 
 	// Отримуємо або передані, або завантажені проекти
-	const { projects: projectList, setProjects } = projects?.length
-		? { projects, setProjects: () => {} }
-		: useFetchProjects(effectiveOrganizationId);
+	const { projects: projectList, handleRefetch } =
+		useFetchProjects(organizationId);
 
 	useEffect(() => {
-		setProjectCount(projectList.length);
+		setProjectCount(projectList?.length ?? 0);
 	}, [projectList]);
 
 	return organizationRole ? (
@@ -93,7 +87,7 @@ export default function ProjectElements({
 			<div
 				className={clsx(
 					pageStyles["workspace-content-col"],
-					isWindowElement && "h-full w-full max-w-full !p-0 !justify-start"
+					isWindowElement && styles["is-window"]
 				)}
 			>
 				{/* Модальне вікно */}
@@ -104,20 +98,20 @@ export default function ProjectElements({
 						onClose={() => setOpen(false)}
 					>
 						<ProjectCreate
-							organizationId={effectiveOrganizationId}
+							organizationId={organizationId}
 							organizationTitle={organizationTitle}
-							setProjects={setProjects}
+							handleRefetch={handleRefetch}
+                            setOpen={setOpen}
 						/>
 					</ModalWindow>
 				)}
 
 				{/* Лічильник проєктів та кнопка створення */}
-				<div className="counter w-full flex flex-row justify-between items-center">
+				<div className={pageStyles["workspace-basic-counter"]}>
 					<div
 						className={clsx(
-							"title",
-							isWindowElement &&
-								"py-2 px-4 bg-background border border-foreground"
+							styles.title,
+							isWindowElement && styles["title__is-window"]
 						)}
 					>
 						<h4>Total Projects: {projectCount}</h4>
@@ -136,13 +130,13 @@ export default function ProjectElements({
 						isWindowElement && "!p-0"
 					)}
 				>
-					<ProjectElementsItem projects={projectList} />
+					{projectList && <ProjectElementsItem projects={projectList} />}
 				</div>
 			</div>
 		)
 	) : (
-		<div className="h-full flex justify-center items-center">
-			<CoinVertical size={80} className="m-auto animate-spin" />
+		<div className={styles["not-found"]}>
+			<CoinVertical size={80} className="" />
 		</div>
 	);
 }

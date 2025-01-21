@@ -1,7 +1,7 @@
 import {TaskResponse} from "@/types/task.types";
 import {Dispatch, SetStateAction} from "react";
 import {formatDateToDayMonthYear} from "@/utils/timeFormatter";
-import NotFoundId from "../../../NotFoundId/NotFoundId";
+import {NotFoundId} from "@/components/index";
 import {Cat, GitBranch, ThumbsUp, Trash, UsersThree} from "@phosphor-icons/react/dist/ssr";
 import {Alarm, Eye, FlagPennant, ThumbsDown} from "@phosphor-icons/react";
 import {useOrganization} from "@/context/OrganizationContext";
@@ -9,10 +9,14 @@ import {useFetchOrgRole} from "@/hooks/organization/useFetchOrgRole";
 import {OrgRole} from "@/types/org.types";
 import {useFetchProjectRole} from "@/hooks/project/useFetchProjectRole";
 import {ProjectRole} from "@/types/project.types";
-import {useModifyTask} from "@/hooks/tasks/useModifyTask";
-import {useTaskRemoval} from "@/hooks/tasks/useTaskRemoval";
+import {useUpdateTask} from "@/hooks/tasks/useUpdateTask";
+import {useDeleteTask} from "@/hooks/tasks/useDeleteTask";
 import {useFetchTeamRole} from "@/hooks/team/useFetchTeamRole";
 import {TeamRole} from "@/types/team.types";
+
+import clsx from "clsx";
+import pageStyles from "@/app/page.module.scss";
+import styles from "./TaskInfo.module.scss"
 
 interface TaskInfo {
     data?: TaskResponse;
@@ -29,8 +33,8 @@ export default function TaskInfo({data, switchType, updateTaskList, onClose}: Ta
 
     const hasAccess = (organizationRole?.role === OrgRole.ADMIN || organizationRole?.role === OrgRole.OWNER) || projectRole === ProjectRole.MANAGER
 
-    const {modifyTask} = useModifyTask();
-    const {removeTask} = useTaskRemoval();
+    const {modifyTask} = useUpdateTask();
+    const {removeTask} = useDeleteTask();
 
     const handleUpdateCard = (data?: TaskResponse) => {
         if (data) {
@@ -81,12 +85,12 @@ export default function TaskInfo({data, switchType, updateTaskList, onClose}: Ta
     const isMember = teamRole?.role === TeamRole.MEMBER || teamRole?.role === TeamRole.LEADER
 
     return (data ?
-            <div className="task-info flex flex-col justify-start items-start w-full gap-y-2 h-full">
+            <div className={styles["task-info"]}>
                 <div
-                    className="actions flex flex-row justify-between items-center w-full border-b border-foreground pb-2 cursor-pointer">
+                    className={styles.actions}>
                     {hasAccess ? (
                         <div
-                            className="flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300"
+                            className={styles["actions__btn"]}
                             onClick={() => handleCompleteTask()}
                         >
                             <p>{!data.isCompleted ? "Complete" : "Not complete"}</p>
@@ -94,7 +98,7 @@ export default function TaskInfo({data, switchType, updateTaskList, onClose}: Ta
                         </div>
                     ) : isMember && (
                         <div
-                            className="flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300"
+                            className={styles["actions__btn"]}
                             onClick={() => handleCompleteTask()}
                         >
                             <p>{!data.isCompleted ? "Complete" : "Not complete"}</p>
@@ -103,57 +107,56 @@ export default function TaskInfo({data, switchType, updateTaskList, onClose}: Ta
                     )
                     }
                     {hasAccess &&
-                        <p className="flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300"
-                           onClick={() => switchType && switchType("edit")}>Edit this</p>
+                        <p
+                            className={styles["actions__btn"]}
+                            onClick={() => switchType && switchType("edit")}>Edit this</p>
                     }
                 </div>
-                <div className="container flex flex-col justify-start items-start w-full h-full gap-y-2">
+                <div className={styles.container}>
                     <div
-                        className="author-info flex flex-row justify-between items-center border border-foreground w-full py-2 px-4 text-xs">
-                        <p>Author: <span className="font-semibold">{data.author?.name}</span></p>
+                        className={styles["author-info"]}>
+                        <p>Author: <span>{data.author?.name}</span></p>
                         <Cat size={22}/>
                     </div>
                     <div
-                        className="assign-info flex flex-col border border-foreground w-full py-2 px-4 text-xs">
-                        <div className="flex flex-row justify-between items-center w-full">
-                            <p>Task status: <span
-                                className="font-semibold lowercase">{data.taskStatus || "No Status"}</span></p>
+                        className={styles["assign-info"]}>
+                        <div className={styles["assign-info__item"]}>
+                            <p>Task status: <span>{data.taskStatus || "No Status"}</span></p>
                             <FlagPennant size={22}/>
                         </div>
-                        <div className="flex flex-row justify-between items-center w-full">
-                            <p>Priority: <span
-                                className="font-semibold lowercase">{data.priority || "No Priority"}</span></p>
+                        <div className={styles["assign-info__item"]}>
+                            <p>Priority: <span>{data.priority || "No Priority"}</span></p>
                             <Alarm size={22}/>
                         </div>
                     </div>
                     <div
-                        className="assign-info flex flex-col border border-foreground w-full py-2 px-4 text-xs">
-                        <div className="flex flex-row justify-between items-center w-full">
-                            <p>Project: <span className="font-semibold">{data.project?.title || "No Project"}</span></p>
+                        className={styles["assign-info"]}>
+                        <div className={styles["assign-info__item"]}>
+                            <p>Project: <span>{data.project?.title || "No Project"}</span></p>
                             <GitBranch size={22}/>
                         </div>
-                        <div className="flex flex-row justify-between items-center w-full">
-                            <p>Team: <span className="font-semibold">{data.team?.title || "No Team"}</span></p>
+                        <div className={styles["assign-info__item"]}>
+                            <p>Team: <span>{data.team?.title || "No Team"}</span></p>
                             <UsersThree size={22}/>
                         </div>
-                        <div className="flex flex-row justify-between items-center w-full">
-                            <p>Assignee: <span className="font-semibold">{data.user?.name || "No assignee"}</span></p>
+                        <div className={styles["assign-info__item"]}>
+                            <p>Assignee: <span>{data.user?.name || "No assignee"}</span></p>
                             <Eye size={22}/>
                         </div>
                     </div>
                     <div
-                        className="task-info flex flex-col justify-start items-start border border-foreground w-full h-full py-4 px-4">
-                        <div className="title text-xl pb-2">
-                            <h4>Title: <span className="font-semibold">{data.title}</span></h4>
+                        className={styles["task-info-details"]}>
+                        <div className={styles["task-info-details__title"]}>
+                            <h4>Title: <span>{data.title}</span></h4>
                         </div>
-                        <div className="description border-t border-foreground w-full pt-4">
-                            <p className="font-semibold mb-1.5">Description: </p>
+                        <div className={styles["task-info-details__description"]}>
+                            <p className={styles["task-info-details__description__title"]}>Description: </p>
                             <p>{data.description}</p>
                         </div>
                     </div>
                     {(data.createdAt || data.updatedAt) && (
                         <div
-                            className="date-info text-xs flex flex-col justify-center items-start border border-foreground w-full py-2 px-4">
+                            className={styles["date-info"]}>
                             {data.createdAt &&
                                 <p>Created at: {formatDateToDayMonthYear(data.createdAt as Date)}</p>}
                             {data.updatedAt &&
@@ -162,10 +165,9 @@ export default function TaskInfo({data, switchType, updateTaskList, onClose}: Ta
                 </div>
                 {hasAccess &&
                     <div
-                        className="actions flex flex-row justify-between items-center w-full border-t border-foreground py-2 cursor-pointer">
+                        className={styles.actions}>
                         <p>Do you want to delete a task {"-->"}</p>
-                        <div onClick={() => handleDeleteTask()}
-                             className="flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300">
+                        <div onClick={() => handleDeleteTask()}>
                             <p>Delete</p>
                             <Trash size={16}/>
                         </div>

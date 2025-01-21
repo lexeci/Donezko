@@ -1,5 +1,6 @@
 "use client";
 
+import pageStyles from "@/app/page.module.scss";
 import { useFetchOrgUsers } from "@/hooks/organization/useFetchOrgUsers";
 import { useAddProjectUser } from "@/hooks/project/useAddProjectUser";
 import { OrgUserResponse } from "@/types/org.types";
@@ -35,45 +36,74 @@ export default function AddProjectUsers({
 	};
 
 	const handleAddUser = (projectId: string, userId: string) => {
-		addUser(
-			{
-				projectId,
-				userId,
-			},
-			{
-				onSuccess: addedUser => handleUpdateArray(addedUser),
-			}
-		);
+		organizationId &&
+			addUser(
+				{
+					projectId,
+					userId,
+					organizationId,
+				},
+				{
+					onSuccess: addedUser => handleUpdateArray(addedUser),
+				}
+			);
 	};
 
 	return (
-		<div className="container flex flex-col w-full h-full bg-background border border-foreground p-4">
-			<div className="title">
+		<div className={pageStyles["workspace-user-list"]}>
+			<div className={pageStyles["workspace-user-list__title"]}>
 				<h5>Users in current organization:</h5>
 			</div>
-			<div className="users flex flex-col w-full h-full overflow-auto pt-4 gap-y-4">
+			<div className={pageStyles["workspace-user-list__users"]}>
 				{organizationUserList && organizationUserList.length > 0 ? (
 					organizationUserList.map((userItem, i) => (
 						<div
-							className="item flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground"
+							className={pageStyles["workspace-user-list__users__item"]}
 							key={generateKeyComp(`${userItem.user.name}__${i}`)}
 						>
-							<Person size={48} className="border border-foreground p-0.5" />
-							<div className="about flex flex-col justify-start items-start">
-								<div className="name">
+							<Person
+								size={48}
+								className={pageStyles["workspace-user-list__users__item__ico"]}
+							/>
+							<div
+								className={
+									pageStyles["workspace-user-list__users__item__about"]
+								}
+							>
+								<div
+									className={
+										pageStyles["workspace-user-list__users__item__name"]
+									}
+								>
 									<p>Username: {userItem.user.name}</p>
 								</div>
-								<div className="email">
+								<div
+									className={
+										pageStyles["workspace-user-list__users__item__email"]
+									}
+								>
 									<p>Email: "{userItem.user.email}"</p>
 								</div>
-								<div className="status">
+								<div
+									className={
+										pageStyles["workspace-user-list__users__item__status"]
+									}
+								>
 									<p>Status: "{userItem.organizationStatus}"</p>
 								</div>
-								<div className="role">
+								<div
+									className={
+										pageStyles["workspace-user-list__users__item__role"]
+									}
+								>
 									<p>Role: "{userItem.role}"</p>
 								</div>
 							</div>
-							<div className="actions flex flex-col gap-y-2 ml-auto">
+							<div
+								className={
+									pageStyles["workspace-user-list__users__item__actions"]
+								}
+							>
 								<Button
 									type="button"
 									modal
@@ -86,7 +116,7 @@ export default function AddProjectUsers({
 						</div>
 					))
 				) : (
-					<div className="item flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground bg-hoverFill">
+					<div className={pageStyles["workspace-user-list__not-found"]}>
 						<h5>
 							You don't have any participants from organization who haven't been
 							in current project yet

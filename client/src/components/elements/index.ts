@@ -23,6 +23,7 @@ export {default as ModalWindow} from "./ModalWindow/ModalWindow";
 export {default as LackPermission} from "./LackPermission/LackPermission";
 export {default as NotFoundId} from "./NotFoundId/NotFoundId";
 export {default as NotSelected} from "./NotSelected/NotSelected";
+export {default as NoOrganization} from "./NoOrganization/NoOrganization";
 export {default as OrganizationElements} from "./Organization/OrganizationElements";
 export {default as OrganizationModal} from "./Organization/OrganizationModal";
 export {default as OrganizationUpdate} from "./Organization/OrganizationUpdate";
@@ -52,4 +53,4 @@ export {
     Timer,
     TimerRounds,
     WindowContainer,
-} from "./Dashboard/index";
+} from "./Dashboard";

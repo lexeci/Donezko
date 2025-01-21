@@ -1,17 +1,18 @@
 // Define a type alias for UUIDs
-export type UUID = string; // You can replace this with a more specific validation if necessary
+export type UUID = string; // A UUID is represented as a string. This can be used for unique identifiers.
 
 /**
  * Base interface for entities with common properties.
+ * This interface includes common properties like `id`, `createdAt`, and `updatedAt` that can be shared by other models.
  */
 export interface RootBase {
-	id: UUID; // Unique identifier for the entity, could be a UUID
-	createdAt?: Date; // Optional timestamp for creation, consider using Date for type safety
-	updatedAt?: Date; // Optional timestamp for last update, consider using Date for type safety
+    id: UUID; // Unique identifier for the entity, typically a UUID.
+    createdAt?: Date; // Optional timestamp indicating when the entity was created. Using `Date` provides type safety.
+    updatedAt?: Date; // Optional timestamp indicating when the entity was last updated. Using `Date` provides type safety.
 }
 
-// Перелічення для статусу доступу (може бути ACTIVE або BANNED)
+// Enum for access status, which can be either active or banned.
 export enum AccessStatus {
-	BANNED = "BANNED",
-	ACTIVE = "ACTIVE",
+    BANNED = "BANNED", // User is banned and has restricted access
+    ACTIVE = "ACTIVE", // User is active and has normal access
 }

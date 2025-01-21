@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     ...NO_INDEX_PAGE,
 };
 
-export default function Teams() {
+export default function SettingsPage() {
     return (
         <PageLayout>
             <PageHeader

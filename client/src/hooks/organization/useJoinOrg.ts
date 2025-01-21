@@ -2,18 +2,19 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
 import {JoinOrgType, Organization} from "@/types/org.types";
 import {orgService} from "@/src/services/org.service";
+import {toast} from "sonner";
 
 export function useJoinOrg() {
-    const queryClient = useQueryClient();
-    const [joinedOrganization, setJoinedOrganization] = useState<Organization | null>(null);
+    const [joinedOrganization, setJoinedOrganization] = useState<Organization | undefined>(undefined);
 
-    const {mutate: joinOrganization} = useMutation({
+    const {mutate: joinOrganization, isPending} = useMutation({
+        mutationKey: ['Join organization'],
         mutationFn: (data: JoinOrgType) => orgService.joinOrganization(data),
         onSuccess: (data) => {
+            toast.success('Successfully join organization!');
             setJoinedOrganization(data);
-            queryClient.invalidateQueries({queryKey: ["organizations"]});
         },
     });
 
-    return {joinOrganization, joinedOrganization};
+    return {joinOrganization, joinedOrganization, isPending};
 }

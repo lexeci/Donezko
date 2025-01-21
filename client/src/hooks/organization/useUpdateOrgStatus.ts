@@ -1,20 +1,21 @@
-import { orgService } from "@/src/services/org.service";
-import { ManageOrgUser, OrgResponse } from "@/types/org.types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import {orgService} from "@/src/services/org.service";
+import {ManageOrgUser, OrgResponse} from "@/types/org.types";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useState} from "react";
+import {toast} from "sonner";
 
 export function useUpdateOrgStatus() {
-	const queryClient = useQueryClient();
-	const [updatedStatus, setUpdatedStatus] = useState<OrgResponse | null>(null);
+    const [updatedStatus, setUpdatedStatus] = useState<OrgResponse | undefined>(undefined);
 
-	const { mutate: updateStatus } = useMutation({
-		mutationFn: (data: ManageOrgUser) =>
-			orgService.updateStatusOrganization(data),
-		onSuccess: data => {
-			setUpdatedStatus(data);
-			queryClient.invalidateQueries({ queryKey: ["organizations"] });
-		},
-	});
+    const {mutate: updateStatus, isPending} = useMutation({
+        mutationKey: ['Update user status in organization'],
+        mutationFn: (data: ManageOrgUser) =>
+            orgService.updateStatusOrganization(data),
+        onSuccess: data => {
+            toast.success('Successfully updated user status in organization!');
+            setUpdatedStatus(data);
+        },
+    });
 
-	return { updateStatus, updatedStatus };
+    return {updateStatus, updatedStatus, isPending};
 }

@@ -1,21 +1,29 @@
 import {teamService} from "@/src/services/team.service";
 import {TeamsResponse} from "@/types/team.types";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
 
-export function useFetchUserTeams() {
-    const {data: userTeamsData} = useQuery({
-        queryKey: ["userTeams"],
-        queryFn: () => teamService.getUserTeams(), // Використання нового сервісу
-    });
-
+export function useFetchUserTeams(organizationId?: string | null) {
     const [userTeamList, setUserTeamList] = useState<
         TeamsResponse[] | undefined
-    >(userTeamsData);
+    >(undefined);
+
+    const {data: userTeamsData, refetch, isFetching, isFetched} = useQuery({
+        queryKey: ["teams for user"],
+        queryFn: () => teamService.getUserTeams(organizationId as string), // Використання нового сервісу
+        enabled: !!organizationId,
+    });
 
     useEffect(() => {
-        setUserTeamList(userTeamsData);
+        if (userTeamsData) {
+            setUserTeamList(userTeamsData);
+        }
     }, [userTeamsData]);
 
-    return {userTeamList, setUserTeamList};
+    // Функція для рефетчінгу
+    const handleRefetch = () => {
+        refetch(); // Викликає повторний запит
+    };
+
+    return {userTeamList, setUserTeamList, handleRefetch, isFetching, isFetched};
 }

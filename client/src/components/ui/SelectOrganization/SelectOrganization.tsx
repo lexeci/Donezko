@@ -1,116 +1,123 @@
 "use client";
 
-import { useOrganization } from "@/context/OrganizationContext";
-import { useFetchOrgs } from "@/hooks/organization/useFetchOrgs";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
+import {useOrganization} from "@/context/OrganizationContext";
+import {useFetchOrgs} from "@/hooks/organization/useFetchOrgs";
+import {Plus} from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx"; // Імпортуємо clsx для умовних класів
-import { useEffect, useState } from "react";
-import { OrganizationModal } from "../../elements";
+import {useEffect, useState} from "react";
+import {OrganizationModal} from "../../elements";
+
+import styles from "./SelectOrganization.module.scss";
 
 export default function SelectOrganization() {
-	const { organizationId, saveOrganization } = useOrganization(); // Отримуємо organizationId з контексту
-	const { organizationList } = useFetchOrgs();
+    const {organizationId, saveOrganization} = useOrganization(); // Отримуємо organizationId з контексту
+    const {organizationList, handleRefetch} = useFetchOrgs();
 
-	const [isOpen, setIsOpen] = useState(false); // Стейт для контролю відкриття списку
-	const [openModal, setOpenModal] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState(false); // Стейт для контролю відкриття списку
+    const [openModal, setOpenModal] = useState<boolean>(false);
 
-	const [selectedOrg, setSelectedOrg] = useState<string | null>(organizationId); // Зберігаємо вибрану організацію
+    const [selectedOrg, setSelectedOrg] = useState<string | null>(organizationId); // Зберігаємо вибрану організацію
 
-	const handleSelectOrganization = (orgId: string) => {
-		setSelectedOrg(orgId);
-		saveOrganization(orgId); // Зберігаємо вибрану організацію в контексті
-		setIsOpen(false); // Закриваємо список після вибору організації
-	};
+    const handleSelectOrganization = (orgId: string) => {
+        setSelectedOrg(orgId);
+        saveOrganization(orgId); // Зберігаємо вибрану організацію в контексті
+        setIsOpen(false); // Закриваємо список після вибору організації
+    };
 
-	useEffect(() => {
-		if (organizationId) {
-			// Пошук поточної організації за ID
-			const currentOrganization = organizationList?.find(
-				org => org.organization.id === organizationId
-			);
-			currentOrganization &&
-				setSelectedOrg(currentOrganization.organization.id);
-		} else {
-			setSelectedOrg(null);
-		}
-	}, [organizationId]);
+    useEffect(() => {
+        if (organizationId) {
+            // Пошук поточної організації за ID
+            const currentOrganization = organizationList?.find(
+                org => org.organization.id === organizationId
+            );
+            currentOrganization &&
+            setSelectedOrg(currentOrganization.organization.id);
+        } else {
+            setSelectedOrg(null);
+        }
+    }, [organizationId]);
 
-	return (
-		<div className="relative flex flex-row items-center justify-center border-l border-l-foreground pl-6">
-			{openModal && <OrganizationModal setOpen={setOpenModal} />}
-			{/* Вибір організації або інформація про вибрану */}
-			{selectedOrg ? (
-				<div
-					className="flex justify-center items-center text-center text-sm font-bold cursor-pointer"
-					onClick={() => setIsOpen(!isOpen)}
-				>
-					<span>Selected: </span>
-					<span className="ml-2 font-normal">
+    return (
+        <div className={styles["selected-org"]}>
+            {openModal && <OrganizationModal setOpen={setOpenModal} refetch={handleRefetch}/>}
+            {/* Вибір організації або інформація про вибрану */}
+            {selectedOrg ? (
+                <div
+                    className={styles["selected-org__btn"]}
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    <span>Selected: </span>
+                    <span className={styles["selected-org__name"]}>
 						{
-							organizationList?.find(org => org.organization.id === selectedOrg)
-								?.organization.title
-						}
+                            organizationList?.find(org => org.organization.id === selectedOrg)
+                                ?.organization.title
+                        }
 					</span>
-				</div>
-			) : (
-				<div
-					className="flex justify-center items-center cursor-pointer px-2 text-foreground"
-					onClick={() => setIsOpen(!isOpen)}
-				>
-					<span className="text-sm font-bold">Select Organization</span>
-				</div>
-			)}
+                </div>
+            ) : (
+                <div
+                    className={styles["not-selected-org"]}
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    <span className={styles["not-selected-org__title"]}>Select Organization</span>
+                </div>
+            )}
 
-			{/* Список організацій */}
-			{isOpen && (
-				<div className="absolute top-[3.23rem] flex flex-col justify-start items-center gap-y-0.5 left-auto right-auto z-10 w-80 max-h-80 bg-background p-2 font-mono border-2 border-t-0 border-foreground shadow-lg overflow-auto">
-					<div className="manage-org flex flex-row justify-space items-center w-full border-b border-foreground text-xs pb-1">
-						<div className="title font-semibold">
-							<h5>Actions:</h5>
-						</div>
-						<div
-							className="item flex flex-row justify-center items-center border border-double border-foreground w-fit p-0.5 cursor-pointer hover:bg-hoverFill ml-auto"
-							onClick={() => setOpenModal(true)}
-						>
-							<Plus size={12} className="mr-2" /> Organization
-						</div>
-					</div>
+            {/* Список організацій */}
+            {isOpen && (
+                <div
+                    className={styles["org-list"]}>
+                    <div
+                        className={styles["org-list__manage-org"]}>
+                        <div className={styles["org-list__manage-org__title"]}>
+                            <h5>Actions:</h5>
+                        </div>
+                        <div
+                            className={styles["org-list__manage-org__item"]}
+                            onClick={() => setOpenModal(true)}
+                        >
+                            <Plus size={12} className="mr-2"/> Organization
+                        </div>
+                    </div>
 
-					<div className="flex flex-col text-xs border-t border-foreground w-full pt-1 gap-y-0.5">
-						{organizationList?.map(org => {
-							const isSelected = selectedOrg === org.organization.id; // Перевірка, чи вибрана організація
-							return (
-								<div
-									key={org.organization.id}
-									className={clsx(
-										"cursor-pointer p-2 border border-foreground transition-colors",
-										{
-											"bg-hoverFill hover:bg-background": isSelected, // Фон для вибраної організації
-											"hover:bg-hoverFill": !isSelected, // Сірий фон при наведенні
-										}
-									)}
-									onClick={() =>
-										!isSelected && handleSelectOrganization(org.organization.id)
-									}
-								>
-									<div className="container border border-dashed border-foreground p-2">
-										<div className="border-x px-1 border-foreground mb-0.5">{`Organization: ${org.organization.title}`}</div>
-										<div className="border-x px-1 border-foreground mb-0.5">{`Members: ${
-											org.organization._count?.organizationUsers || 0
-										} / Projects: ${org.organization._count?.projects}`}</div>
-										<div className="border-x px-1 border-foreground mb-0.5">{`Role: ${
-											org.role || "N/A"
-										}`}</div>
-										<div className="border-x px-1 border-foreground">{`Status: ${
-											org.organizationStatus || "Inactive"
-										}`}</div>
-									</div>
-								</div>
-							);
-						})}
-					</div>
-				</div>
-			)}
-		</div>
-	);
+                    <div className={styles["org-list__container"]}>
+                        {organizationList?.map(org => {
+                            const isSelected = selectedOrg === org.organization.id; // Перевірка, чи вибрана організація
+                            return (
+                                <div
+                                    key={org.organization.id}
+                                    className={clsx(
+                                        styles["org-list__container__item"],
+                                        isSelected && styles["org-list__container__item__selected"],
+                                        !isSelected && styles["org-list__container__item__not-selected"]
+                                    )}
+                                    onClick={() =>
+                                        !isSelected && handleSelectOrganization(org.organization.id)
+                                    }
+                                >
+                                    <div className={styles["org-list__container__item__container"]}>
+                                        <div
+                                            className={styles["org-list__container__item__details"]}>
+                                            {`Organization: ${org.organization.title}`}
+                                        </div>
+                                        <div className={styles["org-list__container__item__details"]}>
+                                            {`Members: ${
+                                                org.organization._count?.organizationUsers || 0
+                                            } / Projects: ${org.organization._count?.projects}`}
+                                        </div>
+                                        <div className={styles["org-list__container__item__details"]}>
+                                            {`Role: ${org.role || "N/A"}`}
+                                        </div>
+                                        <div className={styles["org-list__container__item__status"]}>
+                                            {`Status: ${org.organizationStatus || "Inactive"}`}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }

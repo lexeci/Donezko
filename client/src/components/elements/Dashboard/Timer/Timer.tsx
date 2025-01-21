@@ -1,11 +1,11 @@
 "use client";
 
 import { Button, TimerRounds } from "@/components/index";
-import { useCreateSession } from "@/hooks/timer/useCreateSession";
-import { useDeleteSession } from "@/hooks/timer/useDeleteSession";
-import { useTimer } from "@/hooks/timer/useTimer";
-import { useTimerActions } from "@/hooks/timer/useTimerActions";
-import { useTodaySession } from "@/hooks/timer/useTodaySession";
+import { useCreateSession } from "@/src/hooks/timer/useCreateSession";
+import { useDeleteSession } from "@/src/hooks/timer/useDeleteSession";
+import { useTimer } from "@/src/hooks/timer/useTimer";
+import { useTimerActions } from "@/src/hooks/timer/useTimerActions";
+import { useTodaySession } from "@/src/hooks/timer/useTodaySession";
 import { timeFormatter } from "@/utils/timeFormatter";
 import {
 	ArrowsCounterClockwise,
@@ -16,10 +16,18 @@ import {
 	X,
 } from "@phosphor-icons/react";
 
+import { useEffect } from "react";
+import styles from "./Timer.module.scss";
+
 export default function Timer() {
 	const timerState = useTimer();
+
 	const { isLoading, sessionsResponse, workInterval } =
 		useTodaySession(timerState);
+
+	useEffect(() => {
+		console.log(sessionsResponse);
+	}, [sessionsResponse]);
 
 	const rounds = sessionsResponse?.rounds;
 	const actions = useTimerActions({ ...timerState, rounds });
@@ -43,33 +51,33 @@ export default function Timer() {
 	};
 
 	return (
-		<div className="relative h-[50vh] w-3/6 text-center flex flex-col justify-center items-center gap-3">
-			<div className="container w-full h-full border-4 border-r-8 border-b-8 border-l-4 border-foreground gap-y-8 flex flex-col">
-				<div className="header flex flex-row justify-between items-center w-full border-b-2 border-b-foreground">
-					<div className="title pl-2">
+		<div className={styles.timer}>
+			<div className={styles.container}>
+				<div className={styles.header}>
+					<div className={styles.title}>
 						<h5>Pomodoro Timer.exe</h5>
 					</div>
-					<div className="actions flex flex-row">
-						<div className="item p-1 border-x border-x-foreground">
+					<div className={styles.actions}>
+						<div className={styles["item-1"]}>
 							<Minus size={16} />
 						</div>
-						<div className="item p-1 border-r border-foreground">
+						<div className={styles["item-2"]}>
 							<Square size={16} />
 						</div>
-						<div className="item p-1">
+						<div className={styles["item-3"]}>
 							<X size={16} />
 						</div>
 					</div>
 				</div>
-				<div className="content h-full py-4 flex flex-col justify-between items-center gap-y-4">
-					<div className="timer text-6xl font-bold my-auto">
+				<div className={styles.content}>
+					<div className={styles["timer-counter"]}>
 						{timeFormatter(timerState.secondsLeft)}
 					</div>
 
 					{!isLoading && sessionsResponse?.rounds ? (
-						<div className="timer-actions flex-col justify-center items-center gap-x-4 w-full px-4">
-							<div className="item w-full flex flex-row justify-between items-center border border-foreground p-2">
-								<div className="title">
+						<div className={styles["timer-actions"]}>
+							<div className={styles["timer-actions__item"]}>
+								<div className={styles["timer-actions__title"]}>
 									<h5>Rounds:</h5>
 								</div>
 								<TimerRounds
@@ -79,8 +87,8 @@ export default function Timer() {
 									activeRound={timerState.activeRound}
 								/>
 							</div>
-							<div className="item w-full flex flex-row justify-between items-center border border-foreground p-2">
-								<div className="title">
+							<div className={styles["timer-actions__item"]}>
+								<div className={styles["timer-actions__title"]}>
 									<h5>Playing:</h5>
 								</div>
 								<Button
@@ -96,8 +104,8 @@ export default function Timer() {
 									)}
 								</Button>
 							</div>
-							<div className="item w-full flex flex-row justify-between items-center border border-foreground p-2">
-								<div className="title">
+							<div className={styles["timer-actions__item"]}>
+								<div className={styles["timer-actions__title"]}>
 									<h5>Reset rounds:</h5>
 								</div>
 								<Button

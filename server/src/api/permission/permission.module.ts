@@ -3,26 +3,28 @@ import { Module } from '@nestjs/common';
 import { PermissionGuard } from './guards/permission.guard';
 
 /**
- * The PermissionModule handles the logic related to permissions in the application.
- * It provides the PermissionGuard for guarding routes based on user permissions.
- * It also provides the PrismaService for interacting with the database.
+ * PermissionModule - Module responsible for handling permission-related logic in the application.
+ *
+ * This module provides the `PermissionGuard` for securing routes based on user permissions.
+ * It also provides the `PrismaService` for interacting with the database to fetch and manage permissions.
  */
 @Module({
 	/**
-	 * The providers array includes the services or guards that provide functionality for this module.
-	 * In this case, it contains the PermissionGuard, which is responsible for handling permission checks,
-	 * and the PrismaService, which interacts with the database.
+	 * The providers array includes services and guards that provide functionality to the module.
+	 * In this case, it contains:
+	 * - `PermissionGuard`, which is responsible for handling permission checks for routes.
+	 * - `PrismaService`, which is used for database interaction related to permissions.
 	 *
-	 * @property {Array} providers - Array of services and guards to be used in this module.
+	 * @property {Array} providers - List of services and guards to be provided within this module.
 	 */
 	providers: [PermissionGuard, PrismaService],
 
 	/**
 	 * The exports array specifies which services or guards are available to be imported and used by other modules.
-	 * In this case, the PermissionGuard is exported so that other modules can use it for permission-based route guarding.
+	 * In this case, the `PermissionGuard` is exported so it can be used in other modules for permission-based route guarding.
 	 *
-	 * @property {Array} exports - Array of services or guards to be made available for other modules.
+	 * @property {Array} exports - List of services or guards to be made available for use by other modules.
 	 */
-	exports: [PermissionGuard] // Exporting PermissionGuard so it can be used by other modules
+	exports: [PermissionGuard] // Exporting the PermissionGuard for use in other modules
 })
 export class PermissionModule {}

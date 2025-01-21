@@ -1,18 +1,19 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { orgService } from "@/src/services/org.service";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useState} from "react";
+import {orgService} from "@/src/services/org.service";
+import {toast} from "sonner";
 
 export function useExitOrg() {
-	const queryClient = useQueryClient();
-	const [exitedOrganizationId, setExitedOrganizationId] = useState<string | null>(null);
+    const [exitedOrganizationId, setExitedOrganizationId] = useState<string | undefined>(undefined);
 
-	const { mutate: exitOrganization } = useMutation({
-		mutationFn: (id: string) => orgService.exitOrganization(id),
-		onSuccess: (_, id) => {
-			setExitedOrganizationId(id);
-			queryClient.invalidateQueries({ queryKey: ["organizations"] });
-		},
-	});
+    const {mutate: exitOrganization, isPending} = useMutation({
+        mutationKey: ['Exit organization'],
+        mutationFn: (id: string) => orgService.exitOrganization(id),
+        onSuccess: (_, id) => {
+            toast.success('Successfully exit organization!');
+            setExitedOrganizationId(id);
+        },
+    });
 
-	return { exitOrganization, exitedOrganizationId };
+    return {exitOrganization, exitedOrganizationId, isPending};
 }

@@ -179,7 +179,7 @@ class TeamService {
 			);
 			return response.data;
 		} catch (error: any) {
-			this.handleError("Error fetching team role:", error);
+			// this.handleError("Error fetching team role:", error);
 			throw new Error("Fetching organization failed");
 		}
 	}

@@ -1,6 +1,4 @@
 import { PrismaService } from '@/src/prisma.service';
-import { RolePermissions } from '../permissions';
-import { PermissionType } from '../permissions.types';
 import {
 	CanActivate,
 	ExecutionContext,
@@ -10,6 +8,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AccessStatus, OrgRole } from '@prisma/client';
+import { RolePermissions } from '../permissions';
+import { PermissionType } from '../permissions.types';
 
 /**
  * The PermissionGuard is a custom NestJS guard that ensures users have the necessary permissions
@@ -217,12 +217,12 @@ export class PermissionGuard implements CanActivate {
 				where: { userId, teamId }
 			});
 			if (!teamUser)
-				throw new ForbiddenException(
+				this.logger.warn(
 					`User: "${userName}" is not a member of team: "${team.title}".`
 				);
 
 			// Deny if user is banned from the team
-			if (teamUser.teamStatus === AccessStatus.BANNED) {
+			if (teamUser?.teamStatus === AccessStatus.BANNED) {
 				throw new ForbiddenException(
 					`User: "${userName}" is banned from team: "${team.title}".`
 				);

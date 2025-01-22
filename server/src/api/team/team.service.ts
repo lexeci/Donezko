@@ -307,16 +307,7 @@ export class TeamService {
 			// If the user is a member, return only teams they are part of
 			teamsQuery = {
 				where: {
-					organizationId,
-					teamUsers: {
-						some: {
-							userId,
-							OR: [
-								{ role: TeamRole.MEMBER, teamStatus: AccessStatus.ACTIVE },
-								{ role: TeamRole.LEADER, teamStatus: AccessStatus.ACTIVE }
-							]
-						}
-					}
+					organizationId
 				},
 				select: {
 					id: true,

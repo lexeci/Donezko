@@ -226,14 +226,6 @@ export class OrgService {
 												tasks: true
 											}
 										}
-									},
-									where: {
-										teamUsers: {
-											some: {
-												userId,
-												teamStatus: AccessStatus.ACTIVE
-											}
-										}
 									}
 								},
 						projects: isPermitted

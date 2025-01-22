@@ -7,13 +7,17 @@ import type { TimerState } from "@/types/timer.types";
 import { useLoadSettings } from "./useLoadSettings";
 
 export function useTimer(): TimerState {
-	const { breakInterval, workInterval } = useLoadSettings();
+	const { breakInterval, workInterval, isDataLoaded } = useLoadSettings();
 
 	const [isRunning, setIsRunning] = useState(false);
 	const [isBreakTime, setIsBreakTime] = useState(false);
 
 	const [secondsLeft, setSecondsLeft] = useState(workInterval * 60);
 	const [activeRound, setActiveRound] = useState<TimerRoundResponse>();
+
+	useEffect(() => {
+		setSecondsLeft(workInterval * 60);
+	}, [workInterval]);
 
 	useEffect(() => {
 		let interval: NodeJS.Timeout | null = null;
@@ -47,5 +51,6 @@ export function useTimer(): TimerState {
 		setIsRunning,
 		setSecondsLeft,
 		isRunning,
+		isDataLoaded,
 	};
 }

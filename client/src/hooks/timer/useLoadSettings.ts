@@ -9,10 +9,10 @@ export function useLoadSettings() {
 
 	useEffect(() => {
 		if (isDataLoaded && user) {
-			setWorkInterval(user?.workInterval ? user.workInterval : 50);
-			setBreakInterval(user?.workInterval ? user.workInterval : 10);
+			setWorkInterval(user.workInterval ? user.workInterval : 50);
+			setBreakInterval(user.breakInterval ? user.breakInterval : 10);
 		}
 	}, [isDataLoaded, user]);
 
-	return { workInterval, breakInterval };
+	return { workInterval, breakInterval, isDataLoaded };
 }

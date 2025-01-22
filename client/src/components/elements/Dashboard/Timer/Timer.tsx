@@ -15,8 +15,9 @@ import {
 	Square,
 	X,
 } from "@phosphor-icons/react";
+import { SpinnerGap } from "@phosphor-icons/react/dist/ssr";
 
-import { useEffect } from "react";
+import pageStyles from "@/app/page.module.scss";
 import styles from "./Timer.module.scss";
 
 export default function Timer() {
@@ -24,10 +25,6 @@ export default function Timer() {
 
 	const { isLoading, sessionsResponse, workInterval } =
 		useTodaySession(timerState);
-
-	useEffect(() => {
-		console.log(sessionsResponse);
-	}, [sessionsResponse]);
 
 	const rounds = sessionsResponse?.rounds;
 	const actions = useTimerActions({ ...timerState, rounds });
@@ -71,7 +68,13 @@ export default function Timer() {
 				</div>
 				<div className={styles.content}>
 					<div className={styles["timer-counter"]}>
-						{timeFormatter(timerState.secondsLeft)}
+						{timerState.isDataLoaded ? (
+							timeFormatter(timerState.secondsLeft)
+						) : (
+							<div className={pageStyles["workspace-not-loaded-coin"]}>
+								<SpinnerGap />
+							</div>
+						)}
 					</div>
 
 					{!isLoading && sessionsResponse?.rounds ? (
@@ -119,15 +122,17 @@ export default function Timer() {
 							</div>
 						</div>
 					) : (
-						<Button
-							type={"button"}
-							onClick={() => handleSessionCreation()}
-							disabled={isCreating}
-							negative
-							block
-						>
-							Create session
-						</Button>
+						timerState.isDataLoaded && (
+							<Button
+								type={"button"}
+								onClick={() => handleSessionCreation()}
+								disabled={isCreating}
+								negative
+								block
+							>
+								Create session
+							</Button>
+						)
 					)}
 				</div>
 			</div>

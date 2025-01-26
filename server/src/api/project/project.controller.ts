@@ -64,8 +64,12 @@ export class ProjectController {
 	@Get(':id')
 	@HttpCode(200)
 	@Permission('viewResources')
-	async getById(@Param('id') id: string, @CurrentUser('id') userId: string) {
-		return this.projectService.getById({ id, userId });
+	async getById(
+		@Param('id') id: string,
+		@CurrentUser('id') userId: string,
+		@Query('organizationId') organizationId: string
+	) {
+		return this.projectService.getById({ id, userId, organizationId });
 	}
 
 	/**
@@ -80,8 +84,12 @@ export class ProjectController {
 	@Get(':id/role')
 	@HttpCode(200)
 	@Permission('viewResources')
-	async getRole(@Param('id') id: string, @CurrentUser('id') userId: string) {
-		return this.projectService.getRole({ id, userId });
+	async getRole(
+		@Param('id') id: string,
+		@CurrentUser('id') userId: string,
+		@Query('organizationId') organizationId: string
+	) {
+		return this.projectService.getRole({ id, userId, organizationId });
 	}
 
 	/**

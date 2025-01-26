@@ -268,15 +268,36 @@ export class ProjectService {
 	 * });
 	 * // projectDetails will contain project and user-related information if the user has access.
 	 */
-	async getById({ id, userId }: { id: string; userId: string }) {
+	async getById({
+		id,
+		userId,
+		organizationId
+	}: {
+		id: string;
+		userId: string;
+		organizationId: string;
+	}) {
+		// Check if the user has access to the organization
+		const { organizationUser } = await this.checkUserInOrganization({
+			userId,
+			orgId: organizationId
+		});
+
 		// Check if the user has access to the project
 		const projectUser = await this.prisma.projectUser.findUnique({
 			where: { projectId_userId: { projectId: id, userId } }
 		});
-		if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
-			throw new ForbiddenException(
-				'User does not have access to this project.'
-			);
+
+		if (
+			!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+				organizationUser.role
+			)
+		) {
+			if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
+				throw new ForbiddenException(
+					'User does not have access to this project.'
+				);
+			}
 		}
 
 		// Return project details
@@ -363,7 +384,21 @@ export class ProjectService {
 	 * });
 	 * // role will contain the user's role in the specified project if they have access.
 	 */
-	async getRole({ id, userId }: { id: string; userId: string }) {
+	async getRole({
+		id,
+		userId,
+		organizationId
+	}: {
+		id: string;
+		userId: string;
+		organizationId;
+	}) {
+		// Check if the user has access to the organization
+		const { organizationUser } = await this.checkUserInOrganization({
+			userId,
+			orgId: organizationId
+		});
+
 		// Check if the user has access to the project
 		const projectUser = await this.prisma.projectUser.findUnique({
 			where: { projectId_userId: { projectId: id, userId } },
@@ -372,13 +407,25 @@ export class ProjectService {
 				projectStatus: true
 			}
 		});
-		if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
-			throw new ForbiddenException(
-				'User does not have access to this project.'
-			);
+
+		if (
+			!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+				organizationUser.role
+			)
+		) {
+			if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
+				throw new ForbiddenException(
+					'User does not have access to this project.'
+				);
+			}
 		}
 
-		return projectUser.role;
+		// Small trick if person is admin or owner he will have manager role instead. Just to simplify code
+		return !([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+			organizationUser.role
+		)
+			? projectUser.role
+			: ProjectRole.MANAGER;
 	}
 
 	/**
@@ -529,6 +576,10 @@ export class ProjectService {
 		const { projectManagerId, ...restDto } = dto;
 		const { title, organizationId } = restDto;
 
+		if (!projectManagerId) {
+			throw new ForbiddenException('Project manager must be provided');
+		}
+
 		// Check if project already exists in the organization
 		const existingProject = await this.prisma.project.findFirst({
 			where: {
@@ -541,6 +592,16 @@ export class ProjectService {
 				`Project "${title}" already exists in this organization.`
 			);
 		}
+
+		// Getting organization owner to allow him having access to any project which will be created later
+		const organizationOwner = await this.prisma.organizationUser.findFirst({
+			where: {
+				role: OrgRole.OWNER
+			},
+			select: {
+				userId: true
+			}
+		});
 
 		// Check user access to the organization (Admin or Owner role)
 		await this.checkUserInOrganization({
@@ -555,17 +616,30 @@ export class ProjectService {
 				...restDto,
 				projectUsers: {
 					create: [
+						// We add the user if he is not the owner of the organization
+						...(userId !== organizationOwner.userId
+							? [
+									{
+										projectStatus: AccessStatus.ACTIVE,
+										user: { connect: { id: userId } }
+									}
+								]
+							: []),
+						// We always add an organization's owner
 						{
 							projectStatus: AccessStatus.ACTIVE,
-							user: { connect: { id: userId } }
+							user: { connect: { id: organizationOwner.userId } }
 						},
-						...[
-							projectManagerId && {
-								projectStatus: AccessStatus.ACTIVE,
-								user: { connect: { id: projectManagerId } },
-								role: ProjectRole.MANAGER
-							}
-						]
+						// We add a project manager if ProjectManagerid is specified
+						...(projectManagerId
+							? [
+									{
+										projectStatus: AccessStatus.ACTIVE,
+										user: { connect: { id: projectManagerId } },
+										role: ProjectRole.MANAGER
+									}
+								]
+							: [])
 					]
 				}
 			}

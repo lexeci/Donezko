@@ -430,12 +430,6 @@ export class TeamService {
 			where: { projectId_userId: { projectId, userId } }
 		});
 
-		if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
-			throw new ForbiddenException(
-				'User does not have access to this project.'
-			);
-		}
-
 		// Get user's role in the organization
 		const userInOrg = await this.prisma.organizationUser.findFirst({
 			where: { userId, organizationId },
@@ -447,6 +441,16 @@ export class TeamService {
 
 		if (!userInOrg) {
 			throw new ForbiddenException('You are not a member of this organization');
+		}
+
+		if (
+			!([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(userInOrg.role)
+		) {
+			if (!projectUser || projectUser.projectStatus !== AccessStatus.ACTIVE) {
+				throw new ForbiddenException(
+					'User does not have access to this project.'
+				);
+			}
 		}
 
 		if (

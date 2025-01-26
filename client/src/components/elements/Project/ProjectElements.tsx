@@ -10,6 +10,7 @@ import {
 import { useOrganization } from "@/context/OrganizationContext";
 import { useFetchOrgRole } from "@/hooks/organization/useFetchOrgRole";
 import { useFetchProjects } from "@/hooks/project/useFetchProjects";
+import { AccessStatus } from "@/src/types/root.types";
 import { OrgRole } from "@/types/org.types";
 import { Project } from "@/types/project.types";
 import generateKeyComp from "@/utils/generateKeyComp";
@@ -28,10 +29,21 @@ interface ProjectElementsProps {
 	isAdministrate?: boolean;
 }
 
-const ProjectElementsItem = ({ projects }: { projects: Project[] }) => {
+const ProjectElementsItem = ({
+	projects,
+	canAdministrate,
+}: {
+	projects: Project[];
+	canAdministrate?: boolean;
+}) => {
 	return projects?.length > 0 ? (
 		projects.map((project, i) => {
 			const { _count } = project;
+			const access = project.projectUsers?.[0];
+			const isGranted = canAdministrate
+				? true
+				: access?.projectStatus === AccessStatus.ACTIVE;
+
 			return (
 				<EntityItem
 					key={generateKeyComp(`${project.title}__${i}`)}
@@ -40,6 +52,7 @@ const ProjectElementsItem = ({ projects }: { projects: Project[] }) => {
 					title={project.title}
 					firstStat={`Teams: ${_count?.projectTeams}`}
 					secondaryStat={`Tasks: ${_count?.tasks}`}
+					hideLink={!isGranted}
 				/>
 			);
 		})
@@ -101,7 +114,7 @@ export default function ProjectElements({
 							organizationId={organizationId}
 							organizationTitle={organizationTitle}
 							handleRefetch={handleRefetch}
-                            setOpen={setOpen}
+							setOpen={setOpen}
 						/>
 					</ModalWindow>
 				)}
@@ -130,7 +143,12 @@ export default function ProjectElements({
 						isWindowElement && "!p-0"
 					)}
 				>
-					{projectList && <ProjectElementsItem projects={projectList} />}
+					{projectList && (
+						<ProjectElementsItem
+							projects={projectList}
+							canAdministrate={canAdministrate}
+						/>
+					)}
 				</div>
 			</div>
 		)

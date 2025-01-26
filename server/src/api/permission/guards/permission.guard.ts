@@ -217,7 +217,7 @@ export class PermissionGuard implements CanActivate {
 				where: { userId, teamId }
 			});
 			if (!teamUser)
-				this.logger.warn(
+				throw new ForbiddenException(
 					`User: "${userName}" is not a member of team: "${team.title}".`
 				);
 

@@ -227,6 +227,33 @@ export class TaskService {
 				author: { connect: { id: userId } },
 				project: { connect: { id: projectId } },
 				team: { connect: { id: teamId } }
+			},
+			include: {
+				team: {
+					select: {
+						title: true
+					}
+				},
+				author: {
+					select: {
+						name: true
+					}
+				},
+				user: {
+					select: {
+						name: true
+					}
+				},
+				project: {
+					select: {
+						title: true
+					}
+				},
+				_count: {
+					select: {
+						comments: true
+					}
+				}
 			}
 		});
 	}
@@ -275,14 +302,15 @@ export class TaskService {
 	async update({
 		dto,
 		id,
-		userId
+		userId,
+		organizationId
 	}: {
 		dto: Partial<UpdateTaskDto>;
 		id: string;
 		userId: string;
+		organizationId: string;
 	}) {
-		const { projectId, teamId } = dto;
-		const { organizationId, ...data } = dto;
+		const { projectId, teamId, ...data } = dto;
 
 		// Fetch the task from the database
 		const task = await this.prisma.task.findUnique({ where: { id } });

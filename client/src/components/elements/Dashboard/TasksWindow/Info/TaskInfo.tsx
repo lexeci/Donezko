@@ -198,18 +198,20 @@ export default function TaskInfo({
 					</div>
 				</div>
 				{(data.createdAt || data.updatedAt) && (
-					<div className={styles["date-info"]}>
-						{data.createdAt && (
-							<p>
-								Created at: {formatDateToDayMonthYear(data.createdAt as Date)}
-							</p>
-						)}
-						{data.updatedAt && (
-							<p>
-								Updated since:{" "}
-								{formatDateToDayMonthYear(data.updatedAt as Date)}
-							</p>
-						)}
+					<div className="pb-4 w-full">
+						<div className={styles["date-info"]}>
+							{data.createdAt && (
+								<p>
+									Created at: {formatDateToDayMonthYear(data.createdAt as Date)}
+								</p>
+							)}
+							{data.updatedAt && (
+								<p>
+									Updated since:{" "}
+									{formatDateToDayMonthYear(data.updatedAt as Date)}
+								</p>
+							)}
+						</div>
 					</div>
 				)}
 			</div>

@@ -11,10 +11,13 @@ import {
 } from "@/components/index";
 import { useFetchProjects } from "@/hooks/project/useFetchProjects";
 import { useFetchTasks } from "@/hooks/tasks/useFetchTasks";
-import { useFetchTeams } from "@/hooks/team/useFetchTeams";
 import { useOrganization } from "@/src/context/OrganizationContext";
 import { useState } from "react";
 
+import pageStyles from "@/app/page.module.scss";
+import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
+import { useFetchTeamsByProject } from "@/src/hooks/team/useFetchTeamsByProject";
+import { AccessStatus } from "@/src/types/root.types";
 import styles from "./page.module.scss";
 
 export default function Tasks() {
@@ -26,13 +29,31 @@ export default function Tasks() {
 		undefined
 	);
 	const { organizationId } = useOrganization();
-	const { projects } = useFetchProjects(organizationId);
-	const { teamList } = useFetchTeams(organizationId);
+	const { organizationRole } = useFetchOrgRole(organizationId);
+	const { projects: projectsData } = useFetchProjects(organizationId);
+	const { teamList: teamsData } = useFetchTeamsByProject(
+		organizationId,
+		selectedProject
+	);
 	const { taskList, setTaskList, handleRefetch } = useFetchTasks({
 		organizationId,
 		projectId: selectedProject,
 		teamId: selectedTeam,
 		available: selectedAvailable,
+	});
+
+	const canAdministrate =
+		organizationRole &&
+		(organizationRole.role === "OWNER" || organizationRole.role === "ADMIN");
+
+	const teamList = teamsData?.inProject.filter(item => {
+		const access = item.teamUsers?.[0];
+		return canAdministrate || access?.teamStatus === AccessStatus.ACTIVE;
+	});
+
+	const projectList = projectsData?.filter(item => {
+		const access = item.projectUsers?.[0];
+		return canAdministrate || access?.projectStatus === AccessStatus.ACTIVE;
 	});
 
 	return (
@@ -44,11 +65,11 @@ export default function Tasks() {
 			/>
 			<div className={styles["additional-blocks"]}>
 				<ActionBlock>
-					{projects && (
+					{projectList && (
 						<Select
 							id="project-select"
 							placeholder="Filter by Project"
-							options={projects.map(item => ({
+							options={projectList.map(item => ({
 								value: item.id,
 								label: item.title,
 							}))}
@@ -78,7 +99,7 @@ export default function Tasks() {
 			</div>
 			{!selectedProject ? (
 				<NotSelected element="project" />
-			) : (
+			) : teamList && teamList?.length > 0 ? (
 				<TasksWindow
 					taskList={taskList}
 					setTaskList={setTaskList}
@@ -86,6 +107,10 @@ export default function Tasks() {
 					projectId={selectedProject}
 					handleRefetch={handleRefetch}
 				/>
+			) : (
+				<div className={pageStyles["workspace-not-found"]}>
+					<h5>You don't have any teams in current project.</h5>
+				</div>
 			)}
 		</PageLayout>
 	);

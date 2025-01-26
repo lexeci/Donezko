@@ -408,12 +408,6 @@ export class ProjectService {
 		return this.prisma.project.findMany({
 			where: {
 				organizationId,
-				projectUsers: {
-					some: {
-						userId,
-						projectStatus: AccessStatus.ACTIVE
-					}
-				},
 				...(projectId && {
 					projectTeams: {
 						some: {
@@ -428,6 +422,17 @@ export class ProjectService {
 				description: true,
 				createdAt: true,
 				updatedAt: true,
+				projectUsers: {
+					where: {
+						projectId,
+						userId,
+						projectStatus: AccessStatus.ACTIVE
+					},
+					select: {
+						role: true,
+						projectStatus: true
+					}
+				},
 				_count: {
 					select: {
 						projectUsers: true,

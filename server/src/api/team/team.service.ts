@@ -1516,16 +1516,23 @@ export class TeamService {
 				}
 			});
 
-			await this.prisma.$transaction([
-				this.prisma.teamUser.update({
-					where: { userId_teamId: { teamId: id, userId: oldLeader.userId } },
-					data: { role: TeamRole.MEMBER }
-				}),
-				this.prisma.teamUser.update({
+			if (oldLeader) {
+				await this.prisma.$transaction([
+					this.prisma.teamUser.update({
+						where: { userId_teamId: { teamId: id, userId: oldLeader.userId } },
+						data: { role: TeamRole.MEMBER }
+					}),
+					this.prisma.teamUser.update({
+						where: { userId_teamId: { teamId: id, userId: teamUserId } },
+						data: { role: TeamRole.LEADER }
+					})
+				]);
+			} else {
+				await this.prisma.teamUser.update({
 					where: { userId_teamId: { teamId: id, userId: teamUserId } },
 					data: { role: TeamRole.LEADER }
-				})
-			]);
+				});
+			}
 		} else {
 			await this.prisma.$transaction([
 				this.prisma.teamUser.update({

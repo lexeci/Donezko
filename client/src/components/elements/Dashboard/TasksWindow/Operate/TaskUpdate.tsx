@@ -58,14 +58,12 @@ export default function TaskUpdate({
 
 			setValue("userId", localData.userId);
 
+			// @ts-ignore
 			setValue("taskStatus", localData.taskStatus);
+			// @ts-ignore
 			setValue("priority", localData.priority);
 		}
 	}, []);
-
-	useEffect(() => {
-		organizationId && setValue("organizationId", organizationId);
-	}, [organizationId]);
 
 	const handleUpdateCard = (data?: TaskResponse) => {
 		if (data) {
@@ -85,11 +83,13 @@ export default function TaskUpdate({
 
 	// Хендлер для вибору організації
 	const handlePrioritySelect = (value: EnumTaskPriority) => {
+		// @ts-ignore
 		setValue("priority", value); // Встановлюємо це значення в форму
 	};
 
 	// Хендлер для вибору організації
 	const handleStatusSelect = (value: EnumTaskStatus) => {
+		// @ts-ignore
 		setValue("taskStatus", value); // Встановлюємо це значення в форму
 	};
 
@@ -103,16 +103,17 @@ export default function TaskUpdate({
 
 	const onSubmit: SubmitHandler<TaskFormData> = data => {
 		if (taskId) {
-			modifyTask(
-				{ taskId, data },
-				{
-					onSuccess(data) {
-						data && handleUpdateCard(data);
-						data && handleRefetch();
-						reset(data);
-					},
-				}
-			);
+			organizationId &&
+				modifyTask(
+					{ taskId, organizationId, data },
+					{
+						onSuccess(data) {
+							data && handleUpdateCard(data);
+							data && handleRefetch();
+							reset(data);
+						},
+					}
+				);
 		}
 	};
 

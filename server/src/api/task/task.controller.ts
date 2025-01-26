@@ -176,10 +176,11 @@ export class TaskController {
 	@HttpCode(200)
 	async update(
 		@Param('id') id: string,
+		@Query('organizationId') organizationId: string,
 		@Body() dto: Partial<UpdateTaskDto>,
 		@CurrentUser('id') userId: string
 	) {
-		return this.taskService.update({ dto, id, userId });
+		return this.taskService.update({ dto, id, userId, organizationId });
 	}
 
 	/**

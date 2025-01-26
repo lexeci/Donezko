@@ -92,10 +92,10 @@ class TaskService {
 	 * @param data - The updated task data.
 	 * @returns The updated task.
 	 */
-	async updateTask(id: string, data: TaskFormData): Promise<TaskResponse> {
+	async updateTask({id, data, organizationId}: {id: string, data: TaskFormData, organizationId: string}): Promise<TaskResponse> {
 		try {
 			const response = await axiosWithAuth.put<TaskResponse>(
-				`${this.BASE_URL}/${id}`,
+				`${this.BASE_URL}/${id}/?organizationId=${organizationId}`,
 				data
 			);
 			return response.data;

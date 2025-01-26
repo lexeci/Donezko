@@ -19,6 +19,7 @@ import { useDeleteTeam } from "@/hooks/team/useDeleteTeam";
 import { useFetchTeamById } from "@/hooks/team/useFetchTeamById";
 import { useFetchTeamRole } from "@/hooks/team/useFetchTeamRole";
 import { useFetchUserProfile } from "@/hooks/user/useFetchUserProfile";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 import { OrgRole } from "@/types/org.types";
 import { TeamRole } from "@/types/team.types";
 import generateKeyComp from "@/utils/generateKeyComp";
@@ -107,7 +108,7 @@ export default function Team() {
 									return (
 										<EntityItem
 											icon={<Browsers size={84} />}
-											linkBase={`/workspace/projects/${project.id}`}
+											linkBase={`${DASHBOARD_PAGES.PROJECTS}/${project.id}`}
 											title={project.title}
 											firstStat={`Participants: ${_count?.projectUsers}`}
 											secondaryStat={`Tasks: ${_count?.tasks}`}
@@ -170,7 +171,7 @@ export default function Team() {
 										deleteTeam(
 											{ teamId, organizationId },
 											{
-												onSuccess: () => replace("/workspace/teams"),
+												onSuccess: () => replace(DASHBOARD_PAGES.TEAMS),
 											}
 										)
 									}

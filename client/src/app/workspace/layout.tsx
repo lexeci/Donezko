@@ -9,6 +9,7 @@ import {useNetworkStatus} from "@/hooks/useNetworkStatus";
 
 import styles from "./layout.module.scss";
 import pageStyles from "@/app/page.module.scss";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 
 export default function Layout(
     {
@@ -43,7 +44,7 @@ export default function Layout(
                     <div className={pageStyles["workspace-not-loaded-coin"]}>
                         <CoinVertical size={80}/>
                     </div>
-                ) : isSelected || pathname === "/workspace/organizations" ? (
+                ) : isSelected || pathname === DASHBOARD_PAGES.ORGANIZATIONS ? (
                     <div className={styles["selected-content"]}>{children}</div>
                 ) : (
                     <NoOrganization/>

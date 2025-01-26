@@ -18,6 +18,7 @@ import { useDeleteOrg } from "@/hooks/organization/useDeleteOrg";
 import { useExitOrg } from "@/hooks/organization/useExitOrg";
 import { useFetchOrgById } from "@/hooks/organization/useFetchOrgById";
 import { useFetchOrgRole } from "@/hooks/organization/useFetchOrgRole";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 import { OrgRole, OrgUserResponse } from "@/types/org.types";
 import { AccessStatus } from "@/types/root.types";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
@@ -60,7 +61,7 @@ export default function Organization() {
 
 	useEffect(() => {
 		organizationId !== cookieOrgId &&
-			replace(`/workspace/organizations/${cookieOrgId}`);
+			replace(`${DASHBOARD_PAGES.ORGANIZATIONS}/${cookieOrgId}`);
 	}, [cookieOrgId]);
 
 	const hasPermission = role === OrgRole.ADMIN || role === OrgRole.OWNER;

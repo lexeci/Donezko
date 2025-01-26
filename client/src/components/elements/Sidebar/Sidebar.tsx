@@ -8,6 +8,7 @@ import generateKeyComp from "@/utils/generateKeyComp";
 import { useEffect, useState } from "react";
 import LogoutButton from "./LogoutButton";
 import styles from "./Sidebar.module.scss";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 
 export default function Sidebar() {
 	const { organizationId } = useOrganization(); // Отримуємо organizationId з контексту
@@ -17,15 +18,15 @@ export default function Sidebar() {
 	// Стейт для лінків
 
 	const baseLinks = [
-		{ link: "/workspace", title: "Dashboard" },
-		{ link: "/workspace/pomodoro", title: "Pomodoro Timer" },
-		{ link: "/workspace/settings", title: "Settings" },
+		{ link: DASHBOARD_PAGES.HOME, title: "Dashboard" },
+		{ link: DASHBOARD_PAGES.TIMER, title: "Pomodoro Timer" },
+		{ link: DASHBOARD_PAGES.SETTINGS, title: "Settings" },
 	];
 
 	const additionalLinks = [
-		{ link: "/workspace/tasks", title: "Tasks" },
-		{ link: "/workspace/teams", title: "Teams" },
-		{ link: "/workspace/projects", title: "Projects" },
+		{ link: DASHBOARD_PAGES.TASKS, title: "Tasks" },
+		{ link: DASHBOARD_PAGES.TEAMS, title: "Teams" },
+		{ link: DASHBOARD_PAGES.PROJECTS, title: "Projects" },
 	];
 
 	const [links, setLinks] = useState(baseLinks);
@@ -37,7 +38,7 @@ export default function Sidebar() {
 		if (organizationId) {
 			// Додаємо посилання на організацію після Dashboard
 			updatedLinks.splice(1, 0, {
-				link: `/workspace/organizations/${organizationId}`,
+				link: `${DASHBOARD_PAGES.ORGANIZATIONS}/${organizationId}`,
 				title: "My Organization",
 			});
 
@@ -51,7 +52,7 @@ export default function Sidebar() {
 		} else {
 			// Додаємо Organizations для користувачів без організації
 			updatedLinks.splice(1, 0, {
-				link: "/workspace/organizations",
+				link: DASHBOARD_PAGES.ORGANIZATIONS,
 				title: "Organizations",
 			});
 		}

@@ -6,19 +6,21 @@
  * @module DASHBOARD
  */
 class DASHBOARD {
-    // The base path for the dashboard
-    private static root = "/workspace";
+	// The base path for the dashboard
+	private static root = "/workspace";
 
-    // Static readonly properties for different dashboard routes
-    static readonly HOME = this.root;
-    static readonly TASKS = `${this.root}/tasks`;
-    static readonly HABITS = `${this.root}/habits`;
-    static readonly TIMER = `${this.root}/timer`;
-    static readonly SETTINGS = `${this.root}/settings`;
+	// Static readonly properties for different dashboard routes
+	static readonly HOME = this.root;
+	static readonly ORGANIZATIONS = `${this.root}/organizations`;
+	static readonly PROJECTS = `${this.root}/projects`;
+	static readonly TEAMS = `${this.root}/teams`;
+	static readonly TASKS = `${this.root}/tasks`;
+	static readonly HABITS = `${this.root}/habits`;
+	static readonly TIMER = `${this.root}/pomodoro`;
+	static readonly SETTINGS = `${this.root}/settings`;
 
-    // Prevent instantiation of the class
-    private constructor() {
-    }
+	// Prevent instantiation of the class
+	private constructor() {}
 }
 
 // Exporting the routes for use throughout the application

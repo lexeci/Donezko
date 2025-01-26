@@ -19,6 +19,8 @@ import { useOrganization } from "@/context/OrganizationContext";
 import { useDeleteProject } from "@/hooks/project/useDeleteProject";
 import { useFetchProjectById } from "@/hooks/project/useFetchProjectById";
 import { useFetchTeamsByProject } from "@/hooks/team/useFetchTeamsByProject";
+import { useExitProject } from "@/src/hooks/project/useExitProject";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 import { OrgRole } from "@/src/types/org.types";
 import { ProjectRole } from "@/types/project.types";
 import { AccessStatus } from "@/types/root.types";
@@ -43,7 +45,9 @@ export default function Project() {
 		organizationId
 	);
 	const { deleteProject } = useDeleteProject();
+	const { exitProject } = useExitProject();
 
+	const userId = fetchedData?.userId;
 	const project = fetchedData?.project;
 	const projectStatus = fetchedData?.projectStatus;
 	const projectRole = fetchedData?.role;
@@ -53,12 +57,29 @@ export default function Project() {
 	const { teamList, setTeamList } = useFetchTeamsByProject(
 		organizationId,
 		projectId
-	); // Отримуємо список команд організації
+	); // We get a list of organizations of the organization
 
 	const hasPermission =
 		role === OrgRole.ADMIN ||
 		role === OrgRole.OWNER ||
 		projectRole === ProjectRole.MANAGER;
+
+	const handleExit = () => {
+		userId &&
+			organizationId &&
+			exitProject(
+				{
+					projectId,
+					userId,
+					organizationId,
+				},
+				{
+					onSuccess: () => {
+						replace(DASHBOARD_PAGES.HOME);
+					},
+				}
+			);
+	};
 
 	return project ? (
 		projectStatus === AccessStatus.ACTIVE ? (
@@ -118,11 +139,19 @@ export default function Project() {
 							/>
 						)}
 					</WindowContainer>
-					{hasPermission && (
-						<Button type="button" onClick={() => setOpenModal(true)}>
-							<Trash size={22} className="mr-4" /> Delete Project
-						</Button>
-					)}
+					<div className={pageStyles["workspace-actions"]}>
+						{hasPermission && (
+							<Button type="button" onClick={() => setOpenModal(true)}>
+								<Trash size={22} className="mr-4" /> Delete Project
+							</Button>
+						)}
+						{role !== OrgRole.OWNER && role !== OrgRole.ADMIN && (
+							<Button type="button" onClick={() => handleExit()}>
+								<Trash size={22} className="mr-4" />
+								Exit organization
+							</Button>
+						)}
+					</div>
 					{openModal && (
 						<ModalWindow
 							title="Program to ask of sure action.exe"
@@ -150,7 +179,7 @@ export default function Project() {
 											deleteProject(
 												{ projectId, organizationId },
 												{
-													onSuccess: () => replace("/workspace/projects"),
+													onSuccess: () => replace(DASHBOARD_PAGES.PROJECTS),
 												}
 											)
 										}

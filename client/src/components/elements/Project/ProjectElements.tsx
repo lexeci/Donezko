@@ -10,6 +10,7 @@ import {
 import { useOrganization } from "@/context/OrganizationContext";
 import { useFetchOrgRole } from "@/hooks/organization/useFetchOrgRole";
 import { useFetchProjects } from "@/hooks/project/useFetchProjects";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 import { AccessStatus } from "@/src/types/root.types";
 import { OrgRole } from "@/types/org.types";
 import { Project } from "@/types/project.types";
@@ -48,7 +49,7 @@ const ProjectElementsItem = ({
 				<EntityItem
 					key={generateKeyComp(`${project.title}__${i}`)}
 					icon={<Buildings size={84} />}
-					linkBase={`/workspace/projects/${project.id}`}
+					linkBase={`${DASHBOARD_PAGES.PROJECTS}/${project.id}`}
 					title={project.title}
 					firstStat={`Teams: ${_count?.projectTeams}`}
 					secondaryStat={`Tasks: ${_count?.tasks}`}

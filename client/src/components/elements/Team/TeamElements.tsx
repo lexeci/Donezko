@@ -21,6 +21,7 @@ import clsx from "clsx";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import TeamCreate from "./TeamCreate";
 import TeamOperate from "./TeamOperate";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 
 interface TeamElementsProps {
 	isWindowElement?: boolean;
@@ -59,7 +60,7 @@ const TeamElementsList = ({
 					<EntityItem
 						key={generateKeyComp(`${team.title}__${i}`)}
 						icon={<UserList size={84} />}
-						linkBase={`/workspace/teams/${team.id}`}
+						linkBase={`${DASHBOARD_PAGES.TEAMS}/${team.id}`}
 						title={team.title}
 						firstStat={`Participants: ${team._count?.teamUsers}`}
 						secondaryStat={`Tasks: ${team._count?.tasks}`}

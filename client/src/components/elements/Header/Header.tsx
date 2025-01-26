@@ -14,6 +14,7 @@ import generateKeyComp from "@/utils/generateKeyComp";
 import {useEffect, useState} from "react";
 import {SelectOrganization} from "../../ui";
 import styles from "./Header.module.scss";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 
 export default function Header() {
     const [user, setUser] = useState<AuthUser | undefined>();
@@ -43,7 +44,7 @@ export default function Header() {
         {link: "/", title: "Homepage"},
         {link: "/about", title: "about us"},
         ...(user && cookiesExist
-            ? [{link: "/workspace", title: "Dashboard"}]
+            ? [{link: DASHBOARD_PAGES.HOME, title: "Dashboard"}]
             : []), // Додаємо об'єкт лише якщо cookiesExist === true
     ];
 

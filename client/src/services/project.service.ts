@@ -354,10 +354,24 @@ class ProjectService {
 	 * @example
 	 * await projectService.exitProject("project123");
 	 */
-	async exitProject(id: string, userId?: string): Promise<ProjectResponse> {
+	async exitProject({
+		id,
+		userId,
+		organizationId,
+	}: {
+		id: string;
+		userId?: string;
+		organizationId: string;
+	}): Promise<ProjectResponse> {
+		const params = new URLSearchParams();
+		if (organizationId) params.append("organizationId", organizationId);
+		if (userId) params.append("userId", userId);
+
 		try {
 			return await axiosWithAuth.delete(
-				`${this.BASE_URL}/${id}/exit${userId ? `/?userId=${userId}` : ""}`
+				`${this.BASE_URL}/${id}/exit/${
+					params.toString() ? `?${params.toString()}` : ""
+				}`
 			);
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);

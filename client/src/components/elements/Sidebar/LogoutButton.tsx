@@ -1,6 +1,7 @@
 import {Button} from "@/components/index";
 import {useOrganization} from "@/context/OrganizationContext";
 import {authService} from "@/services/auth.service";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 
@@ -25,7 +26,7 @@ export default function LogoutButton() {
     return (
         <Button
             type="link"
-            link="/workspace/"
+            link={DASHBOARD_PAGES.HOME}
             onClick={(e: any) => {
                 e.preventDefault(); // Викликаємо preventDefault
                 handleLogout();

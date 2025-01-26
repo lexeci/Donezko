@@ -78,6 +78,7 @@ export default function TaskInfo({
 						organizationId: organizationId,
 						isCompleted: !data.isCompleted,
 					},
+					organizationId,
 				},
 				{
 					onSuccess(data) {

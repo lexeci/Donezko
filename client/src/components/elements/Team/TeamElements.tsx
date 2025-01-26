@@ -100,8 +100,8 @@ export default function TeamElements({
 		isAdministrate !== undefined
 			? isAdministrate
 			: organizationRole &&
-			  (organizationRole.role === "OWNER" ||
-					organizationRole.role === "ADMIN");
+			  (organizationRole.role === OrgRole.OWNER ||
+					organizationRole.role === OrgRole.ADMIN);
 
 	// Використовуємо `useFetchTeams`, якщо `teams` і `setTeamList` не передано
 	const { teamList, setTeamList: setTeamsLocal } = useFetchTeams(

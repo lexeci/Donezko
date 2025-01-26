@@ -60,8 +60,8 @@ export class ManageOrgUserDto {
 	 * @optional
 	 *
 	 * @example
-	 * { "role": "ADMIN" }
-	 * // Represents the user with the role "ADMIN"
+	 * { "role": OrgRole.ADMIN }
+	 * // Represents the user with the role Admin
 	 */
 	@IsEnum(OrgRole)
 	@IsOptional()

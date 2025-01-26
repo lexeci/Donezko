@@ -3,7 +3,7 @@ import { PermissionType } from './permissions.types'; // Importing the Permissio
 
 // A mapping of organization roles to their respective permission
 export const RolePermissions: Record<OrgRole, PermissionType[]> = {
-	// Permissions for the OrgRole.OWNER role
+	// Permissions for the Owner role
 	[OrgRole.OWNER]: [
 		'updateOrganization', // Can update organization details
 		'deleteOrganization', // Can delete the organization
@@ -22,7 +22,7 @@ export const RolePermissions: Record<OrgRole, PermissionType[]> = {
 		'manageTeamUsers' // Can manage team users (add/remove from teams)
 	],
 
-	// Permissions for the OrgRole.ADMIN role
+	// Permissions for the Admin role
 	[OrgRole.ADMIN]: [
 		'manageUsers', // Can manage users
 		'viewResources', // Can view resources

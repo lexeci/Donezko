@@ -19,6 +19,7 @@ import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
 import { useFetchTeamsByProject } from "@/src/hooks/team/useFetchTeamsByProject";
 import { AccessStatus } from "@/src/types/root.types";
 import styles from "./page.module.scss";
+import { OrgRole } from "@/src/types/org.types";
 
 export default function Tasks() {
 	const [selectedAvailable, setSelectedAvailable] = useState<boolean>(false);
@@ -44,7 +45,8 @@ export default function Tasks() {
 
 	const canAdministrate =
 		organizationRole &&
-		(organizationRole.role === "OWNER" || organizationRole.role === "ADMIN");
+		(organizationRole.role === OrgRole.OWNER ||
+			organizationRole.role === OrgRole.ADMIN);
 
 	const teamList = teamsData?.inProject.filter(item => {
 		const access = item.teamUsers?.[0];

@@ -82,8 +82,8 @@ export default function ProjectElements({
 		isAdministrate !== undefined
 			? isAdministrate
 			: organizationRole &&
-			  (organizationRole.role === "OWNER" ||
-					organizationRole.role === "ADMIN");
+			  (organizationRole.role === OrgRole.OWNER ||
+					organizationRole.role === OrgRole.ADMIN);
 
 	// Отримуємо або передані, або завантажені проекти
 	const { projects: projectList, handleRefetch } =

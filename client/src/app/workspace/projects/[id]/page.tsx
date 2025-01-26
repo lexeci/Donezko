@@ -19,6 +19,7 @@ import { useOrganization } from "@/context/OrganizationContext";
 import { useDeleteProject } from "@/hooks/project/useDeleteProject";
 import { useFetchProjectById } from "@/hooks/project/useFetchProjectById";
 import { useFetchTeamsByProject } from "@/hooks/team/useFetchTeamsByProject";
+import { OrgRole } from "@/src/types/org.types";
 import { ProjectRole } from "@/types/project.types";
 import { AccessStatus } from "@/types/root.types";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
@@ -55,7 +56,9 @@ export default function Project() {
 	); // Отримуємо список команд організації
 
 	const hasPermission =
-		role === "ADMIN" || role === "OWNER" || projectRole === ProjectRole.MANAGER;
+		role === OrgRole.ADMIN ||
+		role === OrgRole.OWNER ||
+		projectRole === ProjectRole.MANAGER;
 
 	return project ? (
 		projectStatus === AccessStatus.ACTIVE ? (
@@ -83,7 +86,7 @@ export default function Project() {
 							>
 								Manage user
 							</Button>
-							{(role === "ADMIN" || role === "OWNER") && (
+							{(role === OrgRole.ADMIN || role === OrgRole.OWNER) && (
 								<Button
 									block
 									negative
@@ -108,7 +111,9 @@ export default function Project() {
 								projectId={projectId}
 								projectTitle={project.title}
 								projectTeams={teamList}
-								isAdministrate={role === "ADMIN" || role === "OWNER"}
+								isAdministrate={
+									role === OrgRole.ADMIN || role === OrgRole.OWNER
+								}
 								setTeamList={setTeamList}
 							/>
 						)}

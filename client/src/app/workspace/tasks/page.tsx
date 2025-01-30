@@ -60,12 +60,6 @@ export default function Tasks() {
 		return canAdministrate || access?.projectStatus === AccessStatus.ACTIVE;
 	});
 
-	useEffect(() => {
-		if (taskList && taskList.length > 0) {
-			setIsList(false);
-		}
-	}, [taskList]);
-
 	return (
 		<PageLayout>
 			<PageHeader

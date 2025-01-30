@@ -12,7 +12,7 @@ import {
 import { useFetchProjects } from "@/hooks/project/useFetchProjects";
 import { useFetchTasks } from "@/hooks/tasks/useFetchTasks";
 import { useOrganization } from "@/src/context/OrganizationContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import pageStyles from "@/app/page.module.scss";
 import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
@@ -60,6 +60,12 @@ export default function Tasks() {
 		return canAdministrate || access?.projectStatus === AccessStatus.ACTIVE;
 	});
 
+	useEffect(() => {
+		if (taskList && taskList.length > 0) {
+			setIsList(false);
+		}
+	}, [taskList]);
+
 	return (
 		<PageLayout>
 			<PageHeader
@@ -103,8 +109,8 @@ export default function Tasks() {
 						id="style-select"
 						placeholder="Select view style"
 						options={[
+							{ label: "Kanban", value: "kanban", selected: true },
 							{ label: "List", value: "list" },
-							{ label: "Kanban", value: "kanban" },
 						]}
 						onChange={data => {
 							data.target.value === "list" ? setIsList(true) : setIsList(false);

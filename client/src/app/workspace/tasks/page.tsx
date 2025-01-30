@@ -17,12 +17,14 @@ import { useState } from "react";
 import pageStyles from "@/app/page.module.scss";
 import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
 import { useFetchTeamsByProject } from "@/src/hooks/team/useFetchTeamsByProject";
-import { AccessStatus } from "@/src/types/root.types";
-import styles from "./page.module.scss";
 import { OrgRole } from "@/src/types/org.types";
+import { AccessStatus } from "@/src/types/root.types";
+import clsx from "clsx";
+import styles from "./page.module.scss";
 
 export default function Tasks() {
 	const [selectedAvailable, setSelectedAvailable] = useState<boolean>(false);
+	const [isList, setIsList] = useState<boolean>(false);
 	const [selectedProject, setSelectedProject] = useState<string | undefined>(
 		undefined
 	);
@@ -97,6 +99,18 @@ export default function Tasks() {
 						checked={selectedAvailable}
 						onChange={() => setSelectedAvailable(!selectedAvailable)}
 					/>
+					<Select
+						id="style-select"
+						placeholder="Select view style"
+						options={[
+							{ label: "List", value: "list" },
+							{ label: "Kanban", value: "kanban" },
+						]}
+						onChange={data => {
+							data.target.value === "list" ? setIsList(true) : setIsList(false);
+						}}
+						extra={clsx(styles.fields, "ml-auto")}
+					/>
 				</ActionBlock>
 			</div>
 			{!selectedProject ? (
@@ -106,6 +120,7 @@ export default function Tasks() {
 					taskList={taskList}
 					setTaskList={setTaskList}
 					isPage
+					isList={isList}
 					projectId={selectedProject}
 					handleRefetch={handleRefetch}
 				/>

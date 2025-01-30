@@ -7,39 +7,48 @@ import { useDragAndDropTasks } from "@/hooks/tasks/useDragAndDropTasks"; // Зм
 
 import { TaskResponse } from "@/types/task.types";
 import { Dispatch, SetStateAction } from "react";
-import { KanbanTaskColumn } from "./KanbanTaskColumn";
-import styles from "./KanbanTaskView.module.scss";
+import styles from "./ListRowView.module.scss";
+import { ListRowParent } from "./ListTasksRow";
 
-interface KanbanTaskView {
+interface ListTaskView {
 	taskList?: TaskResponse[];
 	setTaskList: Dispatch<SetStateAction<TaskResponse[] | undefined>>;
 	projectId: string;
 	handleRefetch: () => void;
 }
 
-export function KanbanTaskView({
+export function ListTaskView({
 	taskList,
 	setTaskList,
 	projectId,
 	handleRefetch,
-}: KanbanTaskView) {
+}: ListTaskView) {
 	const { handleDragEnd } = useDragAndDropTasks(handleRefetch); // Зміна назви пропса
 
 	return (
 		<DragDropContext onDragEnd={handleDragEnd}>
-			{/* Виправлення на onDragEnd */}
-			<div className={styles.board}>
-				{TASK_COLUMNS.map(column => (
-					<KanbanTaskColumn
-						key={column.value}
-						value={column.value}
-						label={column.label}
-						items={taskList}
-						projectId={projectId}
-						updateTasks={setTaskList} // Зміна назви пропса
-						handleRefetch={handleRefetch}
-					/>
-				))}
+			<div className={styles.table}>
+				<div className={styles.header}>
+					<div>Task name</div>
+					<div>Author</div>
+					<div>Priority</div>
+					<div>Status</div>
+					<div>Date</div>
+				</div>
+
+				<div className={styles.parentsWrapper}>
+					{TASK_COLUMNS.map(column => (
+						<ListRowParent
+							key={column.value}
+							value={column.value}
+							label={column.label}
+							items={taskList}
+							projectId={projectId}
+							updateTasks={setTaskList} // Зміна назви пропса
+							handleRefetch={handleRefetch}
+						/>
+					))}
+				</div>
 			</div>
 		</DragDropContext>
 	);

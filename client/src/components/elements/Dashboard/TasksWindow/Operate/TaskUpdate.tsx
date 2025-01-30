@@ -65,6 +65,10 @@ export default function TaskUpdate({
 		}
 	}, []);
 
+	useEffect(() => {
+		organizationId && setValue("organizationId", organizationId);
+	}, [organizationId]);
+
 	const handleUpdateCard = (data?: TaskResponse) => {
 		if (data) {
 			updateTaskList(previousTasks => {

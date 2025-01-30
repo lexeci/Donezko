@@ -19,15 +19,22 @@ export function useDragAndDropTasks(handleRefetch: () => void) {
 		if (targetColumnId === result.source.droppableId) return;
 
 		if (targetColumnId === "completed") {
-			modifyTask({
-				// Зміна назви функції
-				taskId: result.draggableId, // Зміна назви параметра
-				data: {
-					organizationId,
-					// Зміна назви параметра
-					isCompleted: true,
-				},
-			});
+			organizationId &&
+				modifyTask(
+					{
+						// Зміна назви функції
+						taskId: result.draggableId, // Зміна назви параметра
+						data: {
+							organizationId,
+							// Зміна назви параметра
+							isCompleted: true,
+						},
+						organizationId,
+					},
+					{
+						onSuccess: () => handleRefetch(),
+					}
+				);
 
 			return;
 		}
@@ -43,6 +50,7 @@ export function useDragAndDropTasks(handleRefetch: () => void) {
 						createdAt: newCreatedAt as unknown as Date,
 						isCompleted: false,
 					},
+					organizationId,
 				},
 				{
 					onSuccess: () => handleRefetch(),

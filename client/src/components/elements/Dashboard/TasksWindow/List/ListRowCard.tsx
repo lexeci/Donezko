@@ -12,11 +12,12 @@ import { useFetchTeamRole } from "@/hooks/team/useFetchTeamRole";
 import { OrgRole } from "@/types/org.types";
 import { ProjectRole } from "@/types/project.types";
 import toCapitalizeText from "@/utils/toCapitalizeText";
-import { CaretUp, ThumbsUp } from "@phosphor-icons/react/dist/ssr";
+import { DotsSixVertical } from "@phosphor-icons/react/dist/ssr";
 
-import styles from "./KanbanTaskCard.module.scss";
+import clsx from "clsx";
+import styles from "./ListRowView.module.scss";
 
-interface KanbanTaskCardProps {
+interface IListRow {
 	projectId: string;
 	data: TaskResponse;
 	updateTasks: Dispatch<SetStateAction<TaskResponse[] | undefined>>; // Зміна назви пропса для унікальності
@@ -24,13 +25,13 @@ interface KanbanTaskCardProps {
 	handleRefetch: () => void;
 }
 
-export function KanbanTaskCard({
+export default function ListRowCard({
 	data,
 	updateTasks,
 	projectId,
 	setDisableDnD,
 	handleRefetch,
-}: KanbanTaskCardProps) {
+}: IListRow) {
 	const [DndDisabled, setDndDisabled] = useState<boolean>(false);
 	const [showCardInfo, setShowCardInfo] = useState<boolean>(false);
 	const [windowType, setWindowType] = useState<"create" | "operate" | "edit">(
@@ -77,29 +78,19 @@ export function KanbanTaskCard({
 		data && (
 			<>
 				<div
-					className={styles["task-kanban"]}
+					className={clsx(
+						styles.row,
+						data.taskStatus ? styles.completed : "",
+						"animation-opacity"
+					)}
 					onClick={() => hasAccess && showModalWindow()}
 				>
-					<div className={styles.topBar}>
-						<div className={styles.author}>
-							<p>
-								<b>Author</b>:
-								<br />
-								{data.author?.name}
-							</p>
-						</div>
-						<div className={styles.time}>
-							<p>
-								<b>
-									Time
-									<span>:</span>
-								</b>
-								{time}
-							</p>
-						</div>
-					</div>
-					<div className={styles.content}>
-						<div className={styles.title}>
+					<div>
+						<button aria-describedby="todo-item">
+							<DotsSixVertical size={21} className={styles.grip} />
+						</button>
+
+						<div className="flex">
 							<h3>
 								<b>
 									<span>Task:</span>
@@ -107,40 +98,22 @@ export function KanbanTaskCard({
 								{data.title}
 							</h3>
 						</div>
-						<div className={styles.description}>
-							<p>{data.description}</p>
-						</div>
-
-						<div className={styles.priority}>
-							<p>
-								<b>Priority:</b> {toCapitalizeText(data.priority as string)}
-							</p>
-						</div>
 					</div>
-					{hasAccess && (
-						<div className={styles.actions}>
-							<div className={styles.comments}>
-								<p>Complete</p>
-								<ThumbsUp />
-							</div>
-							<div className={`${styles.comments} ${styles.lastComment}`}>
-								<p>
-									Comments:
-									{data._count?.comments ? data._count.comments : 0}
-								</p>
-								<CaretUp />
-							</div>
-						</div>
-					)}
-					<div className={styles.bottomBar}>
-						<div className={styles.team}>
-							<p>
-								<b>Team:</b> {data.team?.title}
-							</p>
-						</div>
-						<div className={styles.status}>
-							<p>Status: </p> {returnStatus()}
-						</div>
+					<div className={styles.author}>
+						<p>
+							<b>Author</b>:
+							<br />
+							{data.author?.name}
+						</p>
+					</div>
+					<div className={styles.priority}>
+						<p>
+							<b>Priority:</b> {toCapitalizeText(data.priority as string)}
+						</p>
+					</div>
+					<div className={styles.status}>{returnStatus()}</div>
+					<div className={styles.time}>
+						{formatTimestampToAmPm(data.updatedAt as Date)}
 					</div>
 				</div>
 				{showCardInfo && (

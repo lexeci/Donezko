@@ -27,6 +27,7 @@ interface TaskInfo {
 	switchType?: Dispatch<SetStateAction<"create" | "edit" | "operate">>;
 	updateTaskList: Dispatch<SetStateAction<TaskResponse[] | undefined>>;
 	onClose: () => void;
+	handleRefetch: () => void;
 }
 
 export default function TaskInfo({
@@ -34,6 +35,7 @@ export default function TaskInfo({
 	switchType,
 	updateTaskList,
 	onClose,
+	handleRefetch,
 }: TaskInfo) {
 	const { organizationId } = useOrganization();
 	const { organizationRole } = useFetchOrgRole(organizationId);
@@ -55,6 +57,7 @@ export default function TaskInfo({
 					? previousTasks.filter(item => (item.id === data.id ? data : item))
 					: previousTasks;
 			});
+			handleRefetch();
 		}
 	};
 
@@ -75,7 +78,7 @@ export default function TaskInfo({
 				{
 					taskId: data.id,
 					data: {
-						organizationId: organizationId,
+						organizationId,
 						isCompleted: !data.isCompleted,
 					},
 					organizationId,

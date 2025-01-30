@@ -61,6 +61,7 @@ export default function TaskOperate(
                     data={data}
                     switchType={switchType}
                     updateTaskList={updateTaskList}
+                    handleRefetch={handleRefetch}
                     onClose={onClose}
                 />;
 

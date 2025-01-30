@@ -1,0 +1,74 @@
+.table {
+	@apply flex flex-col min-w-[1420px] w-full min-h-full text-xs overflow-x-auto overflow-y-auto bg-background border border-foreground;
+
+	.header {
+		@apply grid grid-cols-[1.4fr_.4fr_.4fr_.4fr_.2fr];
+	}
+
+	.header,
+	.parentsWrapper .row,
+	.parentsWrapper .colHeading {
+		@apply bg-background border-t border-foreground text-left w-auto whitespace-nowrap;
+
+		> div {
+			@apply border-r border-foreground py-2 px-4;
+
+			&:last-child {
+				@apply border-0;
+			}
+		}
+	}
+
+	.parentsWrapper {
+		.colHeading {
+			@apply bg-background;
+
+			> div {
+				@apply font-semibold py-3;
+			}
+		}
+
+		> div:last-child {
+			> div:last-child .row {
+				@apply border-b border-foreground;
+			}
+		}
+
+		.addRow {
+			@apply bg-background py-2 px-4 border-t border-foreground;
+		}
+
+		.row {
+			@apply justify-start items-center bg-background font-normal grid grid-cols-[1.4fr_.4fr_.4fr_.4fr_.2fr];
+
+			div:nth-child(1) {
+				@apply flex flex-row justify-start items-center pl-0 gap-x-1;
+			}
+
+			.status > div {
+				@apply justify-center;
+			}
+
+			&.completed {
+				> div > span > input {
+					@apply italic line-through opacity-50;
+				}
+			}
+
+			// &:hover {
+			// 	@apply bg-[#1c1f1f];
+			// }
+
+			> div > span {
+				.grip {
+					@apply opacity-40 transition-opacity;
+
+					&:hover,
+					&:active {
+						@apply opacity-100;
+					}
+				}
+			}
+		}
+	}
+}

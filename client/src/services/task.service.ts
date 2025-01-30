@@ -92,7 +92,15 @@ class TaskService {
 	 * @param data - The updated task data.
 	 * @returns The updated task.
 	 */
-	async updateTask({id, data, organizationId}: {id: string, data: TaskFormData, organizationId: string}): Promise<TaskResponse> {
+	async updateTask({
+		id,
+		data,
+		organizationId,
+	}: {
+		id: string;
+		data: TaskFormData;
+		organizationId: string;
+	}): Promise<TaskResponse> {
 		try {
 			const response = await axiosWithAuth.put<TaskResponse>(
 				`${this.BASE_URL}/${id}/?organizationId=${organizationId}`,
@@ -120,9 +128,12 @@ class TaskService {
 		organizationId: string;
 	}): Promise<boolean> {
 		try {
-			return await axiosWithAuth.delete(`${this.BASE_URL}/${taskId}`, {
-				data: { organizationId },
-			});
+			return await axiosWithAuth.delete(
+				`${this.BASE_URL}/${taskId}/?organizationId=${organizationId}`,
+				{
+					data: { organizationId },
+				}
+			);
 		} catch (error: any) {
 			error && toast.error(error.response.data.message);
 			console.error("Error deleting task:", error);

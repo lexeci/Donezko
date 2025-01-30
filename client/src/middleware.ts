@@ -38,5 +38,5 @@ export async function middleware(request: NextRequest) {
 
 // Configuring the matcher for specific paths
 export const config = {
-	matcher: [`${DASHBOARD_PAGES.HOME}/:path*`, "/auth/:path*"], // Matches workspace and auth routes
+	matcher: [`/workspace/:path*`, "/auth/:path*"], // Matches workspace and auth routes
 };

@@ -1,81 +1,78 @@
 .board {
-  @apply grid grid-flow-col gap-0 w-full;
-  overflow-x: auto;
+	@apply grid grid-flow-col gap-0 w-full overflow-x-auto;
 
-  & > div:not(:first-child) {
-    .column {
-      @apply border-l-0;
-    }
-  }
+	& > div:not(:first-child) {
+		.column {
+			@apply border-l-0;
+		}
+	}
 
-  .column {
-    @apply h-full w-[21.5rem] bg-white/30 border border-foreground relative;
-    white-space: nowrap;
-    min-height: 79vh;
+	.column {
+		@apply h-full w-[21.5rem] bg-white/30 border border-foreground relative whitespace-nowrap min-h-[79vh];
 
-    & > div:first-child {
-      @apply bg-background border-b border-t border-b-foreground  border-t-foreground p-2 sticky top-0 z-10 text-xs;
-    }
+		& > div:first-child {
+			@apply bg-background border-b border-t border-b-foreground  border-t-foreground p-2 sticky top-0 z-10 text-xs;
+		}
 
-    .container {
-      @apply p-2 flex flex-col gap-y-2;
-    }
+		.container {
+			@apply p-2 flex flex-col gap-y-2;
+		}
 
-    .card {
-      @apply flex flex-col justify-center items-center gap-y-3 border border-foreground mt-5 p-3 relative bg-background;
+		.card {
+			@apply flex flex-col justify-center items-center gap-y-3 border border-foreground mt-5 p-3 relative bg-background;
 
-      &.completed {
-        @apply italic line-through opacity-50;
-      }
+			&.completed {
+				@apply italic line-through opacity-50;
+			}
 
-      .cardHeader {
-        @apply flex items-center text-base w-full border-b border-foreground;
+			.cardHeader {
+				@apply flex items-center text-base w-full border-b border-foreground;
 
-        > input:last-child {
-          @apply ml-2;
-        }
-      }
+				> input:last-child {
+					@apply ml-2;
+				}
+			}
 
-      .cardBody,
-      .cardBody > div > button > span,
-      .cardBody > div > div > button > span {
-        @apply text-sm;
-      }
+			.cardBody,
+			.cardBody > div > button > span,
+			.cardBody > div > div > button > span {
+				@apply text-sm;
+			}
 
-      .cardBody {
-        @apply w-full flex flex-col gap-3;
+			.cardBody {
+				@apply w-full flex flex-col gap-3;
 
-        > div {
-          @apply w-full;
+				> div {
+					@apply w-full;
 
-          > button:last-child {
-            @apply opacity-40;
-          }
-        }
+					> button:last-child {
+						@apply opacity-40;
+					}
+				}
 
-        > div:last-child {
-          @apply justify-start;
+				> div:last-child {
+					@apply justify-start;
 
-          > button:last-child {
-            @apply -top-2 left-0.5;
-          }
-        }
-      }
+					> button:last-child {
+						@apply -top-2 left-0.5;
+					}
+				}
+			}
 
-      .cardActions {
-        @apply absolute bottom-2 right-3 opacity-40;
-      }
-    }
-  }
+			.cardActions {
+				@apply absolute bottom-2 right-3 opacity-40;
+			}
+		}
+	}
 }
 
 .grip {
-  @apply opacity-20 transition-opacity -ml-1 -mr-0.5 absolute top-2 right-2;
+	@apply opacity-20 transition-opacity -ml-1 -mr-0.5 absolute top-2 right-2;
 
-  &:hover,
-  &:active {
-    .grip {
-      @apply opacity-100;
-    }
-  }
+	&:hover,
+	&:active {
+		.grip {
+			@apply opacity-100;
+		}
+	}
 }

@@ -74,6 +74,7 @@ export function KanbanTaskColumn({
 											: undefined
 									}
 									projectId={projectId}
+									handleRefetch={handleRefetch}
 								/>
 							)}
 						</div>

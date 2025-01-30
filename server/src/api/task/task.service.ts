@@ -310,12 +310,18 @@ export class TaskService {
 		userId: string;
 		organizationId: string;
 	}) {
-		const { projectId, teamId, ...data } = dto;
+		const { projectId, teamId, organizationId: dtoOrgId, ...data } = dto;
 
 		// Fetch the task from the database
 		const task = await this.prisma.task.findUnique({ where: { id } });
 		if (!task) {
 			throw new ForbiddenException('Task not found.');
+		}
+
+		if (dtoOrgId !== organizationId) {
+			throw new ForbiddenException(
+				`Hmmm, something strange happened there...\n`
+			);
 		}
 
 		// Check user permissions for the task's project, team, and organization

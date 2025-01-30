@@ -1,26 +1,27 @@
+import { TaskResponse } from "@/types/task.types";
 import { useState, type Dispatch, type SetStateAction } from "react";
-
-import type { TaskResponse } from "@/types/task.types";
 import TaskOperate from "../TaskOperate";
 
 import pageStyles from "../TaskWindow.module.scss";
+import styles from "./ListRowView.module.scss";
 
-interface AddCardInputProps {
+interface ListAddRowInput {
 	filterDate?: string;
 	updateTaskList: Dispatch<SetStateAction<TaskResponse[] | undefined>>;
 	projectId: string;
 	handleRefetch: () => void;
 }
 
-export function AddCardInput({
+export default function AddCardInput({
 	updateTaskList,
 	filterDate,
 	projectId,
 	handleRefetch,
-}: AddCardInputProps) {
+}: ListAddRowInput) {
 	const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+
 	return (
-		<div className="mt-5">
+		<div className={styles.addRow}>
 			<button
 				onClick={() => setShowCreateModal(true)}
 				className={pageStyles["add-button"]}

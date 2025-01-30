@@ -12,7 +12,7 @@ import {
 import { useFetchProjects } from "@/hooks/project/useFetchProjects";
 import { useFetchTasks } from "@/hooks/tasks/useFetchTasks";
 import { useOrganization } from "@/src/context/OrganizationContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import pageStyles from "@/app/page.module.scss";
 import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";

@@ -6,7 +6,9 @@ import { Buildings } from "@phosphor-icons/react/dist/ssr";
 
 import { useOrganization } from "@/context/OrganizationContext";
 import { useFetchProjects } from "@/hooks/project/useFetchProjects";
+import { useFetchOrgRole } from "@/src/hooks/organization/useFetchOrgRole";
 import { DASHBOARD_PAGES } from "@/src/pages-url.config";
+import { OrgRole } from "@/src/types/org.types";
 import styles from "./ProjectBoardStatistic.module.scss";
 
 function NotFoundElement() {
@@ -24,6 +26,7 @@ function NotFoundElement() {
 
 export default function ProjectBoardStatistic() {
 	const { organizationId } = useOrganization();
+	const { organizationRole } = useFetchOrgRole(organizationId);
 	const { projects } = useFetchProjects(organizationId);
 
 	return (
@@ -32,7 +35,9 @@ export default function ProjectBoardStatistic() {
 			description="Projects with assigned tasks"
 			button={{ title: "Show all", link: DASHBOARD_PAGES.PROJECTS }}
 		>
-			{projects ? (
+			{organizationRole &&
+			organizationRole.role !== OrgRole.VIEWER &&
+			projects ? (
 				projects?.length > 0 ? (
 					projects?.map((project, i) => {
 						const { _count, title, description, id } = project;

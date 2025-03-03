@@ -124,14 +124,16 @@ export default function TeamUsers({
 					<h5>Users in current project:</h5>
 				</div>
 				<div className={pageStyles["workspace-user-list__header__button"]}>
-					<Button
-						type="button"
-						modal
-						fullWidth
-						onClick={() => setShowModal(true)}
-					>
-						Connect more Users
-					</Button>
+					{hasPermission && (
+						<Button
+							type="button"
+							modal
+							fullWidth
+							onClick={() => setShowModal(true)}
+						>
+							Connect more Users
+						</Button>
+					)}
 				</div>
 			</div>
 			<div className={pageStyles["workspace-user-list__users"]}>

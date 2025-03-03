@@ -102,8 +102,9 @@ export default function Tasks() {
 					<Select
 						id="style-select"
 						placeholder="Select view style"
+						defaultValue="kanban"
 						options={[
-							{ label: "Kanban", value: "kanban", selected: true },
+							{ label: "Kanban", value: "kanban" },
 							{ label: "List", value: "list" },
 						]}
 						onChange={data => {

@@ -90,6 +90,7 @@ class TaskService {
 	 * Updates an existing task.
 	 * @param id - The task ID to update.
 	 * @param data - The updated task data.
+	 * @param organizationId - The organization ID to associate with the update.
 	 * @returns The updated task.
 	 */
 	async updateTask({

@@ -107,8 +107,11 @@ export class TeamController {
 	@HttpCode(200)
 	@Permission('viewResources') // Specifies the necessary permission for access
 	@Get('user-teams') // Endpoint to fetch teams associated with the current user
-	async getAllByUser(@CurrentUser('id') userId: string) {
-		return await this.teamService.getAllByUserId(userId);
+	async getAllByUser(
+		@CurrentUser('id') userId: string,
+		@Query('organizationId') organizationId: string
+	) {
+		return await this.teamService.getAllByUserId({ userId, organizationId });
 	}
 
 	/**

@@ -64,6 +64,8 @@ export default function Project() {
 		role === OrgRole.OWNER ||
 		projectRole === ProjectRole.MANAGER;
 
+	const isOrgPermission = role === OrgRole.ADMIN || role === OrgRole.OWNER;
+
 	const handleExit = () => {
 		userId &&
 			organizationId &&
@@ -107,7 +109,7 @@ export default function Project() {
 							>
 								Manage user
 							</Button>
-							{(role === OrgRole.ADMIN || role === OrgRole.OWNER) && (
+							{isOrgPermission && (
 								<Button
 									block
 									negative
@@ -140,12 +142,12 @@ export default function Project() {
 						)}
 					</WindowContainer>
 					<div className={pageStyles["workspace-actions"]}>
-						{hasPermission && (
+						{isOrgPermission && (
 							<Button type="button" onClick={() => setOpenModal(true)}>
 								<Trash size={22} className="mr-4" /> Delete Project
 							</Button>
 						)}
-						{role !== OrgRole.OWNER && role !== OrgRole.ADMIN && (
+						{!isOrgPermission && (
 							<Button type="button" onClick={() => handleExit()}>
 								<Trash size={22} className="mr-4" />
 								Exit organization

@@ -6,6 +6,7 @@ interface SelectFieldProps {
 	id: string;
 	label?: string;
 	placeholder?: string;
+	defaultValue?: string | number | readonly string[] | undefined;
 	options: { value: string; label: string; selected?: boolean }[];
 	value?: string;
 	onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void; // Змінено тип
@@ -19,6 +20,7 @@ const Select = forwardRef<HTMLSelectElement, SelectFieldProps>(
 			id,
 			label,
 			placeholder,
+			defaultValue,
 			options,
 			value,
 			onChange,
@@ -42,6 +44,7 @@ const Select = forwardRef<HTMLSelectElement, SelectFieldProps>(
 					value={value}
 					onChange={onChange} // Передача події
 					onBlur={onBlur} // Передача події
+					defaultValue={defaultValue}
 					{...rest}
 				>
 					{placeholder && <option value="">{placeholder}</option>}

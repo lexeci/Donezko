@@ -208,6 +208,7 @@ class TeamService {
 	 * Updates an existing team.
 	 * @param id - The team ID.
 	 * @param data - Updated team form data.
+	 * @param organizationId - The organization ID to associate with the update.
 	 * @returns The updated team.
 	 * @example
 	 * const updatedTeam = await teamService.updateTeam('team123', updatedTeamData);

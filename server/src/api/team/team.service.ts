@@ -4,13 +4,7 @@ import {
 	Injectable,
 	NotFoundException
 } from '@nestjs/common';
-import {
-	AccessStatus,
-	OrgRole,
-	ProjectRole,
-	Team,
-	TeamRole
-} from '@prisma/client';
+import { AccessStatus, OrgRole, Team, TeamRole } from '@prisma/client';
 import {
 	CreateTeamDto,
 	DeleteTeamDto,
@@ -192,15 +186,36 @@ export class TeamService {
 	 *   }
 	 * ]
 	 */
-	async getAllByUserId(userId: string) {
+	async getAllByUserId({
+		userId,
+		organizationId
+	}: {
+		userId: string;
+		organizationId: string;
+	}) {
+		const currentUserInOrg = await this.prisma.organizationUser.findFirst({
+			where: { userId: userId, organizationId: organizationId }
+		});
+
+		if (!currentUserInOrg) {
+			throw new ForbiddenException('You are not part of this organization');
+		}
+
+		const hasAccess = ([OrgRole.ADMIN, OrgRole.OWNER] as OrgRole[]).includes(
+			currentUserInOrg.role
+		);
+
 		return this.prisma.team.findMany({
 			where: {
-				teamUsers: {
-					some: {
-						userId,
-						teamStatus: AccessStatus.ACTIVE // Ensure the user is active in the team
+				...(!hasAccess && {
+					teamUsers: {
+						some: {
+							userId,
+							teamStatus: AccessStatus.ACTIVE // Ensure the user is active in the team
+						}
 					}
-				}
+				}),
+				organizationId
 			},
 			select: {
 				id: true,
@@ -461,9 +476,9 @@ export class TeamService {
 		}
 
 		// Check if the user has the OWNER or ADMIN role or is a project MANAGER
-		const isPermitted =
-			([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(userInOrg.role) ||
-			projectUser.role === ProjectRole.MANAGER;
+		const isPermitted = ([OrgRole.OWNER, OrgRole.ADMIN] as OrgRole[]).includes(
+			userInOrg.role
+		);
 
 		const regularSelect = {
 			id: true,
@@ -494,16 +509,7 @@ export class TeamService {
 				organizationId,
 				projectTeams: {
 					some: {
-						projectId,
-						...(!isPermitted && {
-							team: {
-								teamUsers: {
-									some: {
-										userId
-									}
-								}
-							}
-						})
+						projectId
 					}
 				}
 			},

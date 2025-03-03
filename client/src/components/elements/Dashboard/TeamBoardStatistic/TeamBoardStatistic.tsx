@@ -40,7 +40,10 @@ export default function TeamBoardStatistic() {
 							title={team.title}
 							description={team.description}
 							subtitle={`Tasks: ${team._count?.tasks}`}
-							link={{ href: team.id, text: "Look -->" }}
+							link={{
+								href: `${DASHBOARD_PAGES.TEAMS}/${team.id}`,
+								text: "Look -->",
+							}}
 						/>
 					))
 				) : (

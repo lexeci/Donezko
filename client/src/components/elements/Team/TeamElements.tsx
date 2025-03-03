@@ -12,6 +12,7 @@ import {
 import { useOrganization } from "@/context/OrganizationContext";
 import { useFetchOrgRole } from "@/hooks/organization/useFetchOrgRole";
 import { useFetchTeams } from "@/hooks/team/useFetchTeams";
+import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 import { OrgRole } from "@/types/org.types";
 import { AccessStatus } from "@/types/root.types";
 import { TeamsProjectResponse, TeamsResponse } from "@/types/team.types";
@@ -21,7 +22,6 @@ import clsx from "clsx";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import TeamCreate from "./TeamCreate";
 import TeamOperate from "./TeamOperate";
-import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 
 interface TeamElementsProps {
 	isWindowElement?: boolean;
@@ -51,9 +51,8 @@ const TeamElementsList = ({
 	return teamsData?.length ? (
 		teamsData.map((team, i) => {
 			const access = team.teamUsers?.[0];
-			const isGranted = canAdministrate
-				? true
-				: access?.teamStatus === AccessStatus.ACTIVE;
+			const isGranted =
+				canAdministrate || access?.teamStatus === AccessStatus.ACTIVE;
 
 			return (
 				team.title && (
@@ -98,11 +97,10 @@ export default function TeamElements({
 
 	// Визначаємо, чи може користувач адміністративно діяти
 	const canAdministrate =
-		isAdministrate !== undefined
-			? isAdministrate
-			: organizationRole &&
-			  (organizationRole.role === OrgRole.OWNER ||
-					organizationRole.role === OrgRole.ADMIN);
+		isAdministrate ??
+		(organizationRole &&
+			(organizationRole.role === OrgRole.OWNER ||
+				organizationRole.role === OrgRole.ADMIN));
 
 	// Використовуємо `useFetchTeams`, якщо `teams` і `setTeamList` не передано
 	const { teamList, setTeamList: setTeamsLocal } = useFetchTeams(

@@ -41,7 +41,7 @@ export default function PrivacyPolicy() {
         <div className={styles["intro-text"]}>
           <p>
             We care about your privacy—just not in a creepy way. We want you to
-            feel safe while using TPlanner. No funny business, no third-party
+            feel safe while using Donezko. No funny business, no third-party
             sales, and definitely no sharing your secret chocolate cake recipe.
           </p>
         </div>
@@ -65,7 +65,7 @@ export default function PrivacyPolicy() {
         <h2 className={styles["section-title"]}>1. Data We Collect 📊</h2>
         <div className={styles["content-block-ul"]}>
           <p className={styles["content-paragraph-ul"]}>
-            We collect a few things that are essential to making TPlanner work.
+            We collect a few things that are essential to making Donezko work.
             This includes:
           </p>
           <ul className={styles["content-ul"]}>
@@ -87,7 +87,7 @@ export default function PrivacyPolicy() {
         </h2>
         <p className={styles["content-paragraph"]}>
           We’re not in the business of selling your data to the highest bidder.
-          TPlanner is an open-source project, and we’re here to help people—not
+          Donezko is an open-source project, and we’re here to help people—not
           make money off of your personal details. Your data stays with you.
         </p>
 
@@ -96,7 +96,7 @@ export default function PrivacyPolicy() {
           3. We Don't Track You (Promise!) 🚫📍
         </h2>
         <p className={styles["content-paragraph"]}>
-          TPlanner doesn’t track your every move across the internet. If you're
+          Donezko doesn’t track your every move across the internet. If you're
           thinking about your favorite pizza place while using the app, we won’t
           be sending that info to anyone. The only thing we track is your tasks
           and schedules (because that’s what we’re about!).
@@ -134,7 +134,7 @@ export default function PrivacyPolicy() {
         </h2>
         <p className={styles["content-paragraph"]}>
           These are just the basics of how we handle your data. We’re
-          developers, not lawyers, so this is as simple as it gets. TPlanner is
+          developers, not lawyers, so this is as simple as it gets. Donezko is
           here to help, and we want you to enjoy using it without any hassle.
         </p>
 
@@ -142,7 +142,7 @@ export default function PrivacyPolicy() {
         <h2 className={styles["section-title"]}>7. Use at Your Own Risk ⚠️</h2>
         <p className={styles["content-paragraph"]}>
           We’re not responsible for anything that might go wrong with your
-          schedule or productivity while using TPlanner. We’re all in this
+          schedule or productivity while using Donezko. We’re all in this
           together, but if something breaks, we’ll try to help you fix it. After
           all, that’s what open-source is for! 🛠️
         </p>
@@ -150,7 +150,7 @@ export default function PrivacyPolicy() {
         {/* Footer thanking users */}
         <div className={styles["footer-text-block"]}>
           <p className={styles["footer-text"]}>
-            Thanks for using TPlanner! We hope it helps you organize your life,
+            Thanks for using Donezko! We hope it helps you organize your life,
             but don’t expect it to do your laundry just yet. 😉
           </p>
         </div>

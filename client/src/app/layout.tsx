@@ -34,9 +34,9 @@ const geistMono = localFont({
  * @type {Metadata}
  */
 export const metadata: Metadata = {
-  title: "TPlanner - plan your time",
+  title: "Donezko - plan your time",
   description:
-    "TPlanner - plan your time. Created by student. Inspired by diploma",
+    "Donezko - plan your time. Created by student. Inspired by diploma",
 };
 
 /**
@@ -58,6 +58,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Donezko" />
+      </head>
       {/* Set global font and enable antialiasing */}
       <body className={`antialiased ${geistMono.variable} font-mono`}>
         <Providers>

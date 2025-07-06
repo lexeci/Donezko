@@ -1,5 +1,5 @@
 .authorization {
-  @apply w-3/4 flex flex-col justify-center bg-background border border-foreground;
+  @apply w-3/4 flex flex-col justify-center bg-background border border-foreground rounded-md;
 }
 
 .content {
@@ -39,11 +39,11 @@
 }
 
 .form {
-  @apply w-full relative flex flex-col items-center flex-wrap md:justify-between gap-y-3 px-6 py-8
+  @apply w-full relative flex flex-col items-center flex-wrap md:justify-between gap-y-3 px-6 py-8;
 }
 
 .register {
-  @apply absolute top-2 right-2 text-xs
+  @apply absolute top-2 right-2 text-xs;
 }
 
 .footer {
@@ -59,5 +59,5 @@
 }
 
 .action-btn {
-  @apply flex items-center mt-4 gap-3 justify-center max-w-80 w-full
+  @apply flex items-center mt-4 gap-3 justify-center max-w-80 w-full;
 }

@@ -18,7 +18,7 @@ export default function Welcome() {
       <div className={styles.textBlock}>
         <p>
           Don't wait when your plans overwhelm you. Get rid of them today with
-          our application TPlaner - time to plan your day.
+          our application Donezko - time to plan your day.
         </p>
       </div>
     </div>

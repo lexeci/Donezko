@@ -249,6 +249,7 @@ class OrgService {
       const response = await axiosWithAuth.post(`${this.BASE_URL}/join`, data);
       return response.data; // Check if the deletion was successful
     } catch (error: any) {
+      error && toast.error(error.response.data.message);
       console.error("Error joining organization:", error);
       throw new Error("Could not join organization");
     }

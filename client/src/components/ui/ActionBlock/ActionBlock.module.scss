@@ -1,6 +1,5 @@
-
 .action-block {
-  @apply flex flex-col gap-y-0.5 w-full border-4 border-foreground;
+  @apply flex flex-col gap-y-0.5 w-full border-4 border-foreground rounded-md;
 }
 
 .title {
@@ -8,7 +7,7 @@
 }
 
 .container {
-  @apply border-t border-foreground flex flex-row justify-start items-center w-full p-2 gap-x-4
+  @apply border-t border-foreground flex flex-row justify-start items-center w-full p-2 gap-x-4;
 }
 
 .fields {

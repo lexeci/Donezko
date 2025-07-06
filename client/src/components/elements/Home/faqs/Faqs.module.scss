@@ -1,19 +1,19 @@
-.fagsBanner {
-	@apply flex flex-col justify-center items-center bg-foreground text-background w-full my-8 gap-4 h-96;
+.faqsBanner {
+  @apply flex flex-col justify-center items-center bg-foreground text-background w-full my-8 gap-4 h-96;
 
-	.sectionTitle {
-		@apply font-bold text-lg;
-	}
+  .sectionTitle {
+    @apply font-bold text-lg;
+  }
 
-	.mainTitle {
-		@apply font-extrabold text-2xl;
-	}
+  .mainTitle {
+    @apply font-extrabold text-2xl;
+  }
 
-	.textBlock {
-		@apply max-w-lg text-center mb-4;
-	}
+  .textBlock {
+    @apply max-w-lg text-center mb-4;
+  }
 
-	.button {
-		@apply rotate-90 ml-2;
-	}
+  .button {
+    @apply rotate-90 ml-2;
+  }
 }

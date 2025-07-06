@@ -9,7 +9,7 @@ import {
 import styles from "./Features.module.scss";
 
 /**
- * Features component displays the main features of the TPlanner application.
+ * Features component displays the main features of the Donezko application.
  * It includes icons, titles, descriptions, and links to learn more about each feature.
  *
  * @returns {JSX.Element} The features section UI element
@@ -24,7 +24,7 @@ export default function Features() {
 
       {/* Main title of the features section */}
       <div className={styles.mainTitle}>
-        <h2>Main Features Of TPlanner</h2>
+        <h2>Main Features Of Donezko</h2>
       </div>
 
       {/* Introductory description text */}

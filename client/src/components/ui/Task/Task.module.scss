@@ -1,107 +1,107 @@
 .taskKanban {
-	@apply w-full h-auto border-2 border-foreground relative flex flex-col cursor-pointer bg-background;
+  @apply w-full h-auto border-2 border-foreground relative flex flex-col cursor-pointer bg-background rounded-md;
 
-	&.full-parent {
-		@apply w-4/5 h-3/4;
-	}
+  &.full-parent {
+    @apply w-4/5 h-3/4;
+  }
 
-	.topBar {
-		@apply text-xs flex flex-row justify-between items-center border-b border-b-foreground p-2;
-	}
+  .topBar {
+    @apply text-xs flex flex-row justify-between items-center border-b border-b-foreground p-2;
+  }
 
-	.author {
-		@apply text-xs w-full;
-	}
+  .author {
+    @apply text-xs w-full;
+  }
 
-	.time {
-		@apply text-xs;
+  .time {
+    @apply text-xs;
 
-		span {
-			@apply font-semibold;
+    span {
+      @apply font-semibold;
 
-			animation: blinker 1s linear infinite;
-		}
-	}
+      animation: blinker 1s linear infinite;
+    }
+  }
 
-	.content {
-		@apply h-full p-2 gap-y-2 flex flex-col justify-center items-start;
-	}
+  .content {
+    @apply h-full p-2 gap-y-2 flex flex-col justify-center items-start;
+  }
 
-	&:not(.full-parent) {
-		.content {
-			@apply py-8 gap-y-4;
-		}
-	}
+  &:not(.full-parent) {
+    .content {
+      @apply py-8 gap-y-4;
+    }
+  }
 
-	.title {
-		@apply text-lg w-full;
+  .title {
+    @apply text-lg w-full;
 
-		span {
-			@apply font-bold;
-		}
-	}
+    span {
+      @apply font-bold;
+    }
+  }
 
-	.description {
-		@apply text-base;
-	}
+  .description {
+    @apply text-base;
+  }
 
-	.priority {
-		@apply text-sm;
-	}
+  .priority {
+    @apply text-sm;
+  }
 
-	&:not(.full-parent) {
-		.title {
-			@apply text-base;
+  &:not(.full-parent) {
+    .title {
+      @apply text-base;
 
-			span {
-				@apply font-semibold;
-			}
-		}
+      span {
+        @apply font-semibold;
+      }
+    }
 
-		.description {
-			@apply text-sm;
-		}
+    .description {
+      @apply text-sm;
+    }
 
-		.priority {
-			@apply text-xs;
-		}
-	}
+    .priority {
+      @apply text-xs;
+    }
+  }
 
-	.actions {
-		@apply flex justify-between items-center w-full;
+  .actions {
+    @apply flex justify-between items-center w-full;
 
-		.comments {
-			@apply border border-foreground border-b-transparent flex justify-center items-center px-2 gap-x-1 w-1/3 ml-auto transition ease-in hover:bg-linkColor;
+    .comments {
+      @apply border border-foreground border-b-transparent flex justify-center items-center px-2 gap-x-1 w-1/3 ml-auto transition ease-in hover:bg-linkColor;
 
-			&:first-child {
-				@apply border-l-transparent ml-0 mr-auto;
-			}
+      &:first-child {
+        @apply border-l-transparent ml-0 mr-auto;
+      }
 
-			&:last-child {
-				@apply border-r-transparent;
-			}
-		}
-	}
+      &:last-child {
+        @apply border-r-transparent;
+      }
+    }
+  }
 
-	.bottomBar {
-		@apply text-xs flex flex-row justify-between border-t border-t-foreground p-2;
-	}
+  .bottomBar {
+    @apply text-xs flex flex-row justify-between border-t border-t-foreground p-2;
+  }
 
-	.team {
-		@apply text-xs;
-	}
+  .team {
+    @apply text-xs;
+  }
 
-	.status {
-		@apply inline-flex;
+  .status {
+    @apply inline-flex;
 
-		p {
-			@apply font-bold;
-		}
-	}
+    p {
+      @apply font-bold;
+    }
+  }
 }
 
 @keyframes blinker {
-	50% {
-		opacity: 0;
-	}
+  50% {
+    opacity: 0;
+  }
 }

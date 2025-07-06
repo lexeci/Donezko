@@ -1,17 +1,17 @@
 /* TasksBoardStatistic.module.scss */
 
 .statistics-item {
-	@apply grid grid-cols-2 gap-4;
+  @apply grid grid-cols-2 gap-4;
 }
 
 .item {
-	@apply min-h-24 border border-foreground p-4 capitalize hover:bg-hoverFill transition;
+  @apply min-h-24 border border-foreground p-4 capitalize hover:bg-hoverFill transition rounded-md;
 }
 
 .title {
-	@apply font-bold;
+  @apply font-bold;
 }
 
 .amount {
-	@apply text-2xl font-semibold text-center py-5;
+  @apply text-2xl font-semibold text-center py-5;
 }

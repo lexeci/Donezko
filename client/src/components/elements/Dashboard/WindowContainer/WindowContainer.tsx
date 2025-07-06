@@ -37,7 +37,7 @@ export default function WindowContainer({
   const currentYear = new Date().getFullYear();
 
   // Footer copyright text
-  const credentials = `© TPlanner ${currentYear}. All Rights Reserved by Andriy Neaijko.`;
+  const credentials = `© Donezko ${currentYear}. All Rights Reserved by Lexeci.`;
 
   return (
     <div
@@ -85,7 +85,7 @@ export default function WindowContainer({
       {/* Footer with copyright notice and an emoticon */}
       <div className={styles.footer}>
         <h5>{credentials}</h5>
-        <p>{"\t(⊙＿⊙')"}</p>
+        <p>{"Nightnoctis Labs"}</p>
       </div>
     </div>
   );

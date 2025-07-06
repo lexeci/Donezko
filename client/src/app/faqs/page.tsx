@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Faqs component renders the Frequently Asked Questions page for TPlanner.
+ * Faqs component renders the Frequently Asked Questions page for Donezko.
  * It displays a list of common questions and their answers using Accordion components.
  *
  * @returns {JSX.Element} The rendered FAQ page component
@@ -28,9 +28,9 @@ export default function Faqs() {
         "x-data is a directive in Alpine.js that allows you to declare component data.",
     },
     {
-      title: "How does TPlanner work?",
+      title: "How does Donezko work?",
       answer:
-        "TPlanner helps you organize your tasks and schedule in a user-friendly interface.",
+        "Donezko helps you organize your tasks and schedule in a user-friendly interface.",
     },
     {
       title: "How to contribute?",
@@ -43,8 +43,8 @@ export default function Faqs() {
         "Open-source means that the source code is freely available for anyone to use, modify, and distribute.",
     },
     {
-      title: "Is TPlanner free?",
-      answer: "Yes, TPlanner is completely free to use and open-source.",
+      title: "Is Donezko free?",
+      answer: "Yes, Donezko is completely free to use and open-source.",
     },
   ];
 
@@ -59,14 +59,14 @@ export default function Faqs() {
 
         {/* Main title describing the FAQ page purpose */}
         <div className={styles["main-title"]}>
-          <h2>Most common questions about TPlanner</h2>
+          <h2>Most common questions about Donezko</h2>
         </div>
 
         {/* Introductory paragraph explaining the FAQ page intent */}
         <div className={styles["intro-text"]}>
           <p>
             The FAQ's page contains answers to the most frequently asked
-            questions of users. We want to make your experience with TPlanner as
+            questions of users. We want to make your experience with Donezko as
             comfortable as possible.
           </p>
         </div>

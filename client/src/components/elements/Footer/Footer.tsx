@@ -30,18 +30,18 @@ export default function Footer() {
   // Contact information list with labels and links
   const contact = [
     {
-      link: "mailto:admin@tplanner.com",
-      title: "admin@tplanner.com",
+      link: "mailto:admin@Donezko.com",
+      title: "admin@Donezko.com",
       label: "Email:",
     },
   ];
 
   // Description text about the platform
   const description =
-    "TPlanner is a free task management platform. It provides Kanban boards and task lists, catering to both structured and flexible planning styles.";
+    "Donezko is a free task management platform. It provides Kanban boards and task lists, catering to both structured and flexible planning styles.";
 
   // Copyright and ownership text
-  const credentials = `© ${currentYear} TPlanner. All Rights Reserved by Andriy Neaijko.`;
+  const credentials = `© ${currentYear} Donezko. All Rights Reserved by Lexeci.`;
 
   // Additional footer message about the team (unused in JSX)
   const teams = "Created with passion… and a few sleepless nights. ☉ ‿ ⚆";

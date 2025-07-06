@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * About page component renders information about the TPlanner project,
+ * About page component renders information about the Donezko project,
  * its team, story, open source philosophy, and contribution invitation.
  *
  * @returns {JSX.Element} The rendered About page content within the PageLayout wrapper
@@ -35,10 +35,10 @@ export default function About() {
           <h2>Time to get know each others</h2>
         </div>
 
-        {/* Introductory paragraph about TPlanner */}
+        {/* Introductory paragraph about Donezko */}
         <div className={styles["intro-text"]}>
           <p>
-            TPlanner - is new way to create your time or task management habits.
+            Donezko - is new way to create your time or task management habits.
             There you will get most profits from scheduling your whole day.
           </p>
         </div>
@@ -65,34 +65,34 @@ export default function About() {
           It all started during a late-night brainstorming session, fueled by
           the realization that planning and deadlines weren’t going to magically
           sort themselves out. Armed with IDEs, snacks, and the occasional
-          coffee, we embarked on this journey to create TPlanner.
+          coffee, we embarked on this journey to create Donezko.
         </p>
 
         {/* Team section showing the people behind the project */}
         <div className={styles["team-section"]}>
           <h3 className={styles["section-header"]}>
-            The People Behind TPlanner 👩‍💻👨‍💻
+            The People Behind Donezko 👩‍💻👨‍💻
           </h3>
 
           {/* Container for individual team member cards */}
           <div className={styles["team-members"]}>
             {/* Individual member card with name, role, and fun fact */}
             <div className={styles["member-card"]}>
-              <h4>Andriy Neaijko</h4>
+              <h4>Lexeci</h4>
               <p>UI/UX Wizard ✨</p>
               <p>Favorite tool: Figma & Cat memes</p>
             </div>
 
             {/* Another member card */}
             <div className={styles["member-card"]}>
-              <h4>Andriy Neaijko</h4>
+              <h4>Lexeci</h4>
               <p>Backend Overlord ⚙️</p>
               <p>Favorite debug strategy: *"Turn it off and on again"*.</p>
             </div>
 
             {/* Another member card */}
             <div className={styles["member-card"]}>
-              <h4>Andriy Neaijko</h4>
+              <h4>Lexeci</h4>
               <p>Frontend Guru 🌐</p>
               <p>Dreams in JavaScript and CSS animations.</p>
             </div>
@@ -105,7 +105,7 @@ export default function About() {
         {/* Paragraph explaining the motivation behind open source */}
         <p className={styles["intro-paragraph"]}>
           We believe in sharing knowledge and building something greater
-          together. TPlanner is for everyone—whether you’re a student struggling
+          together. Donezko is for everyone—whether you’re a student struggling
           with assignments, a professional juggling deadlines, or someone who
           just really loves a good to-do list.
         </p>
@@ -131,8 +131,8 @@ export default function About() {
           <p className={styles["footer-text"]}>
             P.S. Remember, every great project starts with an idea... and a lot
             of perseverance. Also, if you’re reading this instead of working,
-            you’re totally procrastinating. Go plan your next task with
-            TPlanner! 😉
+            you’re totally procrastinating. Go plan your next task with Donezko!
+            😉
           </p>
         </div>
       </div>

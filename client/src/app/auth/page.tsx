@@ -23,7 +23,7 @@ export default function AuthPage() {
     <div className={clsx(styles.authorization, "bg-radial-grid")}>
       <div>
         <WindowContainer
-          title={"TPlanner Authorization"}
+          title={"Donezko Authorization"}
           subtitle={"Login.exe"}
           fullPage
         >

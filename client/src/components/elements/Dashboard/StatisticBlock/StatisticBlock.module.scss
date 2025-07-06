@@ -1,23 +1,23 @@
 .board-statistics-block {
-	@apply border border-foreground flex flex-col gap-y-1 max-h-96;
+  @apply border border-foreground flex flex-col gap-y-1 max-h-96 rounded-md;
 }
 
 .header {
-	@apply flex justify-between items-end border-b-2 border-b-foreground p-4 w-full;
+  @apply flex justify-between items-end border-b-2 border-b-foreground p-4 w-full;
 }
 
 .about {
-	@apply border-b border-b-foreground;
+  @apply border-b border-b-foreground;
 }
 
 .title {
-	@apply text-xl font-bold;
+  @apply text-xl font-bold;
 }
 
 .description {
-	@apply text-base;
+  @apply text-base;
 }
 
 .content {
-	@apply p-2 w-full h-full overflow-auto border-t-2 border-t-foreground flex flex-col gap-y-2;
+  @apply p-2 w-full h-full overflow-auto border-t-2 border-t-foreground flex flex-col gap-y-2;
 }

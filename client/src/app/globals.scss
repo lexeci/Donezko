@@ -3,19 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #faf6f0;
-  --foreground: #1a120b;
-  --hover-fill: #f8ede1;
-  --inactive: #f4eae0;
-  --link: #d39d63;
+  --background: #f0f0f0;
+  --foreground: #000000;
+  --hover-fill: #dcdcdc;
+  --inactive: #bcbcbc;
+  --link: #f0f0f0;
 }
 
 html.dark {
-  --background: #393646; /* Темний фон */
-  --foreground: #F4EEE0; /* Світлий текст */
-  --hover-fill: #4F4557; /* Підсвітка для елементів */
-  --inactive: #6D5D6E; /* Інший світлий тон */
-  --link: #4F4557; /* Тон для посилань */
+  --background: #1f2d2f;
+  --foreground: #e0f7f7;
+  --hover-fill: #2d3f42;
+  --inactive: #3a4e50;
+  --link: #7fc1c4;
 }
 
 body {

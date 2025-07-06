@@ -14,12 +14,12 @@
   @apply flex justify-center items-center cursor-pointer px-2 text-foreground;
 
   &__title {
-    @apply text-sm font-bold
+    @apply text-sm font-bold;
   }
 }
 
 .org-list {
-  @apply absolute top-[3.23rem] flex flex-col justify-start items-center gap-y-0.5 left-auto right-auto z-10 w-80 max-h-80 bg-background p-2 font-mono border-2 border-t-0 border-foreground shadow-lg overflow-auto;
+  @apply absolute top-[3.23rem] flex flex-col justify-start items-center gap-y-0.5 left-auto right-auto z-10 w-80 max-h-80 bg-background p-2 font-mono border-2 border-t-0 border-foreground shadow-lg overflow-auto rounded-b-md;
 
   &__manage-org {
     @apply flex flex-row justify-between items-center w-full border-b border-foreground text-xs pb-1;
@@ -29,7 +29,7 @@
     }
 
     &__item {
-      @apply flex flex-row justify-center items-center border border-double border-foreground w-fit p-0.5 cursor-pointer hover:bg-hoverFill ml-auto;
+      @apply flex flex-row justify-center items-center border border-double border-foreground w-fit p-0.5 cursor-pointer hover:bg-hoverFill ml-auto rounded-md;
     }
   }
 
@@ -48,11 +48,11 @@
       }
 
       &__container {
-        @apply border border-dashed border-foreground p-2
+        @apply border border-dashed border-foreground p-2;
       }
 
       &__details {
-        @apply border-x px-1 border-foreground mb-0.5
+        @apply border-x px-1 border-foreground mb-0.5;
       }
 
       &__status {

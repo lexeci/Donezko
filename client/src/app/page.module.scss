@@ -19,7 +19,7 @@
 }
 
 .content-block {
-  @apply p-8 max-w-screen-lg border-2 border-foreground my-8;
+  @apply p-8 max-w-screen-lg border-2 border-foreground my-8 rounded-md;
 }
 
 .content-base {
@@ -27,7 +27,7 @@
 }
 
 .content-block-conga {
-  @apply p-8 max-w-screen-lg border-2 border-foreground my-8 w-full flex flex-col justify-center items-center gap-8;
+  @apply p-8 max-w-screen-lg border-2 border-foreground my-8 w-full flex flex-col justify-center items-center gap-8 rounded-md;
 
   &__ascii-art {
     @apply text-4xl;
@@ -39,7 +39,7 @@
     }
 
     p {
-      @apply border border-foreground py-8 px-4 text-center;
+      @apply border border-foreground py-8 px-4 text-center rounded-md;
     }
   }
 }
@@ -57,7 +57,7 @@
 }
 
 .content-block-ul {
-  @apply border border-foreground py-8 px-4 mb-8;
+  @apply border border-foreground py-8 px-4 mb-8 rounded-md;
 
   ul {
     @apply mb-0;
@@ -65,11 +65,11 @@
 }
 
 .content-ul {
-  @apply list-disc pl-8 mb-8;
+  @apply list-disc pl-8 mb-8 rounded-md;
 }
 
 .content-paragraph {
-  @apply mb-8 border border-foreground py-8 px-4;
+  @apply mb-8 border border-foreground py-8 px-4 rounded-md;
 }
 
 .content-paragraph-clear {
@@ -97,7 +97,7 @@
 }
 
 .member-card {
-  @apply border border-foreground p-4;
+  @apply border border-foreground p-4 rounded-md;
 
   h4 {
     @apply text-lg font-bold mb-2;
@@ -110,19 +110,19 @@
   @apply h-full flex justify-center items-center;
 
   & > * {
-    @apply m-auto animate-spin
+    @apply m-auto animate-spin;
   }
 }
 
 .workspace-basic-content-window {
-  @apply bg-background w-full h-full border border-foreground p-4 py-8;
+  @apply bg-background w-full h-full border border-foreground p-4 py-8 rounded-md;
 
   &__title {
     @apply text-lg font-bold;
   }
 
   &__text-block {
-    @apply text-base
+    @apply text-base;
   }
 
   &__operate-window {
@@ -155,7 +155,7 @@
 }
 
 .workspace-user-list {
-  @apply container flex flex-col w-full h-full bg-background border border-foreground p-4;
+  @apply container flex flex-col w-full h-full bg-background border border-foreground p-4 rounded-md;
 
   &__header {
     @apply flex flex-row justify-between items-center w-full;
@@ -166,29 +166,35 @@
   }
 
   &__title {
-    @apply text-inherit
+    @apply text-inherit;
   }
 
   &__not-found {
-    @apply flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground bg-hoverFill;
+    @apply flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground bg-hoverFill rounded-md;
   }
 
   &__users {
     @apply flex flex-col w-full h-full overflow-auto pt-4 gap-y-4;
 
     &__item {
-      @apply flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground;
+      @apply flex flex-row justify-between items-center w-full gap-x-4 p-2 border border-foreground rounded-md;
 
       &__ico {
-        @apply border border-foreground p-0.5;
+        @apply border border-foreground p-0.5 rounded-md;
       }
 
       &__about {
-        @apply flex flex-col justify-start items-start
+        @apply flex flex-col justify-start items-start;
       }
 
-      &__name, &__email, &__status, &__role, &__tasks, &__participants, &__desc {
-        @apply text-inherit
+      &__name,
+      &__email,
+      &__status,
+      &__role,
+      &__tasks,
+      &__participants,
+      &__desc {
+        @apply text-inherit;
       }
 
       &__actions {
@@ -259,7 +265,7 @@
 }
 
 .workspace-basic-content {
-  @apply flex flex-col justify-start items-start w-full gap-y-4
+  @apply flex flex-col justify-start items-start w-full gap-y-4;
 }
 
 .workspace-not-found-block {
@@ -296,7 +302,7 @@
   @apply w-full h-[calc(100vh-82px)] mx-auto flex flex-row justify-center items-center;
 
   & > div {
-    @apply w-[110vh]
+    @apply w-[110vh];
   }
 }
 

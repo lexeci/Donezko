@@ -39,7 +39,7 @@
 }
 
 .message {
-  @apply flex flex-col bg-background max-w-[45%] min-w-[20vh] w-auto p-2 border border-black/20 gap-y-2.5;
+  @apply flex flex-col bg-background max-w-[45%] min-w-[20vh] w-auto p-2 border border-black/20 gap-y-2.5 rounded-md;
 
   &__head {
     @apply flex justify-between items-center w-full gap-x-4 text-xs;
@@ -62,6 +62,6 @@
   }
 
   &__time {
-    @apply text-inherit
+    @apply text-inherit;
   }
 }

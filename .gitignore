@@ -99,3 +99,4 @@ git rm -r --cached .
 
 # Helping files have no affect on project
 prompt.txt
+database-accesses.txt

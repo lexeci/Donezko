@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * ContributionGuidelines component renders the guidelines page for contributing to TPlanner.
+ * ContributionGuidelines component renders the guidelines page for contributing to Donezko.
  * It provides a friendly and clear set of steps for new contributors.
  *
  * @returns {JSX.Element} The rendered Contribution Guidelines page component
@@ -30,13 +30,13 @@ export default function ContributionGuidelines() {
 
         {/* Main title encouraging contribution */}
         <div className={styles["main-title"]}>
-          <h2>Let's make TPlanner better—together!</h2>
+          <h2>Let's make Donezko better—together!</h2>
         </div>
 
         {/* Introductory paragraph welcoming contributors */}
         <div className={styles["intro-text"]}>
           <p>
-            Welcome to the TPlanner open-source project! We're thrilled you’re
+            Welcome to the Donezko open-source project! We're thrilled you’re
             here. Whether you’re fixing bugs, adding features, or just cheering
             us on, we appreciate your contribution.
           </p>
@@ -101,15 +101,15 @@ export default function ContributionGuidelines() {
         <h2 className={styles["section-title"]}>7. Spread the Word 📢</h2>
         <p className={styles["content-paragraph"]}>
           Once you’re a proud contributor, share your experience with friends,
-          family, or your pet goldfish. Encourage others to join the TPlanner
+          family, or your pet goldfish. Encourage others to join the Donezko
           adventure.
         </p>
 
         {/* Footer block thanking contributors */}
         <div className={styles["footer-text-block"]}>
           <p className={styles["footer-text"]}>
-            Thanks for contributing to TPlanner! Together, we can build
-            something truly amazing (and maybe graduate while we’re at it).
+            Thanks for contributing to Donezko! Together, we can build something
+            truly amazing (and maybe graduate while we’re at it).
           </p>
         </div>
       </div>

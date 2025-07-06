@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Legal component renders the Legal information page for TPlanner.
+ * Legal component renders the Legal information page for Donezko.
  * It outlines the open-source libraries used, licensing details,
  * respect for licenses, and contributor guidelines.
  *
@@ -37,7 +37,7 @@ export default function Legal() {
         {/* Introductory paragraph describing the page purpose */}
         <div className={styles["intro-text"]}>
           <p>
-            TPlanner is built with the help of amazing open-source libraries.
+            Donezko is built with the help of amazing open-source libraries.
             This page outlines the legal aspects of using and distributing our
             project.
           </p>
@@ -55,7 +55,7 @@ export default function Legal() {
         <p className={styles["content-paragraph-ul"]}>
           Our project wouldn’t be possible without the incredible work of the
           open-source community. Below is a non-exhaustive list of libraries and
-          tools that power TPlanner:
+          tools that power Donezko:
         </p>
 
         {/* Unordered list of key open-source libraries with links */}
@@ -102,9 +102,9 @@ export default function Legal() {
         {/* Section header for licensing information */}
         <h3 className={styles["section-header"]}>Licensing:</h3>
 
-        {/* Paragraph explaining TPlanner's license and its implications */}
+        {/* Paragraph explaining Donezko's license and its implications */}
         <p className={styles["content-paragraph-ul"]}>
-          TPlanner itself is released under the <strong>MIT License</strong>.
+          Donezko itself is released under the <strong>MIT License</strong>.
           This means:
         </p>
 
@@ -127,7 +127,7 @@ export default function Legal() {
         {/* Paragraph explaining adherence to third-party license compliance */}
         <p className={styles["intro-paragraph"]}>
           We ensure that every library or tool we use complies with their
-          respective licenses. If you’re contributing code to TPlanner, please
+          respective licenses. If you’re contributing code to Donezko, please
           ensure that any third-party dependencies you include also respect
           open-source licensing norms.
         </p>
@@ -137,7 +137,7 @@ export default function Legal() {
 
         {/* Paragraph explaining contributors' agreement to MIT licensing */}
         <p className={styles["intro-paragraph"]}>
-          By contributing to TPlanner, you agree to license your contributions
+          By contributing to Donezko, you agree to license your contributions
           under the MIT License. This helps us keep the project open and
           accessible for everyone.
         </p>

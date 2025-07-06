@@ -11,7 +11,7 @@
 }
 
 .window-element-team {
-  @apply py-2 px-4 bg-background border border-foreground;
+  @apply py-2 px-4 bg-background border border-foreground rounded-md;
 }
 
 .team-operate {
@@ -19,5 +19,5 @@
 }
 
 .tabs-container {
-  @apply w-full border border-foreground p-4 overflow-y-auto;
+  @apply w-full border border-foreground p-4 overflow-y-auto rounded-md;
 }

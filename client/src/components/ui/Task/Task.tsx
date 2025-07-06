@@ -54,7 +54,7 @@ export default function Task({ data, isBannerElem = false }: TaskElement) {
           {isBannerElem ? (
             <p>
               <b>Author</b>:
-              <br /> Andriy Neaijko
+              <br /> Lexeci
             </p>
           ) : (
             data && (
@@ -91,13 +91,15 @@ export default function Task({ data, isBannerElem = false }: TaskElement) {
             <b>
               <span>Task:</span>
             </b>
-            {isBannerElem ? "Finish website design" : data && data.title}
+            {isBannerElem
+              ? "Upload this project to Github"
+              : data && data.title}
           </h3>
         </div>
         <div className={styles.description}>
           <p>
             {isBannerElem
-              ? "It's time to get this website done!"
+              ? "It's time to get this project done!"
               : data && data.description}
           </p>
         </div>
@@ -132,7 +134,7 @@ export default function Task({ data, isBannerElem = false }: TaskElement) {
         <div className={styles.team}>
           <p>
             <b>Team:</b>{" "}
-            {isBannerElem ? "Insomnia Works" : data && data.team?.title}
+            {isBannerElem ? "Nightnoctis Labs" : data && data.team?.title}
           </p>
         </div>
         <div className={styles.status}>

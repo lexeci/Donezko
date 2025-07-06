@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
 	getInfo(): string {
 		return `
-    Welcome to TPlanner! <br/><br/>
+    Welcome to Donezko! <br/><br/>
 
-    TPlanner is an innovative platform designed to streamline and enhance the management of organizations and teams. 
-    Whether you are managing a small team or an enterprise organization, TPlanner provides a suite of tools to improve collaboration, 
+    Donezko is an innovative platform designed to streamline and enhance the management of organizations and teams. 
+    Whether you are managing a small team or an enterprise organization, Donezko provides a suite of tools to improve collaboration, 
     streamline communication, and empower team members to contribute effectively. 
 <br/><br/>
     **Key Features:**<br/>
@@ -33,10 +33,10 @@ export class AppService {
     **Need Help?**<br/>
     If you have any questions or need assistance, please refer to the documentation or contact support.<br/>
 
-    We're here to help you get the most out of TPlanner!
+    We're here to help you get the most out of Donezko!
 <br/><br/>
 
-    Thank you for using TPlanner. We hope this platform enhances your team's productivity and collaboration!
+    Thank you for using Donezko. We hope this platform enhances your team's productivity and collaboration!
 <br/>
 <br/>
     ---

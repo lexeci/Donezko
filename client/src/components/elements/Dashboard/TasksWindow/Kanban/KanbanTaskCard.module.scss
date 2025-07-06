@@ -1,5 +1,5 @@
 .task-kanban {
-  @apply w-full h-auto border-2 border-foreground relative flex flex-col cursor-pointer bg-background whitespace-break-spaces;
+  @apply w-full h-auto border-2 border-foreground relative flex flex-col cursor-pointer bg-background whitespace-break-spaces rounded-md;
 
   .topBar {
     @apply text-xs flex flex-row justify-between items-center border-b border-b-foreground p-2;

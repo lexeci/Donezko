@@ -33,7 +33,7 @@ export default function Home() {
       {/* Page header with title and description */}
       <PageHeader
         pageTitle="Dashboard"
-        title="Welcome back to TPlanner"
+        title="Welcome back to Donezko"
         desc="This page is the start of our workspace. Here, you can find the main data."
       />
 

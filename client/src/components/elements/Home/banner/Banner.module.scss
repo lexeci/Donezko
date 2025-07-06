@@ -2,7 +2,7 @@
   @apply h-[calc(100vh-82px)] w-full flex justify-center items-center;
 
   .container {
-    @apply flex flex-row justify-between items-start w-3/4 h-3/4 border-2 border-foreground;
+    @apply flex flex-row justify-between items-start w-3/4 h-3/4 border-2 border-foreground rounded-md;
   }
 
   .info {

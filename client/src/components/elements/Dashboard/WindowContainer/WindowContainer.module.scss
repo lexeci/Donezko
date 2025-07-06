@@ -1,9 +1,9 @@
 .window {
-  @apply flex flex-col justify-center items-center border-4 border-t-4 border-r-8 border-b-4 border-foreground w-full h-[70vh];
+  @apply flex flex-col justify-center items-center border-4 border-t-4 border-r-8 border-b-4 border-foreground w-full h-[70vh] rounded-md;
 }
 
 .header {
-  @apply flex flex-row justify-between items-center w-full border-b-4 border-b-foreground bg-hoverFill;
+  @apply flex flex-row justify-between items-center w-full border-b-4 border-b-foreground bg-hoverFill rounded-tl-md rounded-tr-md;
 }
 
 .title {
@@ -49,5 +49,9 @@
 }
 
 .footer {
-  @apply flex flex-row justify-between items-center w-full border-t-2 border-t-foreground px-4 py-1 text-xs bg-hoverFill;
+  @apply flex flex-row justify-between items-center w-full border-t-2 border-t-foreground px-4 py-1 text-xs bg-hoverFill rounded-bl-md rounded-br-md;
+
+  p {
+    @apply font-bold;
+  }
 }

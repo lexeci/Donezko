@@ -8,7 +8,7 @@
  * const pageMeta = NO_INDEX_PAGE; // { robots: { index: false, follow: false } }
  */
 export const NO_INDEX_PAGE: { robots: { index: boolean; follow: boolean } } = {
-    robots: {index: false, follow: false},
+  robots: { index: false, follow: false },
 };
 
 /**
@@ -21,7 +21,7 @@ export const NO_INDEX_PAGE: { robots: { index: boolean; follow: boolean } } = {
  * const pageMeta = INDEX_PAGE; // { robots: { index: true, follow: true } }
  */
 export const INDEX_PAGE: { robots: { index: boolean; follow: boolean } } = {
-    robots: {index: true, follow: true},
+  robots: { index: true, follow: true },
 };
 
 /**
@@ -30,6 +30,6 @@ export const INDEX_PAGE: { robots: { index: boolean; follow: boolean } } = {
  * This value is used across the site for consistency in naming and branding.
  *
  * @example
- * const siteName = SITE_NAME; // 'TPlanner'
+ * const siteName = SITE_NAME; // 'Donezko'
  */
-export const SITE_NAME: string = 'TPlanner';
+export const SITE_NAME: string = "Donezko";

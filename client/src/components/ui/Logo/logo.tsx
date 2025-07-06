@@ -11,7 +11,7 @@ export default function Logo() {
   return (
     <div className={styles.logo}>
       <Link href="/">
-        <strong>TPlanner.com</strong>
+        <strong>Donezko.com</strong>
       </Link>
     </div>
   );

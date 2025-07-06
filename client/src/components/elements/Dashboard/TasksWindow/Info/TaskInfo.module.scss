@@ -1,99 +1,99 @@
 .task-info {
-	@apply flex flex-col justify-start items-start w-full gap-y-2 h-full;
+  @apply flex flex-col justify-start items-start w-full gap-y-2 h-full;
 }
 
 .info-base {
-	@apply p-4;
+  @apply p-4;
 }
 
 .header {
-	@apply w-full border-b border-b-foreground pb-4;
+  @apply w-full border-b border-b-foreground pb-4;
 }
 
 .title {
-	@apply text-lg font-bold mb-4;
+  @apply text-lg font-bold mb-4;
 }
 
 .text-block {
-	@apply text-xs;
+  @apply text-xs;
 
-	p:not(:last-child) {
-		@apply block mb-2;
-	}
+  p:not(:last-child) {
+    @apply block mb-2;
+  }
 }
 
 .description {
-	@apply text-sm;
+  @apply text-sm;
 }
 
 .actions {
-	@apply flex flex-row justify-between items-center w-full border-b border-foreground pb-2 cursor-pointer;
+  @apply flex flex-row justify-between items-center w-full border-b border-foreground pb-2 cursor-pointer;
 
-	&__btn {
-		@apply flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300;
-	}
+  &__btn {
+    @apply flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300 rounded-md;
+  }
 }
 
 .note {
-	@apply text-xs border border-foreground p-2;
+  @apply text-xs border border-foreground p-2 rounded-md;
 }
 
 .container {
-	@apply flex flex-col justify-start items-start w-full h-full gap-y-2;
+  @apply flex flex-col justify-start items-start w-full h-full gap-y-2;
 }
 
 .author-info {
-	@apply flex flex-row justify-between items-center border border-foreground w-full py-2 px-4 text-xs;
+  @apply flex flex-row justify-between items-center border border-foreground w-full py-2 px-4 text-xs rounded-md;
 
-	span {
-		@apply font-semibold;
-	}
+  span {
+    @apply font-semibold;
+  }
 }
 
 .assign-info {
-	@apply flex flex-col border border-foreground w-full py-2 px-4 text-xs;
+  @apply flex flex-col border border-foreground w-full py-2 px-4 text-xs rounded-md;
 
-	&__item {
-		@apply flex flex-row justify-between items-center w-full;
+  &__item {
+    @apply flex flex-row justify-between items-center w-full;
 
-		span {
-			@apply font-semibold lowercase;
-		}
-	}
+    span {
+      @apply font-semibold lowercase;
+    }
+  }
 }
 
 .task-info-details {
-	@apply flex flex-col justify-start items-start border border-foreground w-full h-full py-4 px-4;
+  @apply flex flex-col justify-start items-start border border-foreground w-full h-full py-4 px-4 rounded-md;
 
-	&__title {
-		@apply text-xl pb-2;
+  &__title {
+    @apply text-xl pb-2;
 
-		span {
-			@apply font-semibold;
-		}
-	}
+    span {
+      @apply font-semibold;
+    }
+  }
 
-	&__description {
-		@apply border-t border-foreground w-full pt-4;
+  &__description {
+    @apply border-t border-foreground w-full pt-4;
 
-		.title {
-			@apply font-semibold mb-1.5;
-		}
-	}
+    .title {
+      @apply font-semibold mb-1.5;
+    }
+  }
 }
 
 .date-info {
-	@apply text-xs flex flex-col justify-center items-start border border-foreground w-full py-2 px-4;
+  @apply text-xs flex flex-col justify-center items-start border border-foreground w-full py-2 px-4 rounded-md;
 }
 
 .actions {
-	@apply flex flex-row justify-between items-center w-full border-t border-foreground py-2 cursor-pointer;
+  @apply flex flex-row justify-between items-center w-full border-t border-foreground py-2 cursor-pointer;
 
-	& > div {
-		@apply flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300;
-	}
+  & > div {
+    @apply flex flex-row items-center gap-x-2 font-semibold border border-foreground p-2 py-1 hover:bg-foreground hover:text-hoverFill transition-all ease-in duration-300 rounded-md;
+  }
 }
 
 .task-info-update {
-	@apply flex flex-col justify-start items-start w-full gap-y-4 p-4;
+  @apply flex flex-col justify-start items-start w-full gap-y-4 p-4;
 }

@@ -1,29 +1,56 @@
-import {projectService} from "@/src/services/project.service";
-import {ProjectResponse} from "@/types/project.types";
-import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {useEffect, useState} from "react";
-import {toast} from "sonner";
+import { projectService } from "@/src/services/project.service";
+import { ProjectResponse } from "@/types/project.types";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export function useFetchProjectById(id: string, organizationId?: string | null) {
-    const [project, setProject] = useState<ProjectResponse | undefined>(
-        undefined);
+/**
+ * Custom hook to fetch a project by its ID within an organization.
+ *
+ * @param id - The ID of the project to fetch.
+ * @param organizationId - Optional organization ID to scope the request.
+ *
+ * @returns {{
+ *   project: ProjectResponse | undefined;
+ *   setProject: React.Dispatch<React.SetStateAction<ProjectResponse | undefined>>;
+ *   handleRefetch: () => void;
+ *   isFetching: boolean;
+ *   isFetched: boolean;
+ * }}
+ */
+export function useFetchProjectById(
+  id: string,
+  organizationId?: string | null
+) {
+  // Local state to store the fetched project data
+  const [project, setProject] = useState<ProjectResponse | undefined>(
+    undefined
+  );
 
-    const {data: projectData, refetch, isFetching, isFetched} = useQuery<ProjectResponse>({
-        queryKey: ["project", id],
-        queryFn: () => projectService.getProjectById(id, organizationId as string),
-        enabled: !!id && !!organizationId,
-    });
+  // React Query to fetch project data by ID and organization ID
+  const {
+    data: projectData,
+    refetch,
+    isFetching,
+    isFetched,
+  } = useQuery<ProjectResponse>({
+    queryKey: ["project", id], // Unique query key including project ID
+    queryFn: () => projectService.getProjectById(id, organizationId as string),
+    enabled: !!id && !!organizationId, // Only fetch if both IDs are provided
+  });
 
-    useEffect(() => {
-        if (projectData) {
-            setProject(projectData);
-        }
-    }, [projectData]);
+  // Update local state when fetched data changes
+  useEffect(() => {
+    if (projectData) {
+      setProject(projectData);
+    }
+  }, [projectData]);
 
-    // Функція для рефетчінгу
-    const handleRefetch = () => {
-        refetch(); // Викликає повторний запит
-    };
+  // Function to manually refetch project data
+  const handleRefetch = () => {
+    refetch();
+  };
 
-    return {project, setProject, handleRefetch, isFetching, isFetched};
+  // Return the current project state, setter, refetch function, and status flags
+  return { project, setProject, handleRefetch, isFetching, isFetched };
 }

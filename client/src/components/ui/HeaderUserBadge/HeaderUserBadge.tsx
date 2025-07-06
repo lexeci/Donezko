@@ -1,44 +1,61 @@
 "use client";
 
-import {Button} from "@/components/index";
-import {useCookieMonitor} from "@/hooks/useCookieMonitor";
-import {useFetchUserProfile} from "@/hooks/user/useFetchUserProfile";
-import {useEffect, useState} from "react";
+import { Button } from "@/components/index";
+import { useCookieMonitor } from "@/hooks/useCookieMonitor";
+import { useFetchUserProfile } from "@/hooks/user/useFetchUserProfile";
+import { useEffect, useState } from "react";
 
+/**
+ * HeaderUserBadge component displays the user's login status in the header.
+ *
+ * It monitors the presence of a specific cookie ("accessToken") to determine if the user
+ * is authenticated and fetches the user profile data. Depending on this state,
+ * it either shows a welcome message with the user's name or a login button.
+ *
+ * @component
+ * @returns {JSX.Element} User greeting if logged in; otherwise, a login button.
+ */
 export default function HeaderUserBadge() {
-    const {profileData, isDataLoading} = useFetchUserProfile();
-    const [user, setUser] = useState(profileData?.user); // Динамічно зберігаємо користувача
+  // Fetch user profile data and loading status
+  const { profileData, isDataLoading } = useFetchUserProfile();
 
-    const [cookiesExist, setCookiesExist] = useState(false);
+  // Local state to hold the current user info dynamically
+  const [user, setUser] = useState(profileData?.user);
 
-    // Колбек, коли кука з'являється
-    const handleCookieChange = () => {
-        setCookiesExist(true);
-    };
+  // State tracking if the required cookie exists
+  const [cookiesExist, setCookiesExist] = useState(false);
 
-    // Колбек, коли кука зникає
-    const handleCookieRemove = () => {
-        setCookiesExist(false);
-    };
+  // Callback when the cookie appears
+  const handleCookieChange = () => {
+    setCookiesExist(true);
+  };
 
-    // Викликаємо useCookieMonitor з двома колбеками
-    useCookieMonitor("accessToken", handleCookieChange, handleCookieRemove);
+  // Callback when the cookie is removed
+  const handleCookieRemove = () => {
+    setCookiesExist(false);
+  };
 
-    useEffect(() => {
-        if (profileData && cookiesExist) {
-            setUser(profileData?.user);
-        }
-    }, [profileData, isDataLoading, cookiesExist]);
+  // Hook to monitor the "accessToken" cookie with the above callbacks
+  useCookieMonitor("accessToken", handleCookieChange, handleCookieRemove);
 
-    return (
-        <div>
-            {isDataLoading || !user || !cookiesExist ? (
-                <Button type="link" link="/auth">
-                    Login
-                </Button>
-            ) : (
-                <p>Welcome, {user.name}</p>
-            )}
-        </div>
-    );
+  // Update local user state when profile data or cookie presence changes
+  useEffect(() => {
+    if (profileData && cookiesExist) {
+      setUser(profileData?.user);
+    }
+  }, [profileData, isDataLoading, cookiesExist]);
+
+  return (
+    <div>
+      {/* Show login button if loading, no user, or cookie missing */}
+      {isDataLoading || !user || !cookiesExist ? (
+        <Button type="link" link="/auth">
+          Login
+        </Button>
+      ) : (
+        // Otherwise greet the user by name
+        <p>Welcome, {user.name}</p>
+      )}
+    </div>
+  );
 }

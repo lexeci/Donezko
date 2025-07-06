@@ -1,19 +1,34 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {useState} from "react";
-import {orgService} from "@/src/services/org.service";
-import {toast} from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { orgService } from "@/src/services/org.service";
+import { toast } from "sonner";
 
+/**
+ * Custom hook to handle exiting from an organization.
+ *
+ * @returns An object containing:
+ *  - exitOrganization: Function to trigger exit mutation with the organization ID.
+ *  - exitedOrganizationId: The ID of the organization that was successfully exited.
+ *  - isPending: Boolean indicating whether the exit mutation is in progress.
+ */
 export function useExitOrg() {
-    const [exitedOrganizationId, setExitedOrganizationId] = useState<string | undefined>(undefined);
+  // Local state to store the ID of the organization that the user has exited
+  const [exitedOrganizationId, setExitedOrganizationId] = useState<
+    string | undefined
+  >(undefined);
 
-    const {mutate: exitOrganization, isPending} = useMutation({
-        mutationKey: ['Exit organization'],
-        mutationFn: (id: string) => orgService.exitOrganization(id),
-        onSuccess: (_, id) => {
-            toast.success('Successfully exit organization!');
-            setExitedOrganizationId(id);
-        },
-    });
+  // useMutation hook to call the API for exiting an organization
+  const { mutate: exitOrganization, isPending } = useMutation({
+    mutationKey: ["Exit organization"], // Unique mutation key
+    mutationFn: (id: string) => orgService.exitOrganization(id), // Mutation function calling the service
+    onSuccess: (_, id) => {
+      // Show success toast notification on successful exit
+      toast.success("Successfully exited organization!");
+      // Update state with the exited organization ID
+      setExitedOrganizationId(id);
+    },
+  });
 
-    return {exitOrganization, exitedOrganizationId, isPending};
+  // Return the mutation function, exited org ID, and pending status
+  return { exitOrganization, exitedOrganizationId, isPending };
 }

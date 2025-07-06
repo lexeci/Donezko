@@ -1,25 +1,39 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import {taskService} from "@/src/services/task.service";
-import {useState} from "react";
-import {toast} from "sonner"; // Залишаємо без змін, якщо це необхідно
+import { taskService } from "@/src/services/task.service";
 
+/**
+ * Custom hook to delete a task by ID within an organization.
+ *
+ * Manages deletion status and shows toast notifications on success.
+ *
+ * @returns {{
+ *   removeTask: (params: { taskId: string; organizationId: string }) => void;
+ *   isDeleted: boolean;
+ *   isPending: boolean;
+ * }}
+ */
 export function useDeleteTask() {
-    // Зміна назви хуку для унікальності
-    const [isDeleted, setIsDeleted] = useState<boolean>(false);
+  // Local state to track whether deletion was successful
+  const [isDeleted, setIsDeleted] = useState<boolean>(false);
 
-    const {mutate: removeTask, isPending} = useMutation({
-        // Зміна назви функції та статусу
-        mutationKey: ["delete task"], // Зміна ключа мутації для унікальності
-        mutationFn: ({taskId, organizationId}: { taskId: string, organizationId: string }) => taskService.deleteTask({
-            taskId,
-            organizationId
-        }), // Залишаємо назву сервісу
-        onSuccess(data) {
-            toast.success('Successfully deleted task!');
-            setIsDeleted(data)
-        },
-    });
+  // Mutation hook to call the deleteTask API endpoint
+  const { mutate: removeTask, isPending } = useMutation({
+    mutationKey: ["delete task"], // Unique mutation key for this action
+    mutationFn: ({
+      taskId,
+      organizationId,
+    }: {
+      taskId: string;
+      organizationId: string;
+    }) => taskService.deleteTask({ taskId, organizationId }),
+    onSuccess(data) {
+      toast.success("Successfully deleted task!");
+      setIsDeleted(data);
+    },
+  });
 
-    return {removeTask, isDeleted, isPending}; // Повертаємо оновлену назву функції та статусу
+  return { removeTask, isDeleted, isPending };
 }

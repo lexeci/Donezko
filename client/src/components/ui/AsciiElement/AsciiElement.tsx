@@ -1,117 +1,133 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import styles from "./AsciiElement.module.scss";
 
 type AsciiElementTypes =
-    | "loading"
-    | "progress"
-    | "completed"
-    | "notStarted"
-    | "hold"
-    | "conga";
+  | "loading"
+  | "progress"
+  | "completed"
+  | "notStarted"
+  | "hold"
+  | "conga";
 
-export default function AsciiElement({types}: { types: AsciiElementTypes }) {
-    const [currentFrame, setCurrentFrame] = useState(0);
-    const [showCloud, setShowCloud] = useState(false);
+interface AsciiElementProps {
+  /** Animation type to display */
+  types: AsciiElementTypes;
+}
 
-    const animations = {
-        loading: [
-            "[>    ]",
-            "[>>   ]",
-            "[>>>  ]",
-            "[ >>> ]",
-            "[  >>>]",
-            "[   >>]",
-            "[    >]",
-        ],
-        progress: [
-            "[    ]",
-            "[=   ]",
-            "[==  ]",
-            "[=== ]",
-            "[====]",
-            "[ ===]",
-            "[  ==]",
-            "[   =]",
-        ],
-        completed: ["[....]", "[✓...]", "[.✓..]", "[..✓.]", "[...✓]"], // Completed — статичне заповнення
-        notStarted: [
-            "[....]",
-            "[>...]",
-            "[.>..]",
-            "[..>.]",
-            "[...>]",
-            "[....]",
-            "[...<]",
-            "[..<.]",
-            "[.<..]",
-            "[<...]",
-            "[....]",
-        ],
-        hold: ["[>--<]", "[-<>-]", "[--<>]"],
+/**
+ * AsciiElement component renders ASCII art animations based on the provided type.
+ * It cycles through predefined frames with a fixed interval.
+ *
+ * @param {AsciiElementProps} props - Component props.
+ * @returns {JSX.Element} Animated ASCII art element.
+ *
+ * @example
+ * <AsciiElement types="loading" />
+ *
+ * <AsciiElement types="conga" />
+ */
+export default function AsciiElement({ types }: AsciiElementProps) {
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [showCloud, setShowCloud] = useState(false);
 
-        conga: [
-            `
+  const animations = {
+    loading: [
+      "[>    ]",
+      "[>>   ]",
+      "[>>>  ]",
+      "[ >>> ]",
+      "[  >>>]",
+      "[   >>]",
+      "[    >]",
+    ],
+    progress: [
+      "[    ]",
+      "[=   ]",
+      "[==  ]",
+      "[=== ]",
+      "[====]",
+      "[ ===]",
+      "[  ==]",
+      "[   =]",
+    ],
+    completed: ["[....]", "[✓...]", "[.✓..]", "[..✓.]", "[...✓]"],
+    notStarted: [
+      "[....]",
+      "[>...]",
+      "[.>..]",
+      "[..>.]",
+      "[...>]",
+      "[....]",
+      "[...<]",
+      "[..<.]",
+      "[.<..]",
+      "[<...]",
+      "[....]",
+    ],
+    hold: ["[>--<]", "[-<>-]", "[--<>]"],
+    conga: [
+      `
   (•_•)
   <)  )╯
   /  \\ `,
-            `
+      `
   (•_•)
  \\(  (>
    /  \\`,
-            `
+      `
   (ಠ_ಠ)
   <)   )╯
    /  \\`,
-            `
+      `
   (ಠ_ಠ)
   <)  )
    /  \\`,
-            `
+      `
 (•_•)
 \\(  (>
   \\ /`,
-            `
+      `
 (•_•)
 <)  )╯
  \\ \\`,
-            `
+      `
 (•_•)
 <)  )╯
   \\ \\`,
-            `
+      `
   (•_•)
  \\(  (>
    /   /`,
-        ],
-    };
+    ],
+  };
 
-    useEffect(() => {
-        const frames = animations[types];
-        if (!frames) return;
+  useEffect(() => {
+    const frames = animations[types];
+    if (!frames) return;
 
-        // Додаємо хмарку для кожного другого кадру
-        const interval = setInterval(() => {
-            setCurrentFrame(prevFrame => {
-                const newFrame = (prevFrame + 1) % frames.length;
-                setShowCloud(newFrame % 2 === 0); // Хмарка з'являється на парних кадрах
-                return newFrame;
-            });
-        }, 500);
+    // Cycle through frames every 500ms and toggle showCloud on even frames
+    const interval = setInterval(() => {
+      setCurrentFrame((prevFrame) => {
+        const newFrame = (prevFrame + 1) % frames.length;
+        setShowCloud(newFrame % 2 === 0);
+        return newFrame;
+      });
+    }, 500);
 
-        return () => clearInterval(interval);
-    }, [types]);
+    return () => clearInterval(interval);
+  }, [types]);
 
-    // Якщо тип анімації не підтримується
-    if (!animations[types]) {
-        return <div>Animation type not supported</div>;
-    }
-    return (
-        <div className={styles["ascii-element"]}>
-            <div className={styles["ascii-element__loader"]}>
-                <pre>{animations[types][currentFrame]}</pre>
-            </div>
-        </div>
-    );
+  if (!animations[types]) {
+    return <div>Animation type not supported</div>;
+  }
+
+  return (
+    <div className={styles["ascii-element"]}>
+      <div className={styles["ascii-element__loader"]}>
+        <pre>{animations[types][currentFrame]}</pre>
+      </div>
+    </div>
+  );
 }

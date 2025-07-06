@@ -3,86 +3,126 @@ import { useLoadSettings } from "./useLoadSettings";
 import { useUpdateRound } from "./useUpdateRound";
 
 type UseTimerActionsProps = TimerState & {
-	rounds: TimerRoundResponse[] | undefined;
+  rounds: TimerRoundResponse[] | undefined;
 };
 
+/**
+ * @function useTimerActions
+ *
+ * Provides imperative timer control actions such as start, pause, skip to next round, or revert to a previous round.
+ * Intended to be used with the `useTimer` state and a list of current timer rounds.
+ *
+ * Internally updates the current round's status and duration via the `useUpdateRound` hook.
+ *
+ * @param {UseTimerActionsProps} props - The timer state and rounds list.
+ * @param {TimerRoundResponse | undefined} props.activeRound - Currently active round.
+ * @param {Function} props.setIsRunning - Function to start or stop the timer.
+ * @param {number} props.secondsLeft - Seconds remaining in the current round.
+ * @param {TimerRoundResponse[] | undefined} props.rounds - All user timer rounds for the session.
+ * @param {Function} props.setActiveRound - Function to set the currently active round.
+ *
+ * @returns {{
+ *   isUpdateRoundPending: boolean,
+ *   pauseTimer: () => void,
+ *   startTimer: () => void,
+ *   moveToNextRound: () => void,
+ *   moveToPreviousRound: () => void
+ * }} Timer action handlers and update status.
+ *
+ * @example
+ * const {
+ *   pauseTimer,
+ *   startTimer,
+ *   moveToNextRound,
+ *   moveToPreviousRound,
+ *   isUpdateRoundPending
+ * } = useTimerActions({ ...timerState, rounds });
+ *
+ * <button onClick={pauseTimer}>Pause</button>
+ */
 export function useTimerActions({
-	activeRound,
-	setIsRunning,
-	secondsLeft,
-	rounds,
-	setActiveRound,
+  activeRound,
+  setIsRunning,
+  secondsLeft,
+  rounds,
+  setActiveRound,
 }: UseTimerActionsProps) {
-	const { workInterval } = useLoadSettings();
-	const { isUpdateRoundPending, updateRound } = useUpdateRound();
+  const { workInterval } = useLoadSettings();
+  const { isUpdateRoundPending, updateRound } = useUpdateRound();
 
-	const pauseTimer = () => {
-		setIsRunning(false);
-		if (!activeRound?.id) return;
+  /**
+   * Pause the timer and update the current round's `totalSeconds` and `isCompleted` status.
+   */
+  const pauseTimer = () => {
+    setIsRunning(false);
+    if (!activeRound?.id) return;
 
-		updateRound({
-			id: activeRound.id,
-			data: {
-				totalSeconds: secondsLeft,
-				isCompleted: Math.floor(secondsLeft / 60) >= workInterval,
-			},
-		});
-	};
+    updateRound({
+      id: activeRound.id,
+      data: {
+        totalSeconds: secondsLeft,
+        isCompleted: Math.floor(secondsLeft / 60) >= workInterval,
+      },
+    });
+  };
 
-	const startTimer = () => {
-		setIsRunning(true);
-	};
+  /**
+   * Start the timer.
+   */
+  const startTimer = () => {
+    setIsRunning(true);
+  };
 
-	const moveToNextRound = () => {
-		if (!activeRound?.id) return;
+  /**
+   * Mark the current round as completed and set totalSeconds to full work interval.
+   */
+  const moveToNextRound = () => {
+    if (!activeRound?.id) return;
 
-		updateRound({
-			id: activeRound.id,
-			data: {
-				isCompleted: true,
-				totalSeconds: workInterval * 60,
-			},
-		});
-	};
+    updateRound({
+      id: activeRound.id,
+      data: {
+        isCompleted: true,
+        totalSeconds: workInterval * 60,
+      },
+    });
+  };
 
-	const moveToPreviousRound = () => {
-		// Перевіряємо, чи є раунди
-		if (!rounds || rounds.length === 0) return;
+  /**
+   * Revert the last completed round to an incomplete state and make it active again.
+   */
+  const moveToPreviousRound = () => {
+    if (!rounds || rounds.length === 0) return;
 
-		// Знайти індекс останнього завершеного раунду
-		const lastCompletedIndex = rounds
-			.map(round => round.isCompleted)
-			.lastIndexOf(true);
+    const lastCompletedIndex = rounds
+      .map((round) => round.isCompleted)
+      .lastIndexOf(true);
 
-		// Якщо не знайдено завершених раундів, виходимо
-		if (lastCompletedIndex === -1) return;
+    if (lastCompletedIndex === -1) return;
 
-		// Отримуємо останній завершений раунд
-		const lastCompletedRound = rounds[lastCompletedIndex];
+    const lastCompletedRound = rounds[lastCompletedIndex];
 
-		// Змінюємо стан цього раунду
-		updateRound(
-			{
-				id: lastCompletedRound.id,
-				data: {
-					isCompleted: false, // Робимо раунд незавершеним
-					totalSeconds: 0, // Скидаємо час
-				},
-			},
-			{
-				onSuccess: () => {
-					// Встановлюємо його активним після оновлення
-					setActiveRound(lastCompletedRound);
-				},
-			}
-		);
-	};
+    updateRound(
+      {
+        id: lastCompletedRound.id,
+        data: {
+          isCompleted: false,
+          totalSeconds: 0,
+        },
+      },
+      {
+        onSuccess: () => {
+          setActiveRound(lastCompletedRound);
+        },
+      }
+    );
+  };
 
-	return {
-		isUpdateRoundPending,
-		pauseTimer,
-		startTimer,
-		moveToNextRound,
-		moveToPreviousRound,
-	};
+  return {
+    isUpdateRoundPending,
+    pauseTimer,
+    startTimer,
+    moveToNextRound,
+    moveToPreviousRound,
+  };
 }

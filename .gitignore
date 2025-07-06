@@ -96,3 +96,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 **/*.tsbuildinfo
 **/next-env.d.ts
 git rm -r --cached .
+
+# Helping files have no affect on project
+prompt.txt

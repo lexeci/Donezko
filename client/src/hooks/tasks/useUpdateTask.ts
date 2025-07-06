@@ -1,31 +1,51 @@
 import { useMutation } from "@tanstack/react-query";
-
 import { TaskFormData, TaskResponse } from "@/types/task.types";
-
 import { taskService } from "@/src/services/task.service";
 import { useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * Custom hook to update a task.
+ *
+ * Provides mutation logic with React Query and tracks the updated task data.
+ *
+ * @returns {{
+ *   modifyTask: (params: { taskId: string; organizationId: string; data: TaskFormData }) => void;
+ *   updatedTask: TaskResponse | undefined;
+ *   isPending: boolean;
+ * }}
+ *
+ * @example
+ * const { modifyTask, updatedTask, isPending } = useUpdateTask();
+ * modifyTask({ taskId: "123", organizationId: "org456", data: { title: "New title" } });
+ */
 export function useUpdateTask() {
-	// Зміна назви функції для унікальності
-	const [updatedTask, setUpdatedTask] = useState<TaskResponse | undefined>(
-		undefined
-	);
+  // State to store the updated task response after successful mutation
+  const [updatedTask, setUpdatedTask] = useState<TaskResponse | undefined>(
+    undefined
+  );
 
-	const { mutate: modifyTask, isPending } = useMutation({
-		mutationKey: ["update task"], // Зміна назви ключа для унікальності
-		mutationFn: (
-			{
-				taskId,
-				organizationId,
-				data,
-			}: { taskId: string; data: TaskFormData; organizationId: string } // Зміна назви параметрів
-		) => taskService.updateTask({ id: taskId, data, organizationId }),
-		onSuccess(data) {
-			toast.success("Successfully updated task!");
-			setUpdatedTask(data);
-		},
-	});
+  // React Query mutation for updating the task
+  const { mutate: modifyTask, isPending } = useMutation({
+    mutationKey: ["update task"],
 
-	return { modifyTask, updatedTask, isPending }; // Зміна назви функції, що повертається
+    // Mutation function accepts an object containing taskId, organizationId, and the updated data
+    mutationFn: ({
+      taskId,
+      organizationId,
+      data,
+    }: {
+      taskId: string;
+      data: TaskFormData;
+      organizationId: string;
+    }) => taskService.updateTask({ id: taskId, data, organizationId }),
+
+    // On successful update, show a toast notification and update local state
+    onSuccess(data) {
+      toast.success("Successfully updated task!");
+      setUpdatedTask(data);
+    },
+  });
+
+  return { modifyTask, updatedTask, isPending };
 }

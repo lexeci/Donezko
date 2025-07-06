@@ -1,3 +1,5 @@
+// Export default components from their respective paths for centralized imports
+
 export { default as DailyBoardAdvice } from "./DailyBoardAdvice/DailyBoardAdvice";
 export { default as EntityItem } from "./EntityItem/EntityItem";
 export { default as ProjectBoardStatistic } from "./ProjectBoardStatistic/ProjectBoardStatistic";

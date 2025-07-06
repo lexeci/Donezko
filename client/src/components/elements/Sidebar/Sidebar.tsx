@@ -10,76 +10,91 @@ import LogoutButton from "./LogoutButton";
 import styles from "./Sidebar.module.scss";
 import { DASHBOARD_PAGES } from "@/src/pages-url.config";
 
+/**
+ * Sidebar component
+ *
+ * Displays navigation links in the sidebar with conditional rendering based on
+ * the user's organization membership and role.
+ *
+ * @component
+ * @example
+ * return <Sidebar />
+ *
+ * @returns {JSX.Element} Sidebar navigation panel
+ */
 export default function Sidebar() {
-	const { organizationId } = useOrganization(); // Отримуємо organizationId з контексту
+  // Get current organization ID from context
+  const { organizationId } = useOrganization();
 
-	const { organizationRole } = useFetchOrgRole(organizationId);
+  // Fetch the current user's role in the organization
+  const { organizationRole } = useFetchOrgRole(organizationId);
 
-	// Стейт для лінків
+  // Basic navigation links visible to all users
+  const baseLinks = [
+    { link: DASHBOARD_PAGES.HOME, title: "Dashboard" },
+    { link: DASHBOARD_PAGES.TIMER, title: "Pomodoro Timer" },
+    { link: DASHBOARD_PAGES.SETTINGS, title: "Settings" },
+  ];
 
-	const baseLinks = [
-		{ link: DASHBOARD_PAGES.HOME, title: "Dashboard" },
-		{ link: DASHBOARD_PAGES.TIMER, title: "Pomodoro Timer" },
-		{ link: DASHBOARD_PAGES.SETTINGS, title: "Settings" },
-	];
+  // Additional links only visible to non-viewer roles
+  const additionalLinks = [
+    { link: DASHBOARD_PAGES.TASKS, title: "Tasks" },
+    { link: DASHBOARD_PAGES.TEAMS, title: "Teams" },
+    { link: DASHBOARD_PAGES.PROJECTS, title: "Projects" },
+  ];
 
-	const additionalLinks = [
-		{ link: DASHBOARD_PAGES.TASKS, title: "Tasks" },
-		{ link: DASHBOARD_PAGES.TEAMS, title: "Teams" },
-		{ link: DASHBOARD_PAGES.PROJECTS, title: "Projects" },
-	];
+  // State for currently displayed links
+  const [links, setLinks] = useState(baseLinks);
 
-	const [links, setLinks] = useState(baseLinks);
+  useEffect(() => {
+    const isViewer = organizationRole?.role === OrgRole.VIEWER;
+    let updatedLinks = [...baseLinks];
 
-	useEffect(() => {
-		const isViewer = organizationRole?.role === OrgRole.VIEWER;
-		let updatedLinks = [...baseLinks];
+    if (organizationId) {
+      // Insert "My Organization" link after Dashboard
+      updatedLinks.splice(1, 0, {
+        link: `${DASHBOARD_PAGES.ORGANIZATIONS}/${organizationId}`,
+        title: "My Organization",
+      });
 
-		if (organizationId) {
-			// Додаємо посилання на організацію після Dashboard
-			updatedLinks.splice(1, 0, {
-				link: `${DASHBOARD_PAGES.ORGANIZATIONS}/${organizationId}`,
-				title: "My Organization",
-			});
+      if (!isViewer) {
+        // Insert additional links between Pomodoro Timer and Settings
+        const pomodoroIndex = updatedLinks.findIndex(
+          (link) => link.title === "Pomodoro Timer"
+        );
+        updatedLinks.splice(pomodoroIndex + 1, 0, ...additionalLinks);
+      }
+    } else {
+      // If no organization, add Organizations link after Dashboard
+      updatedLinks.splice(1, 0, {
+        link: DASHBOARD_PAGES.ORGANIZATIONS,
+        title: "Organizations",
+      });
+    }
 
-			if (!isViewer) {
-				// Вставляємо additionalLinks між Pomodoro та Settings
-				const pomodoroIndex = updatedLinks.findIndex(
-					link => link.title === "Pomodoro Timer"
-				);
-				updatedLinks.splice(pomodoroIndex + 1, 0, ...additionalLinks);
-			}
-		} else {
-			// Додаємо Organizations для користувачів без організації
-			updatedLinks.splice(1, 0, {
-				link: DASHBOARD_PAGES.ORGANIZATIONS,
-				title: "Organizations",
-			});
-		}
+    setLinks(updatedLinks);
+  }, [organizationId, organizationRole]);
 
-		setLinks(updatedLinks);
-	}, [organizationId, organizationRole]); // Залежність від organizationId та organizationRole
+  return (
+    <div className={styles.sidebar}>
+      <div className={styles.container}>
+        <div className={styles["container__links"]}>
+          {links.map((item, i) => (
+            <Button
+              type="link"
+              link={item.link}
+              fullWidth
+              block
+              negative
+              key={generateKeyComp(`${item.title}__${i}`)}
+            >
+              {item.title}
+            </Button>
+          ))}
+        </div>
 
-	return (
-		<div className={styles.sidebar}>
-			<div className={styles.container}>
-				<div className={styles["container__links"]}>
-					{links.map((item, i) => (
-						<Button
-							type="link"
-							link={item.link}
-							fullWidth
-							block
-							negative
-							key={generateKeyComp(`${item.title}__${i}`)}
-						>
-							{item.title}
-						</Button>
-					))}
-				</div>
-
-				<LogoutButton />
-			</div>
-		</div>
-	);
+        <LogoutButton />
+      </div>
+    </div>
+  );
 }

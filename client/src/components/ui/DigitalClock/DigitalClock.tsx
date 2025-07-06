@@ -3,57 +3,67 @@
 import { useEffect, useMemo, useState } from "react";
 import styles from "./DigitalClock.module.scss";
 
+/**
+ * DigitalClock component displays the current time in 12-hour format with AM/PM.
+ * The time updates every second.
+ *
+ * @component
+ * @example
+ * return <DigitalClock />;
+ *
+ * @returns {JSX.Element | null} The formatted digital clock or null if time is not initialized yet.
+ */
 export default function DigitalClock() {
-	const [currentTime, setCurrentTime] = useState<Date | null>(null); // Початковий стан null
+  const [currentTime, setCurrentTime] = useState<Date | null>(null); // Initial state is null
 
-	useEffect(() => {
-		const updateTime = () => {
-			setCurrentTime(new Date());
-		};
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date());
+    };
 
-		// Оновлюємо час щосекунди
-		const intervalId = setInterval(updateTime, 1000);
+    // Update time every second
+    const intervalId = setInterval(updateTime, 1000);
 
-		// Встановлюємо час відразу при першому рендері
-		updateTime();
+    // Set time immediately on mount
+    updateTime();
 
-		// Чистимо інтервал після демонтажу
-		return () => clearInterval(intervalId);
-	}, []);
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
-	// Форматуємо час з використанням useMemo
-	const formattedTime = useMemo(() => {
-		if (!currentTime) return null;
+  // Memoize formatted time to avoid unnecessary recalculations
+  const formattedTime = useMemo(() => {
+    if (!currentTime) return null;
 
-		const hours = currentTime.getHours();
-		const minutes = currentTime.getMinutes();
-		const seconds = currentTime.getSeconds();
+    const hours = currentTime.getHours();
+    const minutes = currentTime.getMinutes();
+    const seconds = currentTime.getSeconds();
 
-		return {
-			hours: String(hours % 12 || 12).padStart(2, "0"), // 12-годинний формат
-			minutes: String(minutes).padStart(2, "0"),
-			seconds: String(seconds).padStart(2, "0"),
-			amOrPm: hours >= 12 ? "PM" : "AM",
-		};
-	}, [currentTime]);
+    return {
+      hours: String(hours % 12 || 12).padStart(2, "0"), // 12-hour format
+      minutes: String(minutes).padStart(2, "0"),
+      seconds: String(seconds).padStart(2, "0"),
+      amOrPm: hours >= 12 ? "PM" : "AM",
+    };
+  }, [currentTime]);
 
-	// Виводимо дані
-	if (!formattedTime) {
-		return null; // Нічого не рендеримо, поки стан не буде оновлений
-	}
+  // Render nothing until time is initialized
+  if (!formattedTime) {
+    return null;
+  }
 
-	return (
-		<div
-			className={styles["digital-clock"]}
-			role="timer"
-			aria-label={`Current time is ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds} ${formattedTime.amOrPm}`}
-		>
-			<span className={styles["hours"]}>{formattedTime.hours}</span>
-			<span className={styles["separator"]}>:</span>
-			<span className={styles["minutes"]}>{formattedTime.minutes}</span>
-			<span className={styles["separator"]}>:</span>
-			<span className={styles["seconds"]}>{formattedTime.seconds}</span>
-			<span className={styles["am-pm"]}> {formattedTime.amOrPm}</span>
-		</div>
-	);
+  return (
+    <div
+      className={styles["digital-clock"]}
+      role="timer"
+      aria-label={`Current time is ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds} ${formattedTime.amOrPm}`}
+    >
+      <span className={styles["hours"]}>{formattedTime.hours}</span>
+      <span className={styles["separator"]}>:</span>
+      <span className={styles["minutes"]}>{formattedTime.minutes}</span>
+      <span className={styles["separator"]}>:</span>
+      <span className={styles["seconds"]}>{formattedTime.seconds}</span>
+      <span className={styles["am-pm"]}> {formattedTime.amOrPm}</span>
+    </div>
+  );
 }

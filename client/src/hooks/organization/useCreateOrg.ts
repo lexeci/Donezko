@@ -1,22 +1,35 @@
-import {orgService} from "@/src/services/org.service";
-import {Organization, OrgFormData} from "@/types/org.types";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {useState} from "react";
-import {toast} from "sonner";
+import { orgService } from "@/src/services/org.service";
+import { Organization, OrgFormData } from "@/types/org.types";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 
+/**
+ * Custom hook to create a new organization.
+ *
+ * @returns An object containing:
+ *  - createOrganization: Function to trigger the creation mutation with form data.
+ *  - newOrganization: The newly created organization data.
+ *  - isPending: Boolean indicating if the creation mutation is in progress.
+ */
 export function useCreateOrg() {
-    const [newOrganization, setNewOrganization] = useState<Organization | undefined>(
-        undefined
-    );
+  // State to store the newly created organization data
+  const [newOrganization, setNewOrganization] = useState<
+    Organization | undefined
+  >(undefined);
 
-    const {mutate: createOrganization, isPending} = useMutation({
-        mutationKey: ['Create organization'],
-        mutationFn: (data: OrgFormData) => orgService.createOrganization(data),
-        onSuccess: data => {
-            toast.success('Successfully created organization!');
-            setNewOrganization(data);
-        },
-    });
+  // useMutation hook for creating an organization
+  const { mutate: createOrganization, isPending } = useMutation({
+    mutationKey: ["Create organization"], // Unique mutation key
+    mutationFn: (data: OrgFormData) => orgService.createOrganization(data), // API call to create organization
+    onSuccess: (data) => {
+      // Show success notification on successful creation
+      toast.success("Successfully created organization!");
+      // Save the created organization in local state
+      setNewOrganization(data);
+    },
+  });
 
-    return {createOrganization, newOrganization, isPending};
+  // Return the mutate function, created data, and loading state
+  return { createOrganization, newOrganization, isPending };
 }
